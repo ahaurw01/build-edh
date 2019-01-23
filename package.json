@@ -1,0 +1,23 @@
+{
+  "name": "build-edh",
+  "version": "1.0.0",
+  "description": "Build purposeful EDH decks.",
+  "main": "index.js",
+  "dependencies": {
+    "koa": "2.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahaurw01/build-edh.git"
+  },
+  "author": "ahaurw01 <aaron.haurwitz@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ahaurw01/build-edh/issues"
+  },
+  "homepage": "https://github.com/ahaurw01/build-edh#readme"
+}
