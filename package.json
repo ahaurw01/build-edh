@@ -6,9 +6,12 @@
   "dependencies": {
     "koa": "2.6.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "1.18.9"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -w server server/index"
   },
   "repository": {
     "type": "git",
@@ -19,5 +22,10 @@
   "bugs": {
     "url": "https://github.com/ahaurw01/build-edh/issues"
   },
-  "homepage": "https://github.com/ahaurw01/build-edh#readme"
+  "homepage": "https://github.com/ahaurw01/build-edh#readme",
+  "prettier": {
+    "trailingComma": "es5",
+    "semi": false,
+    "singleQuote": true
+  }
 }
