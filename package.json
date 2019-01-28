@@ -4,11 +4,12 @@
   "description": "Build purposeful EDH decks.",
   "main": "index.js",
   "dependencies": {
-    "koa": "2.6.2",
-    "cross-env": "5.2.0",
-    "nuxt": "2.3.4",
     "@nuxtjs/axios": "5.3.6",
-    "@nuxtjs/pwa": "2.6.0"
+    "@nuxtjs/pwa": "2.6.0",
+    "array-shuffle": "^1.0.1",
+    "cross-env": "5.2.0",
+    "koa": "2.6.2",
+    "nuxt": "2.3.4"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "0.0.1",
