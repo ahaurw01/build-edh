@@ -1,20 +1,12 @@
 <template>
   <div>
     <div class="card-container">
-      <div class="card-left">
-        <Card
-          img-src="https://img.scryfall.com/cards/large/en/cmd/261.jpg?1517813031"
-        />
-      </div>
-      <div class="card-middle">
-        <Card
-          img-src="https://img.scryfall.com/cards/large/en/pcy/45.jpg?1517813031"
-        />
-      </div>
-      <div class="card-right">
-        <Card
-          img-src="https://img.scryfall.com/cards/large/en/rtr/35.jpg?1517813031"
-        />
+      <div
+        v-for="display in displays"
+        :key="display.src"
+        :class="display.class"
+      >
+        <Card :img-src="display.src" />
       </div>
     </div>
   </div>
@@ -22,9 +14,134 @@
 
 <script>
 import Card from '~/components/Card.vue'
+import shuffle from 'array-shuffle'
+const popularCardNames = [
+  'Sol Ring',
+  'Cyclonic Rift',
+  'Swords to Plowshares',
+  'Cultivate',
+  'Counterspell',
+  'Eternal Witness',
+  'Izzet Signet',
+  'Rakdos Signet',
+  'Orzhov Signet',
+  "Kodama's Reach",
+  'Dimir Signet',
+  'Boros Signet',
+  'Putrefy',
+  'Azorius Signet',
+  'Anguished Unmaking',
+  'Merciless Eviction',
+  'Sakura-Tribe Elder',
+  'Simic Signet',
+  'Lightning Greaves',
+  'Demonic Tutor',
+  'Supreme Verdict',
+  'Utter End',
+  'Path to Exile',
+  "Mirari's Wake",
+  'Golgari Signet',
+  'Phyrexian Arena',
+  'Beast Within',
+  'Swiftfoot Boots',
+  'Brainstorm',
+  'Sun Titan',
+  'Boros Charm',
+  'Enlightened Tutor',
+  'Terminate',
+  'Mortify',
+  'Diabolic Tutor',
+  'Rhystic Study',
+  'Acidic Slime',
+  'Krosan Grip',
+  'Wrath of God',
+  'Blasphemous Act',
+  'Birds of Paradise',
+  'Mystical Tutor',
+  'Gruul Signet',
+  'Solemn Simulacrum',
+  'Selesnya Signet',
+  'Chaos Warp',
+  'Reclamation Sage',
+  'Sylvan Library',
+  'Return to Dust',
+  'Explosive Vegetation',
+  'Vandalblast',
+  'Aura Shards',
+  'Deathrite Shaman',
+  'Ponder',
+  'Crackling Doom',
+  'Coiling Oracle',
+  'Chromatic Lantern',
+  'Skullclamp',
+  'Vampiric Tutor',
+  "Commander's Sphere",
+  'Rampant Growth',
+  'Avenger of Zendikar',
+  'Fact or Fiction',
+  'Gisela, Blade of Goldnight',
+  'Temur Ascendancy',
+  "Green Sun's Zenith",
+  'Farseek',
+  'Ghostly Prison',
+  'Llanowar Elves',
+  'Nicol Bolas, Planeswalker',
+  'Swan Song',
+  'Propaganda',
+  'Tamiyo, Field Researcher',
+  'Elvish Mystic',
+  'Iroas, God of Victory',
+  'Wood Elves',
+  'Decimate',
+  'Oblivion Ring',
+  'Darksteel Ingot',
+  'Xenagos, God of Revels',
+  'Preordain',
+  'Rakdos Charm',
+  'Oracle of Mul Daya',
+  'Arcane Denial',
+  'Venser, the Sojourner',
+  'Prime Speaker Zegana',
+  'Aurelia, the Warleader',
+  'Rite of Replication',
+  'Conflux',
+  'Vindicate',
+  'Gilded Lotus',
+  'Baleful Strix',
+  'Negate',
+  'Maelstrom Wanderer',
+  'Toxic Deluge',
+  'Abzan Charm',
+  'Assemble the Legion',
+  'Worldly Tutor',
+  "Elspeth, Sun's Champion",
+  'Counterflux'
+]
 export default {
   components: {
     Card
+  },
+  data() {
+    const uriStart = 'https://api.scryfall.com/cards/named?exact='
+    const uriEnd = '&format=image'
+    const toUse = shuffle(popularCardNames).slice(0, 3)
+    const uri = name => `${uriStart}${encodeURIComponent(name)}${uriEnd}`
+    return {
+      displays: [
+        {
+          class: 'card-left',
+          src: uri(toUse[0])
+        },
+        {
+          class: 'card-middle',
+          src: uri(toUse[1])
+        },
+        {
+          class: 'card-right',
+          src: uri(toUse[2])
+        }
+      ]
+    }
   }
 }
 </script>
@@ -39,6 +156,12 @@ export default {
 .card-middle,
 .card-right {
   max-width: 33%;
+}
+
+.card-left img,
+.card-middle img,
+.card-right img {
+  box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 @media (min-width: 480px) {

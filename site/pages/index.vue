@@ -1,7 +1,9 @@
 <template>
   <div>
     <LandingHero />
-    <h1 class="tagline">Build purposeful EDH decks.</h1>
+    <h1 class="tagline">
+      Build purposeful EDH decks.
+    </h1>
   </div>
 </template>
 
