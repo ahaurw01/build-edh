@@ -3,15 +3,15 @@
     <h2>Sign in to get started.</h2>
     <div>
       <a href="/sign-in/google">
-        <i class="fab fa-google"></i>
+        <i class="fab fa-google" />
         <span>Google</span>
       </a>
       <a href="/sign-in/facebook">
-        <i class="fab fa-facebook"></i>
+        <i class="fab fa-facebook" />
         <span>Facebook</span>
       </a>
       <a href="/sign-in/twitter">
-        <i class="fab fa-twitter"></i>
+        <i class="fab fa-twitter" />
         <span>Twitter</span>
       </a>
     </div>
