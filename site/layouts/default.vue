@@ -2,10 +2,31 @@
   <div>
     <h1 class="site-header">
       BuildEDH
+
+      <button v-show="isLoggedIn" @click="logOut">
+        Log Out
+      </button>
     </h1>
-    <Nuxt />
+    <div class="site-wrapper">
+      <Nuxt />
+    </div>
   </div>
 </template>
+
+<script>
+export default {
+  computed: {
+    isLoggedIn() {
+      return this.$auth.loggedIn
+    }
+  },
+  methods: {
+    logOut() {
+      this.$auth.logout()
+    }
+  }
+}
+</script>
 
 <style>
 :root {
@@ -47,5 +68,20 @@ html {
 .site-header {
   padding: 10px 15px;
   box-shadow: 0 0 0 1px var(--gray-900);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-wrapper {
+  padding: 15px;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 16px;
 }
 </style>
