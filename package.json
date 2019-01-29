@@ -4,6 +4,7 @@
   "description": "Build purposeful EDH decks.",
   "main": "index.js",
   "dependencies": {
+    "@nuxtjs/auth": "4.5.3",
     "@nuxtjs/axios": "5.3.6",
     "@nuxtjs/pwa": "2.6.0",
     "array-shuffle": "^1.0.1",
