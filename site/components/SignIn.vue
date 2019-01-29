@@ -2,7 +2,7 @@
   <div>
     <h2>Sign in to get started.</h2>
     <div>
-      <a href="/sign-in/google">
+      <a @click="onGoogleClick">
         <i class="fab fa-google" />
         <span>Google</span>
       </a>
@@ -18,7 +18,15 @@
   </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  methods: {
+    onGoogleClick() {
+      this.$auth.loginWith('google')
+    }
+  }
+}
+</script>
 
 <style scoped>
 h2 {
@@ -37,6 +45,7 @@ a {
   border: 1px solid var(--gray-900);
   border-radius: 4px;
   padding: 10px;
+  cursor: pointer;
 }
 
 a i {
