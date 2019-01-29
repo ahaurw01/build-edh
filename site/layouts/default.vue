@@ -3,7 +3,7 @@
     <h1 class="site-header">
       BuildEDH
     </h1>
-    <nuxt />
+    <Nuxt />
   </div>
 </template>
 
