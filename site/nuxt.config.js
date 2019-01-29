@@ -50,7 +50,24 @@ module.exports = {
   /*
    ** Auth config
    */
-  auth: {},
+  auth: {
+    redirect: {
+      login: '/',
+      logout: '/',
+      home: '/my-decks',
+      callback: '/'
+    },
+    strategies: {
+      google: {
+        client_id:
+          '3664568602-f2qrk8tb2pdvvv320c76lpit07o5gotn.apps.googleusercontent.com'
+      }
+    }
+  },
+
+  router: {
+    middleware: ['auth']
+  },
 
   /*
    ** Build configuration
