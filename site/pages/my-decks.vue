@@ -14,8 +14,4 @@ export default {
 }
 </script>
 
-<style>
-.tagline {
-  text-align: center;
-}
-</style>
+<style></style>

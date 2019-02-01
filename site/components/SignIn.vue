@@ -1,19 +1,21 @@
 <template>
   <div>
-    <h2>Sign in to get started.</h2>
-    <div>
-      <a @click="onGoogleClick">
-        <i class="fab fa-google" />
+    <h4 class="subtitle is-4 has-text-centered">
+      Sign in to get started.
+    </h4>
+    <div class="buttons signin-buttons">
+      <button class="button is-fullwidth is-medium" @click="onGoogleClick">
+        <BIcon icon="google" />
         <span>Google</span>
-      </a>
-      <a href="/sign-in/facebook">
-        <i class="fab fa-facebook" />
+      </button>
+      <button class="button is-fullwidth is-medium">
+        <BIcon icon="facebook" />
         <span>Facebook</span>
-      </a>
-      <a href="/sign-in/twitter">
-        <i class="fab fa-twitter" />
+      </button>
+      <button class="button is-fullwidth is-medium">
+        <BIcon icon="twitter" />
         <span>Twitter</span>
-      </a>
+      </button>
     </div>
   </div>
 </template>
@@ -29,31 +31,12 @@ export default {
 </script>
 
 <style scoped>
-h2 {
-  text-align: center;
-  margin: 10px 0;
-}
-a {
-  display: flex;
-  align-items: center;
-  margin: 10px auto;
-  max-width: 350px;
-  font-size: 25px;
-  text-decoration: none;
-  color: var(--gray-50);
-  background-color: var(--gray-700);
-  border: 1px solid var(--gray-900);
-  border-radius: 4px;
-  padding: 10px;
-  cursor: pointer;
+.signin-buttons {
+  max-width: 300px;
+  margin: auto;
 }
 
-a i {
-  flex: 0;
-}
-
-a span {
+button :last-child {
   flex: 1;
-  text-align: center;
 }
 </style>

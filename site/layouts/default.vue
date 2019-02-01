@@ -1,15 +1,27 @@
 <template>
   <div>
-    <h1 class="site-header">
-      BuildEDH
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <h1 class="navbar-item title">
+          BuildEDH
+        </h1>
+      </div>
 
-      <button v-show="isLoggedIn" @click="logOut">
-        Log Out
-      </button>
-    </h1>
-    <div class="site-wrapper">
-      <Nuxt />
-    </div>
+      <div class="navbar-menu">
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <button v-show="isLoggedIn" class="button" @click="logOut">
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <section class="section">
+      <div class="container">
+        <Nuxt />
+      </div>
+    </section>
   </div>
 </template>
 
@@ -27,61 +39,3 @@ export default {
   }
 }
 </script>
-
-<style>
-:root {
-  --gray-50: #fafafa;
-  --gray-100: #f5f5f5;
-  --gray-200: #eeeeee;
-  --gray-300: #e0e0e0;
-  --gray-400: #bdbdbd;
-  --gray-500: #9e9e9e;
-  --gray-600: #757575;
-  --gray-700: #616161;
-  --gray-800: #424242;
-  --gray-900: #212121;
-}
-
-html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-  background-color: var(--gray-800);
-  color: var(--gray-50);
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-  margin: 0;
-}
-</style>
-
-<style scoped>
-.site-header {
-  padding: 10px 15px;
-  box-shadow: 0 0 0 1px var(--gray-900);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.site-wrapper {
-  padding: 15px;
-}
-
-button {
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: 16px;
-}
-</style>
