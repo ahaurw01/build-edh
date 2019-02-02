@@ -8,7 +8,7 @@
 export default {
   computed: {
     name() {
-      return this.$auth.user.given_name
+      return this.$auth.user.username
     },
   },
 }
