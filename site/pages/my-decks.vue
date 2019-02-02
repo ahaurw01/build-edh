@@ -9,8 +9,8 @@ export default {
   computed: {
     name() {
       return this.$auth.user.given_name
-    }
-  }
+    },
+  },
 }
 </script>
 

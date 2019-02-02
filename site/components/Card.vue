@@ -5,8 +5,8 @@
 <script>
 export default {
   props: {
-    imgSrc: { type: String, default: null }
-  }
+    imgSrc: { type: String, default: null },
+  },
 }
 </script>
 

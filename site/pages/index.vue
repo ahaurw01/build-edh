@@ -15,8 +15,8 @@ import SignIn from '~/components/SignIn.vue'
 export default {
   components: {
     LandingHero,
-    SignIn
-  }
+    SignIn,
+  },
 }
 </script>
 

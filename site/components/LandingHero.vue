@@ -115,11 +115,11 @@ const popularCardNames = [
   'Assemble the Legion',
   'Worldly Tutor',
   "Elspeth, Sun's Champion",
-  'Counterflux'
+  'Counterflux',
 ]
 export default {
   components: {
-    Card
+    Card,
   },
   data() {
     const uriStart = 'https://api.scryfall.com/cards/named?exact='
@@ -130,19 +130,19 @@ export default {
       displays: [
         {
           class: 'card-left',
-          src: uri(toUse[0])
+          src: uri(toUse[0]),
         },
         {
           class: 'card-middle',
-          src: uri(toUse[1])
+          src: uri(toUse[1]),
         },
         {
           class: 'card-right',
-          src: uri(toUse[2])
-        }
-      ]
+          src: uri(toUse[2]),
+        },
+      ],
     }
-  }
+  },
 }
 </script>
 

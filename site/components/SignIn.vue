@@ -25,8 +25,8 @@ export default {
   methods: {
     onGoogleClick() {
       this.$auth.loginWith('google')
-    }
-  }
+    },
+  },
 }
 </script>
 

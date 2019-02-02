@@ -30,12 +30,12 @@ export default {
   computed: {
     isLoggedIn() {
       return this.$auth.loggedIn
-    }
+    },
   },
   methods: {
     logOut() {
       this.$auth.logout()
-    }
-  }
+    },
+  },
 }
 </script>
