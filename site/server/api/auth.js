@@ -7,6 +7,7 @@ const jwtSecret = 'secret'
 module.exports = {
   login,
   register,
+  me,
 }
 
 async function login(ctx, next) {
@@ -40,4 +41,8 @@ async function register(ctx, next) {
   ctx.body = {
     token: jwt.sign(user.safeProps(), jwtSecret),
   }
+}
+
+function me(ctx) {
+  ctx.body = { user: ctx.state.user }
 }
