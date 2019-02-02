@@ -19,10 +19,9 @@
 export default {
   computed: {},
   methods: {
-    createDeck() {
-      this.$axios.post('/api/decks').then(({ data }) => {
-        this.$router.push(`/decks/${data._id}`)
-      })
+    async createDeck() {
+      const { data: deck } = await this.$axios.post('/api/decks')
+      this.$router.push(`/decks/${deck._id}`)
     },
   },
 }
