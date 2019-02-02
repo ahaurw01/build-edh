@@ -3,6 +3,8 @@ const Router = require('koa-router')
 const bodyParser = require('koa-bodyparser')
 const mongoose = require('mongoose')
 const { login, register, me } = require('./auth')
+const { createDeck, getDeck } = require('./decks')
+const { getUser } = require('./users')
 
 const apiRouter = new Router({
   prefix: '/api',
@@ -12,6 +14,11 @@ apiRouter.post('/login', login)
 apiRouter.post('/register', register)
 apiRouter.use(koaJwt({ secret: 'secret' }))
 apiRouter.get('/me', me)
+
+apiRouter.post('/decks', createDeck)
+apiRouter.get('/decks/:id', getDeck)
+
+apiRouter.get('/users/:id', getUser)
 
 module.exports = apiRouter
 
