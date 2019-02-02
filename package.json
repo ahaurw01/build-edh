@@ -44,11 +44,9 @@
   },
   "scripts": {
     "test": "jest",
-    "dev-api": "nodemon -w server server/index",
-    "dev-site": "cross-env NODE_ENV=development nodemon site/server/index.js --watch site/server",
+    "dev": "cross-env NODE_ENV=development nodemon site/server/index.js --watch site/server",
     "build": "nuxt build",
     "start": "cross-env NODE_ENV=production node site/server/index.js",
-    "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint"
   },
