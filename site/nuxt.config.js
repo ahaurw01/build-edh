@@ -11,9 +11,9 @@ module.exports = {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+      { hid: 'description', name: 'description', content: pkg.description },
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
 
   /*
@@ -39,13 +39,13 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     '@nuxtjs/auth',
-    'nuxt-buefy'
+    'nuxt-buefy',
   ],
   /*
    ** Axios module configuration
    */
   axios: {
-    // See https://github.com/nuxt-community/axios-module#options
+    baseURL: 'http://localhost:3333',
   },
 
   /*
@@ -56,18 +56,25 @@ module.exports = {
       login: '/',
       logout: '/',
       home: '/my-decks',
-      callback: '/'
+      callback: '/',
     },
     strategies: {
-      google: {
-        client_id:
-          '3664568602-f2qrk8tb2pdvvv320c76lpit07o5gotn.apps.googleusercontent.com'
-      }
-    }
+      local: {
+        endpoints: {
+          login: {
+            url: '/api/login',
+            method: 'post',
+            propertyName: 'token',
+          },
+          logout: false,
+          user: { url: '/api/me', method: 'get', propertyName: 'user' },
+        },
+      },
+    },
   },
 
   router: {
-    middleware: ['auth']
+    middleware: ['auth'],
   },
 
   /*
@@ -84,14 +91,14 @@ module.exports = {
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
-          exclude: /(node_modules)/
+          exclude: /(node_modules)/,
         })
       }
-    }
+    },
   },
 
   server: {
-    port: 3333
+    port: 3333,
   },
-  srcDir: 'site'
+  srcDir: 'site',
 }
