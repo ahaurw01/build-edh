@@ -11,8 +11,10 @@
     "cross-env": "5.2.0",
     "jsonwebtoken": "8.4.0",
     "koa": "2.6.2",
+    "koa-bodyparser": "4.2.1",
     "koa-jwt": "3.5.1",
     "koa-router": "7.4.0",
+    "lodash": "4.17.11",
     "nuxt": "2.4.0",
     "nuxt-buefy": "0.3.3"
   },
