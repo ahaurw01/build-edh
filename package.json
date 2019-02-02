@@ -8,6 +8,7 @@
     "@nuxtjs/axios": "5.3.6",
     "@nuxtjs/pwa": "2.6.0",
     "array-shuffle": "^1.0.1",
+    "bcrypt": "3.0.3",
     "cross-env": "5.2.0",
     "jsonwebtoken": "8.4.0",
     "koa": "2.6.2",
