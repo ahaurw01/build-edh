@@ -2,12 +2,26 @@
   <div>
     <nav class="navbar">
       <div class="navbar-brand">
-        <h1 class="navbar-item title">
-          BuildEDH
-        </h1>
+        <div class="navbar-item">
+          <h1 class="title">
+            BuildEDH
+          </h1>
+        </div>
+        <a
+          role="button"
+          class="navbar-burger"
+          :class="{ 'is-active': burgerActive }"
+          aria-label="menu"
+          :aria-expanded="burgerActive"
+          @click="hitBurger"
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </a>
       </div>
 
-      <div class="navbar-menu">
+      <div class="navbar-menu" :class="{ 'is-active': burgerActive }">
         <div class="navbar-end">
           <div class="navbar-item">
             <button v-show="isLoggedIn" class="button" @click="logOut">
@@ -27,6 +41,9 @@
 
 <script>
 export default {
+  data() {
+    return { burgerActive: false }
+  },
   computed: {
     isLoggedIn() {
       return this.$auth.loggedIn
@@ -35,6 +52,9 @@ export default {
   methods: {
     logOut() {
       this.$auth.logout()
+    },
+    hitBurger() {
+      this.burgerActive = !this.burgerActive
     },
   },
 }
