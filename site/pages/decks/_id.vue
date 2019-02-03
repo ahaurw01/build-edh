@@ -1,21 +1,30 @@
 <template>
   <section>
-    <h2 class="title is-2">
-      <span>{{ name }}</span>
-      <span>
+    <div class="columns is-vcentered">
+      <div class="column">
+        <h2 class="title is-2">
+          {{ name }}
+        </h2>
+      </div>
+      <div class="column is-1">
         <button class="button" @click="isEditNameModalActive = true">
           <BIcon icon="pencil" />
         </button>
-      </span>
-    </h2>
-    <h4 class="subtitle is-4">
-      <span>{{ purpose }}</span>
-      <span>
+      </div>
+    </div>
+
+    <div class="columns is-vcentered">
+      <div class="column">
+        <h4 class="subtitle is-4">
+          {{ purpose }}
+        </h4>
+      </div>
+      <div class="column is-1">
         <button class="button" @click="isEditPurposeModalActive = true">
           <BIcon icon="pencil" />
         </button>
-      </span>
-    </h4>
+      </div>
+    </div>
 
     <BModal :active.sync="isEditNameModalActive" has-modal-card>
       <DeckPropertyModalForm
