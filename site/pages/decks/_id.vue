@@ -1,7 +1,10 @@
 <template>
   <section>
     <h2 class="title is-2">
-      <span>{{ deckName }} by {{ ownerUsername }}</span>
+      <span>{{ name }} by {{ ownerUsername }}</span>
+      <BField label="Name">
+        <BInput placeholder="Untitled" @input="updateName" />
+      </BField>
     </h2>
   </section>
 </template>
@@ -22,11 +25,11 @@ export default {
   computed: {
     ...mapGetters({
       ownerUsername: 'deck/ownerUsername',
-      deckName: 'deck/deckName',
+      name: 'deck/name',
     }),
   },
   methods: {
-    ...mapActions([]),
+    ...mapActions({ updateName: 'deck/updateName' }),
   },
 }
 </script>

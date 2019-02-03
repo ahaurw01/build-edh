@@ -13,9 +13,19 @@ export const mutations = {
   },
 }
 
-export const actions = {}
+export const actions = {
+  async updateName({ commit, state }, newName) {
+    const { data: deck } = await this.$axios.put(
+      `/api/decks/${state.deck._id}`,
+      {
+        name: newName,
+      }
+    )
+    commit('deck', deck)
+  },
+}
 
 export const getters = {
   ownerUsername: state => state.owner.username,
-  deckName: state => state.deck.name || 'Untitled deck',
+  name: state => state.deck.name || 'Untitled deck',
 }
