@@ -26,6 +26,23 @@
       </div>
     </div>
 
+    <div class="columns is-vcentered">
+      <div class="column">
+        <p
+          v-for="(paragraph, index) in descriptionParagraphs"
+          :key="index"
+          class="description-paragraph"
+        >
+          {{ paragraph }}
+        </p>
+      </div>
+      <div class="column is-1">
+        <button class="button" @click="isEditDescriptionModalActive = true">
+          <BIcon icon="pencil" />
+        </button>
+      </div>
+    </div>
+
     <BModal :active.sync="isEditNameModalActive" has-modal-card>
       <DeckPropertyModalForm
         property-name="name"
@@ -40,6 +57,14 @@
         type="textarea"
         :maxlength="200"
         :on-save="updatePurpose"
+      />
+    </BModal>
+    <BModal :active.sync="isEditDescriptionModalActive" has-modal-card>
+      <DeckPropertyModalForm
+        property-name="description"
+        :property-value="description"
+        type="textarea"
+        :on-save="updateDescription"
       />
     </BModal>
   </section>
@@ -65,21 +90,29 @@ export default {
   data: () => ({
     isEditNameModalActive: false,
     isEditPurposeModalActive: false,
+    isEditDescriptionModalActive: false,
   }),
   computed: {
     ...mapGetters({
       ownerUsername: 'deck/ownerUsername',
       name: 'deck/name',
       purpose: 'deck/purpose',
+      description: 'deck/description',
+      descriptionParagraphs: 'deck/descriptionParagraphs',
     }),
   },
   methods: {
     ...mapActions({
       updateName: 'deck/updateName',
       updatePurpose: 'deck/updatePurpose',
+      updateDescription: 'deck/updateDescription',
     }),
   },
 }
 </script>
 
-<style></style>
+<style scoped>
+.description-paragraph {
+  margin-bottom: 1em;
+}
+</style>

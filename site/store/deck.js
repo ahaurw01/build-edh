@@ -33,10 +33,23 @@ export const actions = {
     )
     commit('deck', deck)
   },
+
+  async updateDescription({ commit, state }, newDescription) {
+    const { data: deck } = await this.$axios.put(
+      `/api/decks/${state.deck._id}`,
+      {
+        description: newDescription,
+      }
+    )
+    commit('deck', deck)
+  },
 }
 
 export const getters = {
   ownerUsername: state => state.owner.username,
   name: state => state.deck.name || 'Untitled deck',
   purpose: state => state.deck.purpose || 'No purpose',
+  description: state => state.deck.description || 'No description',
+  descriptionParagraphs: state =>
+    (state.deck.description || 'No description').split('\n'),
 }

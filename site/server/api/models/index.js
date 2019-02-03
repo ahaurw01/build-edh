@@ -17,6 +17,7 @@ const User = mongoose.model('User', userSchema)
 const deckSchema = new Schema({
   name: String,
   purpose: String,
+  description: String,
   owner: Schema.Types.ObjectId,
   createdAt: Date,
 })
