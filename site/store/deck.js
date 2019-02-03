@@ -23,9 +23,20 @@ export const actions = {
     )
     commit('deck', deck)
   },
+
+  async updatePurpose({ commit, state }, newPurpose) {
+    const { data: deck } = await this.$axios.put(
+      `/api/decks/${state.deck._id}`,
+      {
+        purpose: newPurpose,
+      }
+    )
+    commit('deck', deck)
+  },
 }
 
 export const getters = {
   ownerUsername: state => state.owner.username,
   name: state => state.deck.name || 'Untitled deck',
+  purpose: state => state.deck.purpose,
 }

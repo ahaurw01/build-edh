@@ -3,7 +3,14 @@
     <h2 class="title is-2">
       <span>{{ name }} by {{ ownerUsername }}</span>
       <BField label="Name">
-        <BInput placeholder="Untitled" @input="updateName" />
+        <BInput :value="name" placeholder="Untitled" @input="updateName" />
+      </BField>
+      <BField label="Purpose">
+        <BInput
+          :value="purpose"
+          placeholder="What is this deck's goal?"
+          @input="updatePurpose"
+        />
       </BField>
     </h2>
   </section>
@@ -26,10 +33,14 @@ export default {
     ...mapGetters({
       ownerUsername: 'deck/ownerUsername',
       name: 'deck/name',
+      purpose: 'deck/purpose',
     }),
   },
   methods: {
-    ...mapActions({ updateName: 'deck/updateName' }),
+    ...mapActions({
+      updateName: 'deck/updateName',
+      updatePurpose: 'deck/updatePurpose',
+    }),
   },
 }
 </script>
