@@ -16,11 +16,19 @@
         </button>
       </span>
     </h4>
+
     <BModal :active.sync="isEditNameModalActive" has-modal-card>
       <DeckPropertyModalForm
         property-name="name"
         :property-value="name"
         :on-save="updateName"
+      />
+    </BModal>
+    <BModal :active.sync="isEditPurposeModalActive" has-modal-card>
+      <DeckPropertyModalForm
+        property-name="purpose"
+        :property-value="purpose"
+        :on-save="updatePurpose"
       />
     </BModal>
   </section>

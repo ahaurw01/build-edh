@@ -2,7 +2,7 @@
   <form @submit.prevent="_onSave">
     <div class="modal-card">
       <section class="modal-card-body">
-        <BField :label="propertyName">
+        <BField :label="label">
           <BInput
             :value="propertyValue"
             :placeholder="placeholder"
@@ -35,6 +35,12 @@ export default {
       this.onSave(new FormData(e.target).get('property')).then(() => {
         this.$parent.close()
       })
+    },
+  },
+  computed: {
+    label() {
+      const letters = this.propertyName.split('')
+      return [letters[0].toUpperCase(), ...letters.slice(1)].join('')
     },
   },
 }
