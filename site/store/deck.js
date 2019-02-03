@@ -38,5 +38,5 @@ export const actions = {
 export const getters = {
   ownerUsername: state => state.owner.username,
   name: state => state.deck.name || 'Untitled deck',
-  purpose: state => state.deck.purpose,
+  purpose: state => state.deck.purpose || 'No purpose',
 }

@@ -1,23 +1,34 @@
 <template>
   <section>
     <h2 class="title is-2">
-      <span>{{ name }} by {{ ownerUsername }}</span>
-      <BField label="Name">
-        <BInput :value="name" placeholder="Untitled" @input="updateName" />
-      </BField>
-      <BField label="Purpose">
-        <BInput
-          :value="purpose"
-          placeholder="What is this deck's goal?"
-          @input="updatePurpose"
-        />
-      </BField>
+      <span>{{ name }}</span>
+      <span>
+        <button class="button" @click="isEditNameModalActive = true">
+          <BIcon icon="pencil" />
+        </button>
+      </span>
     </h2>
+    <h4 class="subtitle is-4">
+      <span>{{ purpose }}</span>
+      <span>
+        <button class="button" @click="isEditPurposeModalActive = true">
+          <BIcon icon="pencil" />
+        </button>
+      </span>
+    </h4>
+    <BModal :active.sync="isEditNameModalActive" has-modal-card>
+      <DeckPropertyModalForm
+        property-name="name"
+        :property-value="name"
+        :on-save="updateName"
+      />
+    </BModal>
   </section>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import DeckPropertyModalForm from '~/components/DeckPropertyModalForm'
 export default {
   async fetch({ store, params, error, $axios }) {
     try {
@@ -29,6 +40,13 @@ export default {
       error({ statusCode: 404, message: 'Deck not found' })
     }
   },
+  components: {
+    DeckPropertyModalForm,
+  },
+  data: () => ({
+    isEditNameModalActive: false,
+    isEditPurposeModalActive: false,
+  }),
   computed: {
     ...mapGetters({
       ownerUsername: 'deck/ownerUsername',
