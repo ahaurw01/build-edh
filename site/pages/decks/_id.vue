@@ -28,6 +28,8 @@
       <DeckPropertyModalForm
         property-name="purpose"
         :property-value="purpose"
+        type="textarea"
+        :maxlength="200"
         :on-save="updatePurpose"
       />
     </BModal>
