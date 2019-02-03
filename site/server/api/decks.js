@@ -2,6 +2,7 @@ const { Deck } = require('./models')
 
 module.exports = {
   createDeck,
+  getMyDecks,
   getDeck,
   updateDeck,
 }
@@ -16,6 +17,12 @@ async function createDeck(ctx) {
     createdAt: new Date(),
   })
   ctx.body = await deck.save()
+}
+
+async function getMyDecks(ctx) {
+  const owner = ctx.state.user._id
+  const decks = await Deck.find({ owner })
+  ctx.body = decks
 }
 
 async function getDeck(ctx) {
