@@ -38,6 +38,9 @@ const cardSchema = new Schema({
   canHaveMultiple: Boolean,
   imageUri: String,
   typeLine: String,
+  canBeCommander: { type: Boolean, index: true },
+  isPartner: { type: Boolean, index: true },
+  partnerWith: String,
   faces: [
     {
       name: String,
@@ -91,6 +94,35 @@ cardSchema.statics.canHaveMultiple = function(scryfallData) {
     oracleText.includes('A deck can have any number of cards named')
   )
 }
+cardSchema.statics.canBeCommander = function(doc) {
+  const { types, superTypes, oracleText } = doc.faces[0]
+  const isLegendaryCreature =
+    types.includes('Creature') && superTypes.includes('Legendary')
+  if (isLegendaryCreature) return true
+
+  const oracleSaysSo = oracleText.includes('can be your commander.')
+  return oracleSaysSo
+}
+cardSchema.statics.isPartner = function(doc) {
+  const { oracleText } = doc.faces[0]
+  return (
+    oracleText.startsWith('Partner with') ||
+    oracleText.includes('\nPartner with') ||
+    oracleText.includes('Partner (You can have')
+  )
+}
+cardSchema.statics.partnerWith = function(doc) {
+  // Relies on isPartner applied to the doc.
+  //
+  const { isPartner } = doc
+  if (!isPartner) return
+
+  const { oracleText } = doc.faces[0]
+  const partnerNameRegexp = /Partner with ([-_,\.'"!\?/\w ]+)( \(|\n)/
+  const result = partnerNameRegexp.exec(oracleText)
+  if (!result) return null
+  return result[1]
+}
 cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
   const Card = this
   const doc = {
@@ -122,6 +154,9 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
       colors: rawFace.colors,
     })),
   }
+  doc.canBeCommander = Card.canBeCommander(doc)
+  doc.isPartner = Card.isPartner(doc)
+  doc.partnerWith = Card.partnerWith(doc)
 
   return Card.updateOne({ scryfallId: doc.scryfallId }, doc, { upsert: true })
 }
