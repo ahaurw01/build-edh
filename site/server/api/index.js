@@ -5,14 +5,22 @@ const mongoose = require('mongoose')
 const { login, register, me } = require('./auth')
 const { createDeck, getMyDecks, getDeck, updateDeck } = require('./decks')
 const { getUser } = require('./users')
+const { getCards } = require('./cards')
 
 const apiRouter = new Router({
   prefix: '/api',
 })
 apiRouter.use(bodyParser())
+
+// Un-authed routes:
 apiRouter.post('/login', login)
 apiRouter.post('/register', register)
+
+apiRouter.get('/cards', getCards)
+
+// Authed routes:
 apiRouter.use(koaJwt({ secret: 'secret' }))
+
 apiRouter.get('/me', me)
 
 apiRouter.post('/decks', createDeck)
