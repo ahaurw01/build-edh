@@ -4,41 +4,33 @@ module.exports = {
   getCards,
 }
 
+const group = {
+  ...Object.keys(Card.schema.paths).reduce((acc, key) => {
+    acc[key] = { $first: `$${key}` }
+    return acc
+  }, {}),
+  _id: '$name',
+}
+
 async function getCards(ctx) {
-  const {
-    canBeCommander,
-    nameLike,
-    isLegal = true,
-    cmc,
-    ci,
-    isPartner,
-  } = ctx.query
+  let { nameLike = '', canBeCommander, isLegal, isPartner, cmc, ci } = ctx.query
 
-  const problems = []
-  if (!nameLike)
-    problems.push({
-      param: 'nameLike',
-      message: 'nameLike is required',
-    })
+  nameLike = nameLike.trim()
 
-  if (problems.length) {
-    ctx.status = 400
-    ctx.body = problems
-    return
-  }
+  if (canBeCommander === 'true') canBeCommander = true
+  if (canBeCommander === 'false') canBeCommander = false
 
-  const filters = { name: new RegExp(nameLike, 'i') }
+  if (isLegal === 'true') isLegal = true
+  if (isLegal === 'false') isLegal = false
+
+  if (isPartner === 'true') isPartner = true
+  if (isPartner === 'false') isPartner = false
+
+  const filters = {}
+  if (nameLike) filters.name = new RegExp(nameLike, 'i')
   if (canBeCommander != null) filters.canBeCommander = canBeCommander
   if (isLegal != null) filters.isLegal = isLegal
   if (isPartner != null) filters.isPartner = isPartner
-
-  const group = {
-    ...Object.keys(Card.schema.paths).reduce((acc, key) => {
-      acc[key] = { $first: `$${key}` }
-      return acc
-    }, {}),
-    _id: '$name',
-  }
 
   // const cards = await Card.find(filters, null, { limit: 10 }).exec()
   const cards = await Card.aggregate()
