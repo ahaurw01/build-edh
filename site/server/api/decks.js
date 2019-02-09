@@ -77,73 +77,90 @@ POST
 */
 async function addDeckCommander(ctx) {
   const scryfallId = _.get(ctx.request, 'body.commander.scryfallId')
+  ctx.assert(!!scryfallId, 400, 'Missing scryfallId')
+
   const { deck } = ctx.state
-
-  ctx.assert(!!scryfallId, 400, 'Mising scryfallId')
-
-  // Can never have more than 2 commanders.
-  ctx.assert(deck.commanders.length < 2, 400, 'Already two commanders')
-
-  const [newCommander, existingCommanders] = await Promise.all([
-    Card.findOne({ scryfallId }),
-    deck.commanders.length
-      ? Card.find({
-          scryfallId: { $in: [_.map(deck.commanders, 'scryfallId')] },
-        })
-      : [],
-  ])
-
-  // Enforce ability to be a commander.
-  ctx.assert(newCommander.canBeCommander, 400, 'Not a commander')
-
-  async function saveWithNewCommander() {
-    const subdoc = {
-      scryfallId,
-      uuid: uuid(),
-      purposes: [],
-      isFoil: false,
-    }
-    deck.commanders.push(subdoc)
-    await deck.save()
-    ctx.body = subdoc
+  const subdoc = {
+    scryfallId,
+    uuid: uuid(),
+    purposes: [],
+    isFoil: false,
   }
-
-  if (existingCommanders.length === 0) {
-    return saveWithNewCommander()
-  }
-
-  // Both must be a partner..
-  ctx.assert(
-    existingCommanders[0].isPartner && newCommander.isPartner,
-    400,
-    'Both commanders must have partner'
-  )
-
-  // There cannot be a mismatch of partnerWith.
-  ctx.assert(
-    existingCommanders[0].partnerWith
-      ? existingCommanders[0].partnerWith === newCommander.name
-      : !newCommander.partnerWith,
-    400,
-    'Mismatch of specified partner'
-  )
-
-  return saveWithNewCommander()
+  deck.commanders.push(subdoc)
+  await validateCommanders(ctx)
+  await deck.save()
+  ctx.body = subdoc
 }
 
 /*
 PUT
 {
-  commanders: [
-    {
-      purposes: ['Card draw', 'Sac outlet'],
-      isFoil: true,
-      scryfallId: <id>
-    }
-  ]
+  commander: {
+    purposes: ['Card draw', 'Sac outlet'],
+    isFoil: true,
+    scryfallId: <id>
+  }
 }
 
 */
-async function updateDeckCommander(ctx) {}
+async function updateDeckCommander(ctx) {
+  const uuid = ctx.params.uuid
+  const { deck } = ctx.state
+
+  const commander = _.find(deck.commanders, { uuid })
+  ctx.assert(!!commander, 400, 'UUID not found')
+  ctx.assert(ctx.request.body.commander, 400, 'No updates provided')
+
+  const { isFoil, purposes, scryfallId } = ctx.request.body.commander
+
+  if (isFoil != null) commander.isFoil = isFoil
+  if (purposes != null) commander.purposes = purposes
+  if (scryfallId != null) commander.scryfallId = scryfallId
+
+  await validateCommanders(ctx)
+  await deck.save()
+  ctx.body = commander
+}
 
 async function deleteDeckCommander(ctx) {}
+
+async function validateCommanders(ctx) {
+  const {
+    deck: { commanders },
+  } = ctx.state
+  ctx.assert(
+    commanders.length <= 2,
+    400,
+    'Cannot have more than two commanders'
+  )
+  ctx.assert(
+    commanders.length < 1 ||
+      _(commanders)
+        .map('scryfallId')
+        .uniq()
+        .value().length === 2,
+    400,
+    'Cannot have duplicate commanders'
+  )
+
+  const cards = await Card.find({
+    scryfallId: { $in: _.map(commanders, 'scryfallId') },
+  })
+
+  ctx.assert(commanders.length === cards.length, 400, 'Card not found')
+  ctx.assert(_.every(cards, 'canBeCommander'), 400, 'Ineligible commander')
+
+  if (commanders.length < 2) return
+
+  ctx.assert(
+    _.every(cards, 'isPartner'),
+    400,
+    'Both commanders must have partner'
+  )
+  ctx.assert(
+    (!cards[0].partnerWith && !cards[1].partnerWith) ||
+      cards[0].partnerWith === cards[1].name,
+    400,
+    'Mismatch of specified partner'
+  )
+}
