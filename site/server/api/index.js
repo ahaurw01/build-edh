@@ -3,7 +3,16 @@ const Router = require('koa-router')
 const bodyParser = require('koa-bodyparser')
 const mongoose = require('mongoose')
 const { login, register, me } = require('./auth')
-const { createDeck, getMyDecks, getDeck, updateDeck } = require('./decks')
+const {
+  ensureDeckOwner,
+  createDeck,
+  getMyDecks,
+  getDeck,
+  updateDeck,
+  addDeckCommander,
+  updateDeckCommander,
+  deleteDeckCommander,
+} = require('./decks')
 const { getUser } = require('./users')
 const { getCards } = require('./cards')
 
@@ -24,9 +33,14 @@ apiRouter.use(koaJwt({ secret: 'secret' }))
 apiRouter.get('/me', me)
 
 apiRouter.post('/decks', createDeck)
-apiRouter.get('/decks/mine', getMyDecks)
 apiRouter.get('/decks/:id', getDeck)
+apiRouter.get('/decks/mine', getMyDecks)
+
+apiRouter.use('/decks/:id', ensureDeckOwner)
 apiRouter.put('/decks/:id', updateDeck)
+apiRouter.post('/decks/:id/commanders', addDeckCommander)
+apiRouter.put('/decks/:id/commanders/:uuid', updateDeckCommander)
+apiRouter.delete('/decks/:id/commanders/:uuid', deleteDeckCommander)
 
 apiRouter.get('/users/:id', getUser)
 

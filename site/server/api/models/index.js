@@ -14,12 +14,21 @@ userSchema.methods.safeProps = function() {
 }
 const User = mongoose.model('User', userSchema)
 
+const deckCardSchema = {
+  uuid: String,
+  scryfallId: String,
+  purposes: [String],
+  isFoil: Boolean,
+}
+
 const deckSchema = new Schema({
   name: String,
   purpose: String,
   description: String,
   owner: Schema.Types.ObjectId,
   createdAt: Date,
+  commanders: [deckCardSchema],
+  the99: [deckCardSchema],
 })
 const Deck = mongoose.model('Deck', deckSchema)
 

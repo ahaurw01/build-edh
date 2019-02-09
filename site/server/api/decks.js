@@ -1,10 +1,29 @@
-const { Deck } = require('./models')
+const _ = require('lodash')
+const uuid = require('uuid/v4')
+const { Deck, Card } = require('./models')
 
 module.exports = {
+  ensureDeckOwner,
   createDeck,
   getMyDecks,
   getDeck,
   updateDeck,
+  addDeckCommander,
+  updateDeckCommander,
+  deleteDeckCommander,
+}
+
+async function ensureDeckOwner(ctx, next) {
+  const deck = await Deck.findOne({
+    _id: ctx.params.id,
+    owner: ctx.state.user._id,
+  })
+  if (deck) {
+    ctx.state.deck = deck
+    return next()
+  } else {
+    ctx.throw(403)
+  }
 }
 
 async function createDeck(ctx) {
@@ -47,3 +66,84 @@ async function updateDeck(ctx) {
   if (!deck) ctx.response.status = 404
   else ctx.body = deck
 }
+
+/*
+POST
+{
+  commander: {
+    scryfallId: <id>,
+  }
+}
+*/
+async function addDeckCommander(ctx) {
+  const scryfallId = _.get(ctx.request, 'body.commander.scryfallId')
+  const { deck } = ctx.state
+
+  ctx.assert(!!scryfallId, 400, 'Mising scryfallId')
+
+  // Can never have more than 2 commanders.
+  ctx.assert(deck.commanders.length < 2, 400, 'Already two commanders')
+
+  const [newCommander, existingCommanders] = await Promise.all([
+    Card.findOne({ scryfallId }),
+    deck.commanders.length
+      ? Card.find({
+          scryfallId: { $in: [_.map(deck.commanders, 'scryfallId')] },
+        })
+      : [],
+  ])
+
+  // Enforce ability to be a commander.
+  ctx.assert(newCommander.canBeCommander, 400, 'Not a commander')
+
+  async function saveWithNewCommander() {
+    const subdoc = {
+      scryfallId,
+      uuid: uuid(),
+      purposes: [],
+      isFoil: false,
+    }
+    deck.commanders.push(subdoc)
+    await deck.save()
+    ctx.body = subdoc
+  }
+
+  if (existingCommanders.length === 0) {
+    return saveWithNewCommander()
+  }
+
+  // Both must be a partner..
+  ctx.assert(
+    existingCommanders[0].isPartner && newCommander.isPartner,
+    400,
+    'Both commanders must have partner'
+  )
+
+  // There cannot be a mismatch of partnerWith.
+  ctx.assert(
+    existingCommanders[0].partnerWith
+      ? existingCommanders[0].partnerWith === newCommander.name
+      : !newCommander.partnerWith,
+    400,
+    'Mismatch of specified partner'
+  )
+
+  return saveWithNewCommander()
+}
+
+/*
+PUT
+{
+  commanders: [
+    {
+      purposes: ['Card draw', 'Sac outlet'],
+      isFoil: true,
+      scryfallId: <id>
+    }
+  ]
+}
+
+*/
+async function updateDeckCommander(ctx) {}
+
+async function deleteDeckCommander(ctx) {}
