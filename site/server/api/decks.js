@@ -104,7 +104,7 @@ PUT
 
 */
 async function updateDeckCommander(ctx) {
-  const uuid = ctx.params.uuid
+  const { uuid } = ctx.params
   const { deck } = ctx.state
 
   const commander = _.find(deck.commanders, { uuid })
@@ -122,7 +122,16 @@ async function updateDeckCommander(ctx) {
   ctx.body = commander
 }
 
-async function deleteDeckCommander(ctx) {}
+async function deleteDeckCommander(ctx) {
+  const { uuid } = ctx.params
+  const { deck } = ctx.state
+  ctx.assert(_.find(deck.commanders, { uuid }), 400, 'UUID not found')
+
+  deck.commanders = _.reject(deck.commanders, { uuid })
+  await validateCommanders(ctx)
+  await deck.save()
+  ctx.status = 204
+}
 
 async function validateCommanders(ctx) {
   const {
@@ -134,7 +143,7 @@ async function validateCommanders(ctx) {
     'Cannot have more than two commanders'
   )
   ctx.assert(
-    commanders.length < 1 ||
+    commanders.length <= 1 ||
       _(commanders)
         .map('scryfallId')
         .uniq()
@@ -150,7 +159,7 @@ async function validateCommanders(ctx) {
   ctx.assert(commanders.length === cards.length, 400, 'Card not found')
   ctx.assert(_.every(cards, 'canBeCommander'), 400, 'Ineligible commander')
 
-  if (commanders.length < 2) return
+  if (commanders.length <= 1) return
 
   ctx.assert(
     _.every(cards, 'isPartner'),
