@@ -45,7 +45,7 @@ const cardSchema = new Schema({
   setCode: String,
   setName: String,
   canHaveMultiple: Boolean,
-  imageUri: String,
+  imageUris: { large: String, small: String },
   typeLine: String,
   canBeCommander: { type: Boolean, index: true },
   isPartner: { type: Boolean, index: true },
@@ -53,7 +53,7 @@ const cardSchema = new Schema({
   faces: [
     {
       name: String,
-      imageUri: String,
+      imageUris: { large: String, small: String },
       manaCost: String,
       typeLine: String,
       types: { type: [String], index: true },
@@ -147,11 +147,11 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
     setCode: rawCard.set,
     setName: rawCard.set_name,
     canHaveMultiple: Card.canHaveMultiple(rawCard),
-    imageUri: (rawCard.image_uris || {}).large,
+    imageUris: _.pick(rawCard.image_uris || {}, ['large', 'small']),
     typeLine: rawCard.type_line,
     faces: (rawCard.card_faces || [rawCard]).map(rawFace => ({
       name: rawFace.name,
-      imageUri: (rawFace.image_uris || {}).large,
+      imageUris: _.pick(rawFace.image_uris || {}, ['large', 'small']),
       manaCost: rawFace.mana_cost,
       typeLine: rawFace.type_line,
       types: Card.typeLineToTypes(rawFace.type_line),
