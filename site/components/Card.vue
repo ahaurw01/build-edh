@@ -1,11 +1,11 @@
 <template>
-  <img :src="imgSrc" />
+  <img :src="card.imageUris.large" />
 </template>
 
 <script>
 export default {
   props: {
-    imgSrc: { type: String, default: null },
+    card: { type: Object, required: true },
   },
 }
 </script>

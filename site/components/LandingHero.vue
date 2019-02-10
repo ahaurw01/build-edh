@@ -3,10 +3,10 @@
     <div class="card-container">
       <div
         v-for="display in displays"
-        :key="display.src"
+        :key="display.card.name"
         :class="display.class"
       >
-        <Card :img-src="display.src" />
+        <Card :card="display.card" />
       </div>
     </div>
   </div>
@@ -130,15 +130,30 @@ export default {
       displays: [
         {
           class: 'card-left',
-          src: uri(toUse[0]),
+          card: {
+            name: toUse[0],
+            imageUris: {
+              large: uri(toUse[0]),
+            },
+          },
         },
         {
           class: 'card-middle',
-          src: uri(toUse[1]),
+          card: {
+            name: toUse[1],
+            imageUris: {
+              large: uri(toUse[1]),
+            },
+          },
         },
         {
           class: 'card-right',
-          src: uri(toUse[2]),
+          card: {
+            name: toUse[2],
+            imageUris: {
+              large: uri(toUse[2]),
+            },
+          },
         },
       ],
     }
