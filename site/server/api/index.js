@@ -33,8 +33,8 @@ apiRouter.use(koaJwt({ secret: 'secret' }))
 apiRouter.get('/me', me)
 
 apiRouter.post('/decks', createDeck)
-apiRouter.get('/decks/:id', getDeck)
 apiRouter.get('/decks/mine', getMyDecks)
+apiRouter.get('/decks/:id', getDeck)
 
 apiRouter.use('/decks/:id', ensureDeckOwner)
 apiRouter.put('/decks/:id', updateDeck)

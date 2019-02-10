@@ -46,9 +46,27 @@ async function getMyDecks(ctx) {
 
 async function getDeck(ctx) {
   const { id } = ctx.params
-  const deck = await Deck.findById(id)
-  if (!deck) ctx.response.status = 404
-  else ctx.body = deck
+  let deck = await Deck.findById(id)
+  if (!deck) return (ctx.response.status = 404)
+
+  deck = deck.toJSON()
+  // Populate the card sources
+  const scryfallIds = _.map(deck.commanders, 'scryfallId').concat(
+    _.map(deck.the99, 'scryfallId')
+  )
+  const sources = await Card.find({
+    scryfallId: { $in: scryfallIds },
+  })
+  deck.commanders = deck.commanders.map(commander => ({
+    ...commander,
+    source: _.find(sources, { scryfallId: commander.scryfallId }),
+  }))
+  deck.the99 = deck.the99.map(card => ({
+    ...card,
+    source: _.find(sources, { scryfallId: card.scryfallId }),
+  }))
+
+  ctx.body = deck
 }
 
 async function updateDeck(ctx) {
