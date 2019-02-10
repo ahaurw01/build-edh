@@ -6,6 +6,7 @@ module.exports = {
 
 const group = {
   ...Object.keys(Card.schema.paths).reduce((acc, key) => {
+    key = key.split('.')[0]
     acc[key] = { $first: `$${key}` }
     return acc
   }, {}),
