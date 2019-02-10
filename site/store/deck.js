@@ -52,4 +52,5 @@ export const getters = {
   description: state => state.deck.description || 'No description',
   descriptionParagraphs: state =>
     (state.deck.description || 'No description').split('\n'),
+  commanders: state => state.deck.commanders,
 }

@@ -43,6 +43,8 @@
       </div>
     </div>
 
+    <CommanderSection />
+
     <BModal :active.sync="isEditNameModalActive" has-modal-card>
       <DeckPropertyModalForm
         property-name="name"
@@ -73,6 +75,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import DeckPropertyModalForm from '~/components/DeckPropertyModalForm'
+import CommanderSection from '~/components/CommanderSection'
 export default {
   async fetch({ store, params, error, $axios }) {
     try {
@@ -86,6 +89,7 @@ export default {
   },
   components: {
     DeckPropertyModalForm,
+    CommanderSection,
   },
   data: () => ({
     isEditNameModalActive: false,
