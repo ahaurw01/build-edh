@@ -9,18 +9,46 @@
       :card="commander.source"
       size="large"
     />
+    <button
+      v-if="canAddCommander"
+      class="button is-primary"
+      @click="isNewCommanderModalActive = true"
+    >
+      Add Commander
+    </button>
+
+    <BModal :active.sync="isNewCommanderModalActive" has-modal-card>
+      <CommanderModalForm :on-save="onSaveNewCommander" />
+    </BModal>
   </section>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import Card from '~/components/Card'
+import CommanderModalForm from '~/components/CommanderModalForm'
 export default {
   components: {
     Card,
+    CommanderModalForm,
   },
+  data() {
+    return {
+      isNewCommanderModalActive: false,
+    }
+  },
+
   computed: {
-    ...mapGetters({ commanders: 'deck/commanders' }),
+    ...mapGetters(
+      ['commanders', 'canAddCommander'].reduce((acc, key) => {
+        acc[key] = `deck/${key}`
+        return acc
+      }, {})
+    ),
+  },
+
+  methods: {
+    onSaveNewCommander(commander) {},
   },
 }
 </script>

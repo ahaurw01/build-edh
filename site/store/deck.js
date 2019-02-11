@@ -53,4 +53,8 @@ export const getters = {
   descriptionParagraphs: state =>
     (state.deck.description || 'No description').split('\n'),
   commanders: state => state.deck.commanders,
+  canAddCommander: state =>
+    state.deck.commanders.length === 0 ||
+    (state.deck.commanders.length === 1 &&
+      state.deck.commanders[0].source.isPartner),
 }
