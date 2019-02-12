@@ -2,7 +2,9 @@
   <form @submit.prevent="_onSave">
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Add a commander</p>
+        <p class="modal-card-title">
+          Add a commander
+        </p>
       </header>
       <section class="modal-card-body">
         <BField label="Commander">
