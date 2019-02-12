@@ -50,6 +50,10 @@ export const actions = {
   },
 
   async getCardSuggestions({ commit, state }, query) {
+    if (!(query.nameLike || '').trim()) {
+      return commit('cardSuggestions', [])
+    }
+
     const {
       data: { cards },
     } = await this.$axios.get(`/api/cards`, { params: query })
