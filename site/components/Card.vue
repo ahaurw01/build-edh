@@ -1,6 +1,6 @@
 <template>
   <div :class="size" class="mtg-card">
-    <img :src="card.imageUris.large" />
+    <img :src="imgSrc" />
   </div>
 </template>
 
@@ -18,16 +18,23 @@ export default {
       },
     },
   },
+  computed: {
+    imgSrc() {
+      return this.size === 'x-small'
+        ? this.card.imageUris.small
+        : this.card.imageUris.large
+    },
+  },
 }
 </script>
 
 <style scoped>
-.mtg-card:not(.auto) {
+.mtg-card:not(.auto):not(.x-small) {
   display: inline-block;
   margin: 0.25rem;
 }
 
-img {
+:not(.x-small) > img {
   border-radius: 4.75% / 3.5%;
   width: 100%;
   box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.25);
@@ -43,6 +50,6 @@ img {
   max-width: 10rem;
 }
 .x-small {
-  max-width: 5rem;
+  max-width: 4rem;
 }
 </style>
