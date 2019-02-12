@@ -1,6 +1,7 @@
 export const state = () => ({
   deck: null,
   owner: null,
+  cardSuggestions: [],
 })
 
 export const mutations = {
@@ -10,6 +11,10 @@ export const mutations = {
 
   owner(state, owner) {
     state.owner = owner
+  },
+
+  cardSuggestions(state, cardSuggestions) {
+    state.cardSuggestions = cardSuggestions
   },
 }
 
@@ -43,6 +48,13 @@ export const actions = {
     )
     commit('deck', deck)
   },
+
+  async getCardSuggestions({ commit, state }, query) {
+    const {
+      data: { cards },
+    } = await this.$axios.get(`/api/cards`, { params: query })
+    commit('cardSuggestions', cards)
+  },
 }
 
 export const getters = {
@@ -57,4 +69,5 @@ export const getters = {
     state.deck.commanders.length === 0 ||
     (state.deck.commanders.length === 1 &&
       state.deck.commanders[0].source.isPartner),
+  cardSuggestions: state => state.cardSuggestions,
 }

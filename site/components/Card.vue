@@ -12,7 +12,9 @@ export default {
       type: String,
       default: 'auto',
       validator(value) {
-        return ['large', 'medium', 'small', 'auto'].indexOf(value) !== -1
+        return (
+          ['large', 'medium', 'small', 'x-small', 'auto'].indexOf(value) !== -1
+        )
       },
     },
   },
@@ -39,5 +41,8 @@ img {
 }
 .small {
   max-width: 10rem;
+}
+.x-small {
+  max-width: 5rem;
 }
 </style>

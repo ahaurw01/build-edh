@@ -8,7 +8,24 @@
       </header>
       <section class="modal-card-body">
         <BField label="Commander">
-          <BInput />
+          <BAutocomplete
+            v-model="nameLike"
+            field="name"
+            :data="cardSuggestions"
+            keep-first
+            @keyup.native="_getCardSuggestions"
+          >
+            <template slot-scope="props">
+              <div class="media">
+                <div class="media-left">
+                  <Card size="x-small" :card="props.option" />
+                </div>
+                <div class="media-content">
+                  {{ props.option.name }}
+                </div>
+              </div>
+            </template>
+          </BAutocomplete>
         </BField>
       </section>
       <footer class="modal-card-foot">
@@ -24,15 +41,35 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+import Card from '~/components/Card'
 export default {
+  components: {
+    Card,
+  },
   props: {
     commander: { type: Object, default: null },
     onSave: { type: Function, required: true },
+  },
+  data() {
+    return {
+      nameLike: '',
+    }
+  },
+  computed: {
+    ...mapGetters({ cardSuggestions: 'deck/cardSuggestions' }),
   },
   methods: {
     _onSave(e) {
       this.$parent.close()
     },
+    _getCardSuggestions() {
+      this.getCardSuggestions({
+        nameLike: this.nameLike,
+        canBeCommander: true,
+      })
+    },
+    ...mapActions({ getCardSuggestions: 'deck/getCardSuggestions' }),
   },
 }
 </script>
