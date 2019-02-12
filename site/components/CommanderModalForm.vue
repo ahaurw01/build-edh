@@ -1,12 +1,12 @@
 <template>
   <form @submit.prevent="_onSave">
-    <div class="modal-card">
+    <div class="modal-card" style="overflow: visible">
       <header class="modal-card-head">
         <p class="modal-card-title">
           Add a commander
         </p>
       </header>
-      <section class="modal-card-body">
+      <section class="modal-card-body" style="overflow: visible">
         <BField label="Commander">
           <BAutocomplete
             v-model="nameLike"
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import debounce from 'lodash/debounce'
 import { mapGetters, mapActions } from 'vuex'
 import Card from '~/components/Card'
 export default {
@@ -63,12 +64,12 @@ export default {
     _onSave(e) {
       this.$parent.close()
     },
-    _getCardSuggestions() {
+    _getCardSuggestions: debounce(function() {
       this.getCardSuggestions({
         nameLike: this.nameLike,
         canBeCommander: true,
       })
-    },
+    }, 200),
     ...mapActions({ getCardSuggestions: 'deck/getCardSuggestions' }),
   },
 }
