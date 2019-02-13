@@ -16,6 +16,13 @@ export const mutations = {
   cardSuggestions(state, cardSuggestions) {
     state.cardSuggestions = cardSuggestions
   },
+
+  addCommander(state, commander) {
+    state.deck = {
+      ...state.deck,
+      commanders: [...state.deck.commanders, commander],
+    }
+  },
 }
 
 export const actions = {
@@ -58,6 +65,19 @@ export const actions = {
       data: { cards },
     } = await this.$axios.get(`/api/cards`, { params: query })
     commit('cardSuggestions', cards)
+  },
+
+  async addCommander({ commit, state }, { scryfallId }) {
+    const { data: commander } = await this.$axios.post(
+      `/api/decks/${state.deck._id}/commanders`,
+      {
+        commander: {
+          scryfallId,
+        },
+      }
+    )
+
+    commit('addCommander', commander)
   },
 }
 

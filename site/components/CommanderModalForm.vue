@@ -14,14 +14,21 @@
             :data="cardSuggestions"
             keep-first
             @keyup.native="_getCardSuggestions"
+            @select="selectCommander"
           >
             <template slot-scope="props">
               <div class="media">
                 <div class="media-left">
                   <Card size="x-small" :card="props.option" />
                 </div>
-                <div class="media-content">
-                  {{ props.option.name }}
+                <div class="media-content" style="white-space: normal;">
+                  <h6 class="title is-6">
+                    {{ props.option.name }} -
+                    {{ props.option.faces[0].manaCost }}
+                  </h6>
+                  <p>
+                    {{ props.option.faces[0].oracleText }}
+                  </p>
                 </div>
               </div>
             </template>
@@ -55,22 +62,33 @@ export default {
   data() {
     return {
       nameLike: '',
+      selectedCommander: null,
     }
   },
   computed: {
     ...mapGetters({ cardSuggestions: 'deck/cardSuggestions' }),
   },
   methods: {
+    selectCommander(card) {
+      this.selectedCommander = card
+    },
+
     _onSave(e) {
+      this.addCommander({ scryfallId: this.selectedCommander.scryfallId })
       this.$parent.close()
     },
+
     _getCardSuggestions: debounce(function() {
       this.getCardSuggestions({
         nameLike: this.nameLike,
         canBeCommander: true,
+        isLegal: true,
       })
     }, 200),
-    ...mapActions({ getCardSuggestions: 'deck/getCardSuggestions' }),
+    ...mapActions({
+      getCardSuggestions: 'deck/getCardSuggestions',
+      addCommander: 'deck/addCommander',
+    }),
   },
 }
 </script>
