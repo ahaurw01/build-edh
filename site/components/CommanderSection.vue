@@ -8,6 +8,7 @@
       :key="commander.source.name"
       :card="commander.source"
       size="large"
+      @click="isEditCommanderModalActive = true"
     />
     <button
       v-if="canAddCommander"
@@ -18,6 +19,10 @@
     </button>
 
     <BModal :active.sync="isNewCommanderModalActive" has-modal-card>
+      <CommanderModalForm :on-save="onSaveNewCommander" />
+    </BModal>
+
+    <BModal :active.sync="isEditCommanderModalActive" has-modal-card>
       <CommanderModalForm :on-save="onSaveNewCommander" />
     </BModal>
   </section>
@@ -35,6 +40,7 @@ export default {
   data() {
     return {
       isNewCommanderModalActive: false,
+      isEditCommanderModalActive: false,
     }
   },
 

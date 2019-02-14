@@ -1,7 +1,13 @@
 <template>
-  <div :class="size" class="mtg-card">
-    <img :src="imgSrc" />
-  </div>
+  <Component
+    :is="wrappingElement"
+    v-bind="wrappingElementProps"
+    v-on="$listeners"
+  >
+    <div :class="size" class="mtg-card">
+      <img :src="imgSrc" />
+    </div>
+  </Component>
 </template>
 
 <script>
@@ -17,12 +23,19 @@ export default {
         )
       },
     },
+    onClick: { type: Function, default: null },
   },
   computed: {
     imgSrc() {
       return this.size === 'x-small'
         ? this.card.imageUris.small
         : this.card.imageUris.large
+    },
+    wrappingElement() {
+      return this.$listeners.click ? 'a' : 'div'
+    },
+    wrappingElementProps() {
+      return this.wrappingElement === 'a' ? { href: '#' } : {}
     },
   },
 }
