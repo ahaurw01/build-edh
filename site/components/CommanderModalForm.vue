@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="_onSave">
+  <form @submit.prevent="onSave">
     <div class="modal-card" style="overflow: visible">
       <header class="modal-card-head">
         <p class="modal-card-title">
@@ -57,7 +57,6 @@ export default {
   },
   props: {
     commander: { type: Object, default: null },
-    onSave: { type: Function, required: true },
   },
   data() {
     return {
@@ -73,7 +72,7 @@ export default {
       this.selectedCommander = card
     },
 
-    _onSave(e) {
+    onSave(e) {
       this.addCommander({ scryfallId: this.selectedCommander.scryfallId })
       this.$parent.close()
     },

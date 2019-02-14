@@ -19,11 +19,11 @@
     </button>
 
     <BModal :active.sync="isNewCommanderModalActive" has-modal-card>
-      <CommanderModalForm :on-save="onSaveNewCommander" />
+      <CommanderModalForm />
     </BModal>
 
     <BModal :active.sync="isEditCommanderModalActive" has-modal-card>
-      <CommanderModalForm :on-save="onSaveNewCommander" />
+      <CommanderModalForm />
     </BModal>
   </section>
 </template>
@@ -51,10 +51,6 @@ export default {
         return acc
       }, {})
     ),
-  },
-
-  methods: {
-    onSaveNewCommander(commander) {},
   },
 }
 </script>
