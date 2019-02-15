@@ -23,6 +23,16 @@ export const mutations = {
       commanders: [...state.deck.commanders, commander],
     }
   },
+
+  updateCommander(state, commander) {
+    state.deck = {
+      ...state.deck,
+      commanders: state.deck.commanders.map(existingCommander => {
+        if (existingCommander.uuid === commander.uuid) return commander
+        return existingCommander
+      }),
+    }
+  },
 }
 
 export const actions = {
@@ -78,6 +88,24 @@ export const actions = {
     )
 
     commit('addCommander', commander)
+  },
+
+  async updateCommander(
+    { commit, state },
+    { uuid, purposes, isFoil, scryfallId }
+  ) {
+    const { data: commander } = await this.$axios.put(
+      `/api/decks/${state.deck._id}/commanders/${uuid}`,
+      {
+        commander: {
+          purposes,
+          isFoil,
+          scryfallId,
+        },
+      }
+    )
+
+    commit('updateCommander', commander)
   },
 }
 

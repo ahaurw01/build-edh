@@ -3,7 +3,7 @@
     <div class="modal-card" style="overflow: visible">
       <header class="modal-card-head">
         <p class="modal-card-title">
-          Add a commander
+          {{ title }}
         </p>
       </header>
       <section class="modal-card-body" style="overflow: visible">
@@ -40,7 +40,7 @@
           Cancel
         </button>
         <button class="button is-primary">
-          Add
+          {{ actionName }}
         </button>
       </footer>
     </div>
@@ -57,15 +57,22 @@ export default {
   },
   props: {
     commander: { type: Object, default: null },
+    edit: { type: Boolean, default: false },
   },
   data() {
     return {
-      nameLike: '',
-      selectedCommander: null,
+      nameLike: this.commander ? this.commander.source.name : '',
+      selectedCommander: this.commander ? this.commander.source : null,
     }
   },
   computed: {
     ...mapGetters({ cardSuggestions: 'deck/cardSuggestions' }),
+    title() {
+      return this.edit ? 'Edit commander' : 'Add a commander'
+    },
+    actionName() {
+      return this.edit ? 'Update' : 'Add'
+    },
   },
   methods: {
     selectCommander(card) {
@@ -73,7 +80,16 @@ export default {
     },
 
     onSave(e) {
-      this.addCommander({ scryfallId: this.selectedCommander.scryfallId })
+      if (this.edit) {
+        this.updateCommander({
+          uuid: this.commander.uuid,
+          scryfallId: this.selectedCommander.scryfallId,
+          purposes: [],
+          isFoil: false,
+        })
+      } else {
+        this.addCommander({ scryfallId: this.selectedCommander.scryfallId })
+      }
       this.$parent.close()
     },
 
@@ -87,6 +103,7 @@ export default {
     ...mapActions({
       getCardSuggestions: 'deck/getCardSuggestions',
       addCommander: 'deck/addCommander',
+      updateCommander: 'deck/updateCommander',
     }),
   },
 }
