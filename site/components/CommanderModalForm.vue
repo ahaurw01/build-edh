@@ -34,6 +34,17 @@
             </template>
           </BAutocomplete>
         </BField>
+
+        <BField label="Purposes">
+          <BTaginput
+            v-model="purposes"
+            icon="label"
+            placeholder="E.g. Card draw, Sac outlet"
+            allow-new
+            :data="purposePool"
+            autocomplete
+          />
+        </BField>
       </section>
       <footer class="modal-card-foot">
         <button class="button" type="button" @click="$parent.close()">
@@ -58,11 +69,13 @@ export default {
   props: {
     commander: { type: Object, default: null },
     edit: { type: Boolean, default: false },
+    purposePool: { type: Array, required: true },
   },
   data() {
     return {
       nameLike: this.commander ? this.commander.source.name : '',
       selectedCommander: this.commander ? this.commander.source : null,
+      purposes: [...(this.commander ? this.commander.purposes : [])],
     }
   },
   computed: {
@@ -84,11 +97,14 @@ export default {
         this.updateCommander({
           uuid: this.commander.uuid,
           scryfallId: this.selectedCommander.scryfallId,
-          purposes: [],
+          purposes: this.purposes,
           isFoil: false,
         })
       } else {
-        this.addCommander({ scryfallId: this.selectedCommander.scryfallId })
+        this.addCommander({
+          scryfallId: this.selectedCommander.scryfallId,
+          purposes: this.purposes,
+        })
       }
       this.$parent.close()
     },

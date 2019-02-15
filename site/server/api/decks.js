@@ -96,13 +96,15 @@ POST
 async function addDeckCommander(ctx) {
   const scryfallId = _.get(ctx.request, 'body.commander.scryfallId')
   ctx.assert(!!scryfallId, 400, 'Missing scryfallId')
+  const purposes = _.get(ctx.request, 'body.commander.purposes', [])
+  const isFoil = _.get(ctx.request, 'body.commander.isFoil', false)
 
   const { deck } = ctx.state
   const commander = {
     scryfallId,
     uuid: uuid(),
-    purposes: [],
-    isFoil: false,
+    purposes,
+    isFoil,
   }
   deck.commanders.push(commander)
   await validateCommanders(ctx)
