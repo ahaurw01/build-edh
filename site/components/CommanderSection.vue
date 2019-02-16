@@ -19,15 +19,11 @@
     </button>
 
     <BModal :active.sync="isNewCommanderModalActive" has-modal-card>
-      <CommanderModalForm :purpose-pool="['Card draw', 'Sac outlet']" />
+      <CommanderModalForm />
     </BModal>
 
     <BModal :active.sync="isEditCommanderModalActive" has-modal-card>
-      <CommanderModalForm
-        :commander="commanderToEdit"
-        :purpose-pool="['Card draw', 'Sac outlet']"
-        edit
-      />
+      <CommanderModalForm :commander="commanderToEdit" edit />
     </BModal>
   </section>
 </template>

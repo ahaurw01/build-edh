@@ -1,3 +1,6 @@
+import uniq from 'lodash/uniq'
+import flatten from 'lodash/flatten'
+
 export const state = () => ({
   deck: null,
   owner: null,
@@ -123,4 +126,14 @@ export const getters = {
     (state.deck.commanders.length === 1 &&
       state.deck.commanders[0].source.isPartner),
   cardSuggestions: state => state.cardSuggestions,
+  suggestedPurposes: state =>
+    uniq([
+      ...flatten(state.deck.commanders.map(c => c.purposes)),
+      'Card draw',
+      'Ramp',
+      'Mana rock',
+      'Targeted removal',
+      'Board wipe',
+      'Utility',
+    ]),
 }

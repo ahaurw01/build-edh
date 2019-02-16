@@ -41,8 +41,9 @@
             icon="label"
             placeholder="E.g. Card draw, Sac outlet"
             allow-new
-            :data="purposePool"
+            :data="filteredSuggestedPurposes"
             autocomplete
+            @typing="setFilteredSuggestedPurposes"
           />
         </BField>
       </section>
@@ -69,17 +70,20 @@ export default {
   props: {
     commander: { type: Object, default: null },
     edit: { type: Boolean, default: false },
-    purposePool: { type: Array, required: true },
   },
   data() {
     return {
       nameLike: this.commander ? this.commander.source.name : '',
       selectedCommander: this.commander ? this.commander.source : null,
       purposes: [...(this.commander ? this.commander.purposes : [])],
+      filteredSuggestedPurposes: this.suggestedPurposes,
     }
   },
   computed: {
-    ...mapGetters({ cardSuggestions: 'deck/cardSuggestions' }),
+    ...mapGetters({
+      cardSuggestions: 'deck/cardSuggestions',
+      suggestedPurposes: 'deck/suggestedPurposes',
+    }),
     title() {
       return this.edit ? 'Edit commander' : 'Add a commander'
     },
@@ -121,6 +125,22 @@ export default {
       addCommander: 'deck/addCommander',
       updateCommander: 'deck/updateCommander',
     }),
+
+    setFilteredSuggestedPurposes(text) {
+      text = text.trim()
+      const suggestedPurposesWithoutSelections = this.suggestedPurposes.filter(
+        purpose => !this.purposes.includes(purpose)
+      )
+
+      if (text.length <= 2) {
+        this.filteredSuggestedPurposes = suggestedPurposesWithoutSelections
+        return
+      }
+
+      this.filteredSuggestedPurposes = suggestedPurposesWithoutSelections.filter(
+        purpose => purpose.toLowerCase().includes(text.toLowerCase())
+      )
+    },
   },
 }
 </script>
