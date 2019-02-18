@@ -59,7 +59,7 @@
               </button>
             </div>
           </div>
-          <div class="level-right">
+          <div v-if="edit" class="level-right">
             <div class="level-item">
               <button class="button is-danger" type="button" @click="onDelete">
                 {{ deleteText }}
