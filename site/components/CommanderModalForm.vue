@@ -48,12 +48,25 @@
         </BField>
       </section>
       <footer class="modal-card-foot">
-        <button class="button" type="button" @click="$parent.close()">
-          Cancel
-        </button>
-        <button class="button is-primary">
-          {{ actionName }}
-        </button>
+        <div class="level" style="width: 100%">
+          <div class="level-left">
+            <div class="level-item">
+              <button class="button" type="button" @click="$parent.close()">
+                Cancel
+              </button>
+              <button class="button is-primary">
+                {{ actionName }}
+              </button>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <button class="button is-danger" type="button" @click="onDelete">
+                {{ deleteText }}
+              </button>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   </form>
@@ -77,6 +90,7 @@ export default {
       selectedCommander: this.commander ? this.commander.source : null,
       purposes: [...(this.commander ? this.commander.purposes : [])],
       filteredSuggestedPurposes: this.suggestedPurposes,
+      confirmDelete: false,
     }
   },
   computed: {
@@ -89,6 +103,9 @@ export default {
     },
     actionName() {
       return this.edit ? 'Update' : 'Add'
+    },
+    deleteText() {
+      return this.confirmDelete ? 'Are you sure?' : 'Delete'
     },
   },
   methods: {
@@ -140,6 +157,14 @@ export default {
       this.filteredSuggestedPurposes = suggestedPurposesWithoutSelections.filter(
         purpose => purpose.toLowerCase().includes(text.toLowerCase())
       )
+    },
+
+    onDelete() {
+      if (this.confirmDelete) {
+        this.$parent.close()
+      } else {
+        this.confirmDelete = true
+      }
     },
   },
 }
