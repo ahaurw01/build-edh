@@ -137,11 +137,6 @@ export default {
         isLegal: true,
       })
     }, 200),
-    ...mapActions({
-      getCardSuggestions: 'deck/getCardSuggestions',
-      addCommander: 'deck/addCommander',
-      updateCommander: 'deck/updateCommander',
-    }),
 
     setFilteredSuggestedPurposes(text) {
       text = text.trim()
@@ -161,11 +156,19 @@ export default {
 
     onDelete() {
       if (this.confirmDelete) {
+        this.deleteComander(this.commander.uuid)
         this.$parent.close()
       } else {
         this.confirmDelete = true
       }
     },
+
+    ...mapActions({
+      getCardSuggestions: 'deck/getCardSuggestions',
+      addCommander: 'deck/addCommander',
+      updateCommander: 'deck/updateCommander',
+      deleteComander: 'deck/deleteCommander',
+    }),
   },
 }
 </script>

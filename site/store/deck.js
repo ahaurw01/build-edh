@@ -36,6 +36,15 @@ export const mutations = {
       }),
     }
   },
+
+  deleteCommander(state, uuid) {
+    state.deck = {
+      ...state.deck,
+      commanders: state.deck.commanders.filter(
+        existingCommander => existingCommander.uuid !== uuid
+      ),
+    }
+  },
 }
 
 export const actions = {
@@ -110,6 +119,11 @@ export const actions = {
     )
 
     commit('updateCommander', commander)
+  },
+
+  async deleteCommander({ commit, state }, uuid) {
+    await this.$axios.delete(`/api/decks/${state.deck._id}/commanders/${uuid}`)
+    commit('deleteCommander', uuid)
   },
 }
 
