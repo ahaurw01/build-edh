@@ -12,6 +12,15 @@ export const mutations = {
     state.deck = deck
   },
 
+  deckMeta(state, deck) {
+    state.deck = {
+      ...state.deck,
+      name: deck.name,
+      purpose: deck.purpose,
+      description: deck.description,
+    }
+  },
+
   owner(state, owner) {
     state.owner = owner
   },
@@ -55,7 +64,7 @@ export const actions = {
         name: newName,
       }
     )
-    commit('deck', deck)
+    commit('deckMeta', deck)
   },
 
   async updatePurpose({ commit, state }, newPurpose) {
@@ -65,7 +74,7 @@ export const actions = {
         purpose: newPurpose,
       }
     )
-    commit('deck', deck)
+    commit('deckMeta', deck)
   },
 
   async updateDescription({ commit, state }, newDescription) {
@@ -75,7 +84,7 @@ export const actions = {
         description: newDescription,
       }
     )
-    commit('deck', deck)
+    commit('deckMeta', deck)
   },
 
   async getCardSuggestions({ commit, state }, query) {
