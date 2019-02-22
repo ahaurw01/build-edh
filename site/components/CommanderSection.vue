@@ -1,7 +1,7 @@
 <template>
   <section>
     <h3 class="title is-3">
-      Commander
+      {{ title }}
     </h3>
     <Card
       v-for="commander in commanders"
@@ -46,6 +46,9 @@ export default {
   },
 
   computed: {
+    title() {
+      return this.commanders.length === 2 ? 'Commanders' : 'Commander'
+    },
     ...mapGetters(
       ['commanders', 'canAddCommander'].reduce((acc, key) => {
         acc[key] = `deck/${key}`
