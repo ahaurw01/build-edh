@@ -159,4 +159,11 @@ export const getters = {
       'Board wipe',
       'Utility',
     ]),
+  the99: state => state.deck.the99,
+  canAddCard: (state, { commanders, the99 }) => {
+    return (
+      (commanders.length < 2 && the99.length < 99) ||
+      (commanders.length === 2 && the99.length < 98)
+    )
+  },
 }
