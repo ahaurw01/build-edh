@@ -46,34 +46,23 @@
     <CommanderSection />
 
     <BModal :active.sync="isEditNameModalActive" has-modal-card>
-      <DeckPropertyModalForm
-        property-name="name"
-        :property-value="name"
-        :on-save="updateName"
-      />
+      <DeckPropertyModalForm property="name" />
     </BModal>
     <BModal :active.sync="isEditPurposeModalActive" has-modal-card>
       <DeckPropertyModalForm
-        property-name="purpose"
-        :property-value="purpose"
+        property="purpose"
         type="textarea"
         :maxlength="200"
-        :on-save="updatePurpose"
       />
     </BModal>
     <BModal :active.sync="isEditDescriptionModalActive" has-modal-card>
-      <DeckPropertyModalForm
-        property-name="description"
-        :property-value="description"
-        type="textarea"
-        :on-save="updateDescription"
-      />
+      <DeckPropertyModalForm property="description" type="textarea" />
     </BModal>
   </section>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import DeckPropertyModalForm from '~/components/DeckPropertyModalForm'
 import CommanderSection from '~/components/CommanderSection'
 export default {
@@ -103,13 +92,6 @@ export default {
       purpose: 'deck/purpose',
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
-    }),
-  },
-  methods: {
-    ...mapActions({
-      updateName: 'deck/updateName',
-      updatePurpose: 'deck/updatePurpose',
-      updateDescription: 'deck/updateDescription',
     }),
   },
 }

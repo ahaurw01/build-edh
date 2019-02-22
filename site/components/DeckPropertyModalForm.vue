@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="_onSave">
+  <form @submit.prevent="onSave">
     <div class="modal-card">
       <section class="modal-card-body">
         <BField :label="label">
@@ -25,27 +25,40 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
   props: {
-    propertyName: { type: String, default: null },
-    propertyValue: { type: String, default: null },
+    property: { type: String, default: null },
     placeholder: { type: String, default: null },
     type: { type: String, default: 'text' },
     maxlength: { type: Number, default: null },
-    onSave: { type: Function, default: null },
   },
   computed: {
     label() {
-      const letters = this.propertyName.split('')
+      const letters = this.property.split('')
       return [letters[0].toUpperCase(), ...letters.slice(1)].join('')
+    },
+    ...mapGetters({
+      name: 'deck/name',
+      purpose: 'deck/purpose',
+      description: 'deck/description',
+    }),
+    propertyValue() {
+      return this[this.property]
     },
   },
   methods: {
-    _onSave(e) {
-      this.onSave(new FormData(e.target).get('property')).then(() => {
+    onSave(e) {
+      const saver = this[`update${this.label}`]
+      saver(new FormData(e.target).get('property')).then(() => {
         this.$parent.close()
       })
     },
+    ...mapActions({
+      updateName: 'deck/updateName',
+      updatePurpose: 'deck/updatePurpose',
+      updateDescription: 'deck/updateDescription',
+    }),
   },
 }
 </script>
