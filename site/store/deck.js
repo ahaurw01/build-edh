@@ -149,9 +149,9 @@ export const getters = {
     (state.deck.commanders.length === 1 &&
       state.deck.commanders[0].source.isPartner),
   cardSuggestions: state => state.cardSuggestions,
-  suggestedPurposes: state =>
+  suggestedPurposes: (state, { commanders }) =>
     uniq([
-      ...flatten(state.deck.commanders.map(c => c.purposes)),
+      ...flatten(commanders.map(c => c.purposes)),
       'Card draw',
       'Ramp',
       'Mana rock',
@@ -159,4 +159,8 @@ export const getters = {
       'Board wipe',
       'Utility',
     ]),
+  colorIdentity: (state, { commanders }) => {
+    const colors = flatten(commanders.map(c => c.source.ci))
+    return ['W', 'U', 'B', 'R', 'G'].filter(c => colors.includes(c))
+  },
 }
