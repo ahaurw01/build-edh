@@ -201,3 +201,63 @@ async function validateCommanders(ctx) {
     'Mismatch of specified partner'
   )
 }
+
+/*
+POST
+{
+  card: {
+    scryfallId: <id>,
+    purposes: ['Chair art', 'Card draw'],
+    isFoil: false
+  }
+}
+*/
+async function addDeckCard(ctx) {
+  const scryfallId = _.get(ctx.request, 'body.card.scryfallId')
+  ctx.assert(!!scryfallId, 400, 'Missing scryfallId')
+  const purposes = _.get(ctx.request, 'body.card.purposes', [])
+  const isFoil = _.get(ctx.request, 'body.card.isFoil', false)
+
+  const { deck } = ctx.state
+  const card = {
+    scryfallId,
+    uuid: uuid(),
+    purposes,
+    isFoil,
+  }
+  deck.the99.push(card)
+  await validateThe99(ctx)
+  await deck.save()
+  ctx.body = {
+    ...card,
+    source: _.find(ctx.state.sources, { scryfallId: card.scryfallId }),
+  }
+}
+
+async function validateThe99(ctx) {
+  const {
+    deck: { commanders, the99 },
+  } = ctx.state
+  ctx.assert(
+    commanders.length < 2 && the99.length <= 99,
+    400,
+    'Cannot have more than 99 cards'
+  )
+  ctx.assert(
+    commanders.length === 2 && the99.length <= 98,
+    400,
+    'Cannot have more than 98 cards with two commanders'
+  )
+
+  const sources = await Card.find({
+    scryfallId: { $in: _.map(commanders.concat(the99), 'scryfallId') },
+  })
+  ctx.state.sources = ctx.state.sources || []
+  ctx.state.sources = ctx.state.sources.concat(sources)
+
+  ctx.assert(
+    commanders.length + the99.length === sources.length,
+    400,
+    'Card not found'
+  )
+}
