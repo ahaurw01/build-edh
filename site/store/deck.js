@@ -163,4 +163,11 @@ export const getters = {
     const colors = flatten(commanders.map(c => c.source.ci))
     return ['W', 'U', 'B', 'R', 'G'].filter(c => colors.includes(c))
   },
+  the99: state => state.deck.the99,
+  canAddCard: (state, { commanders, the99 }) => {
+    return (
+      (commanders.length < 2 && the99.length < 99) ||
+      (commanders.length === 2 && the99.length < 98)
+    )
+  },
 }
