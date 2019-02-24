@@ -1,7 +1,7 @@
+const bcrypt = require('bcrypt')
 const supertest = require('supertest')
 const { app } = require('../../../server')
 const { User } = require('../../../server/api/models')
-const bcrypt = require('bcrypt')
 
 const server = app.callback()
 

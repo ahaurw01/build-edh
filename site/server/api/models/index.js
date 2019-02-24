@@ -127,7 +127,7 @@ cardSchema.statics.partnerWith = function(doc) {
   if (!isPartner) return
 
   const { oracleText } = doc.faces[0]
-  const partnerNameRegexp = /Partner with ([-_,\.'"!\?/\w ]+)( \(|\n)/
+  const partnerNameRegexp = /Partner with ([-_,.'"!?/\w ]+)( \(|\n)/
   const result = partnerNameRegexp.exec(oracleText)
   if (!result) return null
   return result[1]

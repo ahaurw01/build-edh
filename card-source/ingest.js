@@ -1,7 +1,8 @@
 'use strict'
 
-const _ = require('lodash')
 const fs = require('fs').promises
+const path = require('path')
+const _ = require('lodash')
 const mongoose = require('mongoose')
 const debug = require('debug')('ingest')
 
@@ -19,7 +20,7 @@ async function disconnectFromDb() {
 
 async function readAllCardsFromFile() {
   const fileContents = await fs.readFile(
-    __dirname + '/data/scryfall-default-cards.json',
+    path.join(__dirname, '/data/scryfall-default-cards.json'),
     'utf8'
   )
   return JSON.parse(fileContents)

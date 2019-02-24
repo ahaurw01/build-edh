@@ -11,6 +11,7 @@ module.exports = {
   addDeckCommander,
   updateDeckCommander,
   deleteDeckCommander,
+  addDeckCard,
 }
 
 async function ensureDeckOwner(ctx, next) {

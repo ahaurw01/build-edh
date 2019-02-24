@@ -44,5 +44,3 @@ apiRouter.delete('/decks/:id/commanders/:uuid', deleteDeckCommander)
 apiRouter.get('/users/:id', getUser)
 
 module.exports = apiRouter
-
-

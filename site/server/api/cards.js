@@ -14,7 +14,7 @@ const group = {
 }
 
 async function getCards(ctx) {
-  let { nameLike = '', canBeCommander, isLegal, isPartner, cmc, ci } = ctx.query
+  let { nameLike = '', canBeCommander, isLegal, isPartner } = ctx.query
 
   nameLike = nameLike.trim()
 
