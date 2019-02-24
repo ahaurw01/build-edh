@@ -240,14 +240,12 @@ async function validateThe99(ctx) {
     deck: { commanders, the99 },
   } = ctx.state
   ctx.assert(
-    commanders.length < 2 && the99.length <= 99,
+    (commanders.length < 2 && the99.length <= 99) ||
+      (commanders.length === 2 && the99.length <= 98),
     400,
-    'Cannot have more than 99 cards'
-  )
-  ctx.assert(
-    commanders.length === 2 && the99.length <= 98,
-    400,
-    'Cannot have more than 98 cards with two commanders'
+    commanders.length < 2
+      ? 'Cannot have more than 99 cards'
+      : 'Cannot have more than 98 cards with two commanders'
   )
 
   const sources = await Card.find({
@@ -260,5 +258,17 @@ async function validateThe99(ctx) {
     commanders.length + the99.length === sources.length,
     400,
     'Card not found'
+  )
+
+  const commanderNames = commanders
+    .map(c => _.find(sources, { scryfallId: c.scryfallId }))
+    .map(s => s.name)
+  const the99Names = the99
+    .map(c => _.find(sources, { scryfallId: c.scryfallId }))
+    .map(s => s.name)
+  ctx.assert(
+    _.intersection(commanderNames, the99Names).length === 0,
+    400,
+    'Cannot add commander to the 99'
   )
 }
