@@ -97,6 +97,7 @@ export default {
     ...mapGetters({
       cardSuggestions: 'deck/cardSuggestions',
       suggestedPurposes: 'deck/suggestedPurposes',
+      colorIdentity: 'deck/colorIdentity',
     }),
     title() {
       return this.edit ? 'Edit card' : 'Add a card'
@@ -134,6 +135,7 @@ export default {
       this.getCardSuggestions({
         nameLike: this.nameLike,
         isLegal: true,
+        ci: this.colorIdentity,
       })
     }, 200),
 

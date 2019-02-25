@@ -14,7 +14,13 @@ const group = {
 }
 
 async function getCards(ctx) {
-  let { nameLike = '', canBeCommander, isLegal, isPartner } = ctx.query
+  let {
+    nameLike = '',
+    canBeCommander,
+    isLegal,
+    isPartner,
+    'ci[]': ci,
+  } = ctx.query
 
   nameLike = nameLike.trim()
 
@@ -32,8 +38,8 @@ async function getCards(ctx) {
   if (canBeCommander != null) filters.canBeCommander = canBeCommander
   if (isLegal != null) filters.isLegal = isLegal
   if (isPartner != null) filters.isPartner = isPartner
+  if (ci != null) filters.$expr = { $setIsSubset: ['$ci', ci] }
 
-  // const cards = await Card.find(filters, null, { limit: 10 }).exec()
   const cards = await Card.aggregate()
     .match(filters)
     .group(group)
