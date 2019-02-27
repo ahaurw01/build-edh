@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="onSave">
+  <form ref="form" @submit.prevent="onSave">
     <div class="modal-card" style="overflow: visible">
       <header class="modal-card-head">
         <p class="modal-card-title">
@@ -108,6 +108,9 @@ export default {
     deleteText() {
       return this.confirmDelete ? 'Are you sure?' : 'Delete'
     },
+  },
+  mounted() {
+    this.$refs.form.querySelector('input').focus()
   },
   methods: {
     selectCard(card) {

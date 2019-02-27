@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="onSave">
+  <form ref="form" @submit.prevent="onSave">
     <div class="modal-card" style="overflow: visible">
       <header class="modal-card-head">
         <p class="modal-card-title">
@@ -13,6 +13,7 @@
             field="name"
             :data="cardSuggestions"
             keep-first
+            autofocus
             @keyup.native="_getCardSuggestions"
             @select="selectCommander"
           >
@@ -108,6 +109,11 @@ export default {
       return this.confirmDelete ? 'Are you sure?' : 'Delete'
     },
   },
+
+  mounted() {
+    this.$refs.form.querySelector('input').focus()
+  },
+
   methods: {
     selectCommander(card) {
       this.selectedCommander = card
