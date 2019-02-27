@@ -27,7 +27,7 @@ apiRouter.post('/register', register)
 
 apiRouter.get('/cards', getCards)
 
-// Authed routes:
+// Authed routes below here:
 apiRouter.use(koaJwt({ secret: 'secret' }))
 
 apiRouter.get('/me', me)

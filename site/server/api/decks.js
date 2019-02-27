@@ -254,10 +254,30 @@ async function validateThe99(ctx) {
   ctx.state.sources = ctx.state.sources || []
   ctx.state.sources = ctx.state.sources.concat(sources)
 
+  const uniqueScryfallIds = _.uniq(
+    _.map([...commanders, ...the99], 'scryfallId')
+  )
+  const uniqueScryfallIdsFound = _.uniq(_.map(sources, 'scryfallId'))
   ctx.assert(
-    commanders.length + the99.length === sources.length,
+    uniqueScryfallIds.length === uniqueScryfallIdsFound.length,
     400,
     'Card not found'
+  )
+
+  const badDuplicates = _(the99)
+    .map(card => ({
+      ...card,
+      source: _.find(sources, { scryfallId: card.scryfallId }),
+    }))
+    .filter(c => !c.source.canHaveMultiple)
+    .groupBy('source.name')
+    .filter(cards => cards.length > 1)
+    .value()
+
+  ctx.assert(
+    badDuplicates.length === 0,
+    400,
+    'Cannot add multiples of this card'
   )
 
   const commanderNames = commanders

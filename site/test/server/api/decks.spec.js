@@ -144,5 +144,108 @@ describe('deck endpoints', () => {
         .expect(400)
         .expect('Cannot add commander to the 99')
     })
+
+    test('add a duplicate card that cannot have multiple', async () => {
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
+        Promise.resolve(
+          new Deck({
+            commanders: [{ scryfallId: '1' }],
+            the99: [{ scryfallId: '2' }],
+          })
+        )
+      )
+
+      jest.spyOn(Card, 'find').mockImplementation(() =>
+        Promise.resolve([
+          new Card({
+            scryfallId: '1',
+            name: 'Rafiq',
+            canHaveMultiple: false,
+          }),
+          new Card({
+            scryfallId: '2',
+            name: 'Swords',
+            canHaveMultiple: false,
+          }),
+        ])
+      )
+
+      await supertest(server)
+        .post('/api/decks/abc123/the99')
+        .set('Authorization', tokenHeader)
+        .send({ card: { scryfallId: '2' } })
+        .expect(400)
+        .expect('Cannot add multiples of this card')
+    })
+
+    test('add a duplicate card with different scryfallId that cannot have multiple', async () => {
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
+        Promise.resolve(
+          new Deck({
+            commanders: [{ scryfallId: '1' }],
+            the99: [{ scryfallId: '2' }],
+          })
+        )
+      )
+
+      jest.spyOn(Card, 'find').mockImplementation(() =>
+        Promise.resolve([
+          new Card({
+            scryfallId: '1',
+            name: 'Rafiq',
+            canHaveMultiple: false,
+          }),
+          new Card({
+            scryfallId: '2',
+            name: 'Swords',
+            canHaveMultiple: false,
+          }),
+          new Card({
+            scryfallId: '3',
+            name: 'Swords',
+            canHaveMultiple: false,
+          }),
+        ])
+      )
+
+      await supertest(server)
+        .post('/api/decks/abc123/the99')
+        .set('Authorization', tokenHeader)
+        .send({ card: { scryfallId: '3' } })
+        .expect(400)
+        .expect('Cannot add multiples of this card')
+    })
+
+    test('add an allowed duplicate', async () => {
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
+        Promise.resolve(
+          new Deck({
+            commanders: [{ scryfallId: '1' }],
+            the99: [{ scryfallId: '2' }],
+          })
+        )
+      )
+
+      jest.spyOn(Card, 'find').mockImplementation(() =>
+        Promise.resolve([
+          new Card({
+            scryfallId: '1',
+            name: 'Rafiq',
+            canHaveMultiple: false,
+          }),
+          new Card({
+            scryfallId: '2',
+            name: 'Forest',
+            canHaveMultiple: true,
+          }),
+        ])
+      )
+
+      await supertest(server)
+        .post('/api/decks/abc123/the99')
+        .set('Authorization', tokenHeader)
+        .send({ card: { scryfallId: '2' } })
+        .expect(200)
+    })
   })
 })
