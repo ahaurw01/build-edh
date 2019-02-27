@@ -54,6 +54,13 @@ export const mutations = {
       ),
     }
   },
+
+  addCard(state, card) {
+    state.deck = {
+      ...state.deck,
+      the99: [...state.deck.the99, card],
+    }
+  },
 }
 
 export const actions = {
@@ -133,6 +140,20 @@ export const actions = {
   async deleteCommander({ commit, state }, uuid) {
     await this.$axios.delete(`/api/decks/${state.deck._id}/commanders/${uuid}`)
     commit('deleteCommander', uuid)
+  },
+
+  async addCard({ commit, state }, { scryfallId, purposes }) {
+    const { data: card } = await this.$axios.post(
+      `/api/decks/${state.deck._id}/the99`,
+      {
+        card: {
+          scryfallId,
+          purposes,
+        },
+      }
+    )
+
+    commit('addCard', card)
   },
 }
 
