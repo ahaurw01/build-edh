@@ -15,7 +15,7 @@
       :key="card.source.name"
       :card="card.source"
       size="medium"
-      @click.prevent="editCommander(card)"
+      @click.prevent="editCard(card)"
     />
 
     <BModal :active.sync="isNewCardModalActive" has-modal-card>
@@ -23,7 +23,7 @@
     </BModal>
 
     <BModal :active.sync="isEditCardModalActive" has-modal-card>
-      <CardModalForm :commander="cardToEdit" edit />
+      <CardModalForm :card="cardToEdit" edit />
     </BModal>
   </section>
 </template>
@@ -56,7 +56,12 @@ export default {
       }, {})
     ),
   },
-  methods: {},
+  methods: {
+    editCard(card) {
+      this.cardToEdit = card
+      this.isEditCardModalActive = true
+    },
+  },
 }
 </script>
 
