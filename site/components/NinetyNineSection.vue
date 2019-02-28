@@ -15,7 +15,7 @@
       :key="card.source.name"
       :card="card.source"
       size="medium"
-      @click="editCommander(card)"
+      @click.prevent="editCommander(card)"
     />
 
     <BModal :active.sync="isNewCardModalActive" has-modal-card>
