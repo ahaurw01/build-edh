@@ -61,6 +61,15 @@ export const mutations = {
       the99: [...state.deck.the99, card],
     }
   },
+
+  deleteCard(state, uuid) {
+    state.deck = {
+      ...state.deck,
+      the99: state.deck.the99.filter(
+        existingCard => existingCard.uuid !== uuid
+      ),
+    }
+  },
 }
 
 export const actions = {
@@ -154,6 +163,11 @@ export const actions = {
     )
 
     commit('addCard', card)
+  },
+
+  async deleteCard({ commit, state }, uuid) {
+    await this.$axios.delete(`/api/decks/${state.deck._id}/the99/${uuid}`)
+    commit('deleteCard', uuid)
   },
 }
 
