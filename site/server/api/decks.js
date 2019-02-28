@@ -12,6 +12,7 @@ module.exports = {
   updateDeckCommander,
   deleteDeckCommander,
   addDeckCard,
+  deleteDeckCard,
 }
 
 async function ensureDeckOwner(ctx, next) {
@@ -233,6 +234,20 @@ async function addDeckCard(ctx) {
     ...card,
     source: _.find(ctx.state.sources, { scryfallId: card.scryfallId }),
   }
+}
+
+/*
+DELETE /decks/:id/the99/:uuid
+*/
+async function deleteDeckCard(ctx) {
+  const { uuid } = ctx.params
+  const { deck } = ctx.state
+  ctx.assert(_.find(deck.the99, { uuid }), 400, 'UUID not found')
+
+  deck.the99 = _.reject(deck.the99, { uuid })
+  await validateThe99(ctx)
+  await deck.save()
+  ctx.status = 204
 }
 
 async function validateThe99(ctx) {

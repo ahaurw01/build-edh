@@ -248,4 +248,71 @@ describe('deck endpoints', () => {
         .expect(200)
     })
   })
+
+  describe('delete deck card', () => {
+    beforeEach(() => {
+      jest.spyOn(Deck.prototype, 'save').mockImplementation(function() {
+        return Promise.resolve(this)
+      })
+    })
+
+    test('delete valid card', async () => {
+      const deck = new Deck({
+        commanders: [{ scryfallId: '1' }],
+        the99: [
+          { scryfallId: '2', uuid: 'abc123' },
+          { scryfallId: '3', uuid: 'xyz456' },
+        ],
+      })
+
+      jest
+        .spyOn(Deck, 'findOne')
+        .mockImplementation(() => Promise.resolve(deck))
+
+      jest
+        .spyOn(Card, 'find')
+        .mockImplementation(() =>
+          Promise.resolve([
+            new Card({ scryfallId: '1', name: 'Krenko' }),
+            new Card({ scryfallId: '3', name: 'Lightning Bolt' }),
+          ])
+        )
+
+      await supertest(server)
+        .delete('/api/decks/abc123/the99/abc123')
+        .set('Authorization', tokenHeader)
+        .expect(204)
+
+      expect(deck.the99).toHaveLength(1)
+      expect(deck.the99[0].uuid).toBe('xyz456')
+    })
+
+    test('delete unknown card', async () => {
+      const deck = new Deck({
+        commanders: [{ scryfallId: '1' }],
+        the99: [{ scryfallId: '2', uuid: 'abc123' }],
+      })
+
+      jest
+        .spyOn(Deck, 'findOne')
+        .mockImplementation(() => Promise.resolve(deck))
+
+      jest
+        .spyOn(Card, 'find')
+        .mockImplementation(() =>
+          Promise.resolve([
+            new Card({ scryfallId: '1', name: 'Krenko' }),
+            new Card({ scryfallId: '2', name: 'Mountain' }),
+          ])
+        )
+
+      await supertest(server)
+        .delete('/api/decks/abc123/the99/xyz456')
+        .set('Authorization', tokenHeader)
+        .expect(400)
+        .expect('UUID not found')
+
+      expect(deck.the99).toHaveLength(1)
+    })
+  })
 })
