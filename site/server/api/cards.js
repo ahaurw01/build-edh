@@ -14,8 +14,16 @@ const group = {
 }
 
 async function getCards(ctx) {
-  let { nameLike = '', canBeCommander, isLegal, isPartner } = ctx.query
-  const { 'ci[]': ci } = ctx.query
+  let {
+    nameLike = '',
+    canBeCommander,
+    isLegal,
+    isPartner,
+    'ci[]': ci,
+  } = ctx.query
+  if (ci && typeof ci === 'string') {
+    ci = [ci]
+  }
 
   nameLike = nameLike.trim()
 
