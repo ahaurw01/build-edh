@@ -8,6 +8,7 @@ module.exports = {
   getMyDecks,
   getDeck,
   updateDeck,
+  bulkUpdateDeck,
   addDeckCommander,
   updateDeckCommander,
   deleteDeckCommander,
@@ -85,6 +86,25 @@ async function updateDeck(ctx) {
   })
   if (!deck) ctx.response.status = 404
   else ctx.body = deck
+}
+
+async function bulkUpdateDeck(ctx) {
+  const { id } = ctx.params
+  const owner = ctx.state.user._id
+  const { updates } = ctx.request.body
+
+  // Validate input:
+  // - Cards provided exist
+
+  // Validate deck:
+  // - Commander validation
+  // - 99 validation
+
+  // If validation problem:
+  // - Do not update the deck.
+  // - Send 400.
+  // - Send list of cards that don't exist.
+  // - Send any deck validation message.
 }
 
 /*

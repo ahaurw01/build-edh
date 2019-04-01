@@ -8,6 +8,7 @@ const {
   getMyDecks,
   getDeck,
   updateDeck,
+  bulkUpdateDeck,
   addDeckCommander,
   updateDeckCommander,
   deleteDeckCommander,
@@ -39,6 +40,7 @@ apiRouter.get('/decks/:id', getDeck)
 
 apiRouter.use('/decks/:id', ensureDeckOwner)
 apiRouter.put('/decks/:id', updateDeck)
+apiRouter.put('/decks/:id/bulk', bulkUpdateDeck)
 apiRouter.post('/decks/:id/commanders', addDeckCommander)
 apiRouter.put('/decks/:id/commanders/:uuid', updateDeckCommander)
 apiRouter.delete('/decks/:id/commanders/:uuid', deleteDeckCommander)
