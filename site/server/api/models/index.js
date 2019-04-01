@@ -172,8 +172,18 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
 
 const Card = mongoose.model('Card', cardSchema)
 
+const allCardFieldsGroup = {
+  ...Object.keys(Card.schema.paths).reduce((acc, key) => {
+    key = key.split('.')[0]
+    acc[key] = { $first: `$${key}` }
+    return acc
+  }, {}),
+  _id: '$name',
+}
+
 module.exports = {
   User,
   Deck,
   Card,
+  allCardFieldsGroup,
 }
