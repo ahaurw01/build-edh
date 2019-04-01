@@ -1,16 +1,7 @@
-const { Card } = require('./models')
+const { Card, allCardFieldsGroup } = require('./models')
 
 module.exports = {
   getCards,
-}
-
-const group = {
-  ...Object.keys(Card.schema.paths).reduce((acc, key) => {
-    key = key.split('.')[0]
-    acc[key] = { $first: `$${key}` }
-    return acc
-  }, {}),
-  _id: '$name',
 }
 
 async function getCards(ctx) {
@@ -45,7 +36,7 @@ async function getCards(ctx) {
 
   const cards = await Card.aggregate()
     .match(filters)
-    .group(group)
+    .group(allCardFieldsGroup)
     .limit(10)
     .exec()
 
