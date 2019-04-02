@@ -1,6 +1,14 @@
 const _ = require('lodash')
 const uuid = require('uuid/v4')
 const { Deck, Card } = require('./models')
+const {
+  populateBulkInputSources,
+  populateCommanderSources,
+  populateThe99Sources,
+  validateBulkInput,
+  validateCommanders,
+  validateThe99,
+} = require('./deck-validation')
 
 module.exports = {
   ensureDeckOwner,
@@ -8,7 +16,15 @@ module.exports = {
   getMyDecks,
   getDeck,
   updateDeck,
-  bulkUpdateDeck,
+  bulkUpdateDeckMiddlewares: [
+    populateBulkInputSources,
+    validateBulkInput,
+    bulkUpdateDeckAssembly,
+    populateCommanderSources,
+    populateThe99Sources,
+    validateCommanders,
+    validateThe99,
+  ],
   addDeckCommander,
   updateDeckCommander,
   deleteDeckCommander,
@@ -88,23 +104,45 @@ async function updateDeck(ctx) {
   else ctx.body = deck
 }
 
-async function bulkUpdateDeck(ctx) {
+async function bulkUpdateDeckAssembly(ctx, next) {
   const { id } = ctx.params
   const owner = ctx.state.user._id
-  const { updates } = ctx.request.body
+  const { updates = [] } = ctx.request.body
+  const { deck } = ctx.state
 
-  // Validate input:
-  // - Cards provided exist
+  if (ctx.state.missingCardInputs.length) {
+    ctx.status = 400
+    ctx.body = _.pick(ctx.state, ['missingCardInputs'])
+    return
+  }
 
-  // Validate deck:
-  // - Commander validation
-  // - 99 validation
+  // Construct new deck.
+  // Parse out the *CMDR* inputs
+  // Parse out names vs tags.
+
+  // Defer validation.
+  await next()
 
   // If validation problem:
   // - Do not update the deck.
   // - Send 400.
   // - Send list of cards that don't exist.
   // - Send any deck validation message.
+  if (
+    ctx.state.missingCardInputs.length ||
+    ctx.state.commanderErrorMessages.length ||
+    ctx.state.the99ErrorMessages.length
+  ) {
+    ctx.status = 400
+    ctx.body = _.pick(ctx.state, [
+      'missingCardInputs',
+      'commanderErrorMessages',
+      'the99ErrorMessages',
+    ])
+  } else {
+    ctx.status = 200
+    ctx.body = deck
+  }
 }
 
 /*
@@ -129,7 +167,7 @@ async function addDeckCommander(ctx) {
     isFoil,
   }
   deck.commanders.push(commander)
-  await validateCommanders(ctx)
+  await oldValidateCommanders(ctx)
   await deck.save()
   ctx.body = {
     ...commander,
@@ -162,7 +200,7 @@ async function updateDeckCommander(ctx) {
   if (purposes != null) commander.purposes = purposes
   if (scryfallId != null) commander.scryfallId = scryfallId
 
-  await validateCommanders(ctx)
+  await oldValidateCommanders(ctx)
   await deck.save()
   ctx.body = {
     ...commander.toJSON(),
@@ -176,12 +214,12 @@ async function deleteDeckCommander(ctx) {
   ctx.assert(_.find(deck.commanders, { uuid }), 400, 'UUID not found')
 
   deck.commanders = _.reject(deck.commanders, { uuid })
-  await validateCommanders(ctx)
+  await oldValidateCommanders(ctx)
   await deck.save()
   ctx.status = 204
 }
 
-async function validateCommanders(ctx) {
+async function oldValidateCommanders(ctx) {
   const {
     deck: { commanders },
   } = ctx.state
@@ -248,7 +286,7 @@ async function addDeckCard(ctx) {
     isFoil,
   }
   deck.the99.push(card)
-  await validateThe99(ctx)
+  await oldValidateThe99(ctx)
   await deck.save()
   ctx.body = {
     ...card,
@@ -265,12 +303,12 @@ async function deleteDeckCard(ctx) {
   ctx.assert(_.find(deck.the99, { uuid }), 400, 'UUID not found')
 
   deck.the99 = _.reject(deck.the99, { uuid })
-  await validateThe99(ctx)
+  await oldValidateThe99(ctx)
   await deck.save()
   ctx.status = 204
 }
 
-async function validateThe99(ctx) {
+async function oldValidateThe99(ctx) {
   const {
     deck: { commanders, the99 },
   } = ctx.state
