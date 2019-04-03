@@ -115,6 +115,7 @@ async function validateBulkInput(ctx, next) {
 async function validateCommanders(ctx, next) {
   const {
     deck: { commanders },
+    commanderSources: sources,
   } = ctx.state
 
   ctx.state.commanderErrorMessages = []
@@ -126,7 +127,7 @@ async function validateCommanders(ctx, next) {
   }
 
   if (
-    _(ctx.state.commanderSources)
+    _(sources)
       .map('name')
       .uniq()
       .value().length === 2
@@ -134,14 +135,11 @@ async function validateCommanders(ctx, next) {
     ctx.state.commanderErrorMessages.push('Cannot have duplicate commanders')
   }
 
-  if (!_.every(ctx.state.commanderSources, 'canBeCommander')) {
+  if (!_.every(sources, 'canBeCommander')) {
     ctx.state.commanderErrorMessages.push('Ineligible commander')
   }
 
-  if (
-    commanders.length === 2 &&
-    !_.every(ctx.state.commanderSources, 'isPartner')
-  ) {
+  if (commanders.length === 2 && !_.every(sources, 'isPartner')) {
     ctx.state.commanderErrorMessages.push('Both commanders must have partner')
   }
 
