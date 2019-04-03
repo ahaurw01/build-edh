@@ -8,6 +8,9 @@ const {
   validateBulkInput,
   validateCommanders,
   validateThe99,
+  isBulkInputCommander,
+  purposesFromBulkInput,
+  scryfallIdForInput,
 } = require('./deck-validation')
 
 module.exports = {
@@ -117,8 +120,15 @@ async function bulkUpdateDeckAssembly(ctx, next) {
   }
 
   // Construct new deck.
-  // Parse out the *CMDR* inputs
-  // Parse out names vs tags.
+  updates.forEach(input => {
+    const card = {
+      scryfallId: scryfallIdForInput(input, ctx.state.bulkInputSources),
+      uuid: uuid(),
+      purposes: purposesFromBulkInput(input),
+    }
+
+    ;(isBulkInputCommander(input) ? deck.commanders : deck.the99).push(card)
+  })
 
   // Defer validation.
   await next()
