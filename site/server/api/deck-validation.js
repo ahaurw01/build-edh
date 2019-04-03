@@ -20,6 +20,11 @@ const purposesFromBulkInput = (input = '') =>
     .uniq()
     .value()
 
+const scryfallIdForInput = (input = '', sources) => {
+  const regexp = bulkInputToNameRegex(input)
+  return sources.find(source => regexp.test(source.name)).scryfallId
+}
+
 module.exports = {
   populateBulkInputSources,
   populateCommanderSources,
@@ -30,6 +35,7 @@ module.exports = {
   bulkInputToNameRegex,
   isBulkInputCommander,
   purposesFromBulkInput,
+  scryfallIdForInput,
 }
 
 /**

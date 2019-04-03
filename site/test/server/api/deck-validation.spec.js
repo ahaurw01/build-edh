@@ -2,6 +2,7 @@ import {
   bulkInputToNameRegex,
   isBulkInputCommander,
   purposesFromBulkInput,
+  scryfallIdForInput,
 } from '../../../server/api/deck-validation'
 
 describe('Deck Validation', () => {
@@ -132,6 +133,20 @@ describe('Deck Validation', () => {
         'looking left',
         'kitty cat',
       ])
+    })
+  })
+
+  describe('scryfallIdForInput', () => {
+    test('finds proper scryfallId', () => {
+      const sources = [
+        { scryfallId: 1, name: 'Lightning Bolt' },
+        { scryfallId: 2, name: 'Rafiq of the Many' },
+        { scryfallId: 3, name: 'Counterspell' },
+      ]
+
+      const result = scryfallIdForInput('Rafiq of the Many # ...', sources)
+
+      expect(result).toBe(2)
     })
   })
 })
