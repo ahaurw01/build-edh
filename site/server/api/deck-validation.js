@@ -1,6 +1,25 @@
 const _ = require('lodash')
 const { Card, allCardFieldsGroup } = require('./models')
 
+const bulkInputToNameRegex = (input = '') =>
+  new RegExp(
+    `^${input
+      .split('#')[0]
+      .replace(/\*cmdr\*/i, '')
+      .trim()}$`,
+    'i'
+  )
+
+const isBulkInputCommander = (input = '') =>
+  /\*cmdr\*/i.test(input.split('#')[0])
+
+const purposesFromBulkInput = (input = '') =>
+  _((input.split('#')[1] || '').split(','))
+    .map(p => p.trim())
+    .compact()
+    .uniq()
+    .value()
+
 module.exports = {
   populateBulkInputSources,
   populateCommanderSources,
@@ -8,10 +27,10 @@ module.exports = {
   validateBulkInput,
   validateCommanders,
   validateThe99,
+  bulkInputToNameRegex,
+  isBulkInputCommander,
+  purposesFromBulkInput,
 }
-
-const bulkInputToRegex = (input = '') =>
-  new RegExp(`^${input.split('#')[0].trim()}$`, 'i')
 
 /**
  * Sets ctx.state.bulkInputSources.
@@ -20,7 +39,7 @@ async function populateBulkInputSources(ctx, next) {
   ctx.state.bulkInputSources = await Card.aggregate()
     .match({
       name: {
-        $in: (ctx.request.body.updates || []).map(bulkInputToRegex),
+        $in: (ctx.request.body.updates || []).map(bulkInputToNameRegex),
       },
     })
     .group(allCardFieldsGroup)
@@ -69,7 +88,7 @@ async function validateBulkInput(ctx, next) {
   const foundCardNames = ctx.state.bulkInputSources.map(s => s.name)
   ctx.state.missingCardInputs = (ctx.request.body.updates || []).reduce(
     (acc, cur) => {
-      const regexp = bulkInputToRegex(cur)
+      const regexp = bulkInputToNameRegex(cur)
       if (!_.find(foundCardNames, name => regexp.test(name))) {
         acc.push(cur)
       }
