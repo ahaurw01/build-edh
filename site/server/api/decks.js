@@ -27,6 +27,8 @@ module.exports = {
     populateThe99Sources,
     validateCommanders,
     validateThe99,
+    bulkUpdateValidationCheck,
+    bulkUpdateSave,
   ],
   addDeckCommander,
   updateDeckCommander,
@@ -130,9 +132,10 @@ async function bulkUpdateDeckAssembly(ctx, next) {
     ;(isBulkInputCommander(input) ? deck.commanders : deck.the99).push(card)
   })
 
-  // Defer validation.
-  await next()
+  return next()
+}
 
+function bulkUpdateValidationCheck(ctx, next) {
   // If validation problem:
   // - Do not update the deck.
   // - Send 400.
@@ -150,9 +153,15 @@ async function bulkUpdateDeckAssembly(ctx, next) {
       'the99ErrorMessages',
     ])
   } else {
-    ctx.status = 200
-    ctx.body = deck
+    return next()
   }
+}
+
+async function bulkUpdateSave(ctx) {
+  const { deck } = ctx.state
+  await deck.save()
+  ctx.status = 200
+  ctx.body = deck
 }
 
 /*

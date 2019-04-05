@@ -50,7 +50,7 @@ async function populateBulkInputSources(ctx, next) {
     })
     .group(allCardFieldsGroup)
     .exec()
-  await next()
+  return next()
 }
 
 /**
@@ -65,7 +65,7 @@ async function populateCommanderSources(ctx, next) {
     scryfallId: { $in: _.map(commanders, 'scryfallId') },
   })
 
-  await next()
+  return next()
 }
 
 /**
@@ -80,7 +80,7 @@ async function populateThe99Sources(ctx, next) {
     scryfallId: { $in: _.map(the99, 'scryfallId') },
   })
 
-  await next()
+  return next()
 }
 
 /**
@@ -90,7 +90,7 @@ async function populateThe99Sources(ctx, next) {
  *
  * Sets ctx.state.missingCardInputs
  */
-async function validateBulkInput(ctx, next) {
+function validateBulkInput(ctx, next) {
   const foundCardNames = ctx.state.bulkInputSources.map(s => s.name)
   ctx.state.missingCardInputs = (ctx.request.body.updates || []).reduce(
     (acc, cur) => {
@@ -102,7 +102,7 @@ async function validateBulkInput(ctx, next) {
     },
     []
   )
-  await next()
+  return next()
 }
 
 /**
@@ -112,7 +112,7 @@ async function validateBulkInput(ctx, next) {
  *
  * Sets ctx.state.commanderErrorMessages.
  */
-async function validateCommanders(ctx, next) {
+function validateCommanders(ctx, next) {
   const {
     deck: { commanders },
     commanderSources: sources,
@@ -127,10 +127,11 @@ async function validateCommanders(ctx, next) {
   }
 
   if (
+    commanders.length === 2 &&
     _(sources)
       .map('name')
       .uniq()
-      .value().length === 2
+      .value().length === 1
   ) {
     ctx.state.commanderErrorMessages.push('Cannot have duplicate commanders')
   }
@@ -151,7 +152,7 @@ async function validateCommanders(ctx, next) {
     ctx.state.commanderErrorMessages.push('Mismatch of specified partner')
   }
 
-  await next()
+  return next()
 }
 
 /**
@@ -162,7 +163,7 @@ async function validateCommanders(ctx, next) {
  *
  * Sets ctx.state.the99ErrorMessages.
  */
-async function validateThe99(ctx, next) {
+function validateThe99(ctx, next) {
   const {
     deck: { commanders, the99 },
   } = ctx.state
@@ -187,5 +188,5 @@ async function validateThe99(ctx, next) {
     ctx.state.the99ErrorMessages.push(`Illegal duplicates`)
   }
 
-  await next()
+  return next()
 }
