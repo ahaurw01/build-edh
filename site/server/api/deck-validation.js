@@ -185,7 +185,11 @@ function validateThe99(ctx, next) {
     .filter(cards => cards.length > 1)
     .value()
   if (badDuplicates.length > 0) {
-    ctx.state.the99ErrorMessages.push(`Illegal duplicates`)
+    ctx.state.the99ErrorMessages.push(
+      `Illegal duplicates: ${badDuplicates
+        .map(dupes => dupes[0].source.name)
+        .join(', ')}`
+    )
   }
 
   return next()
