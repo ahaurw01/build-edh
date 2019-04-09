@@ -3,6 +3,9 @@ import {
   isBulkInputCommander,
   purposesFromBulkInput,
   scryfallIdForInput,
+  validateBulkInput,
+  validateCommanders,
+  validateThe99,
 } from '../../../server/api/deck-validation'
 
 describe('Deck Validation', () => {
@@ -147,6 +150,444 @@ describe('Deck Validation', () => {
       const result = scryfallIdForInput('Rafiq of the Many # ...', sources)
 
       expect(result).toBe(2)
+    })
+  })
+
+  describe('validateBulkInput', () => {
+    test('sets missingCardInputs for missing cards', done => {
+      const ctx = {
+        state: {
+          bulkInputSources: [
+            {
+              name: 'Lightning Bolt',
+            },
+            {
+              name: 'Giant Growth',
+            },
+          ],
+        },
+        request: {
+          body: {
+            updates: [
+              'Lightning Bolt # pew pew',
+              'Swords to Plowshares # go away',
+              'Giant Growth # get biggg',
+            ],
+          },
+        },
+      }
+
+      validateBulkInput(ctx, () => {
+        expect(ctx.state.missingCardInputs).toEqual([
+          'Swords to Plowshares # go away',
+        ])
+        done()
+      })
+    })
+
+    test('is cool for existing cards', done => {
+      const ctx = {
+        state: {
+          bulkInputSources: [
+            {
+              name: 'Lightning Bolt',
+            },
+            {
+              name: 'Giant Growth',
+            },
+          ],
+        },
+        request: {
+          body: {
+            updates: ['Lightning Bolt # pew pew', 'Giant Growth # get biggg'],
+          },
+        },
+      }
+
+      validateBulkInput(ctx, () => {
+        expect(ctx.state.missingCardInputs).toEqual([])
+        done()
+      })
+    })
+  })
+
+  describe('validateCommanders', () => {
+    test('is cool with valid commander', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }],
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Rafiq of the Many',
+              canBeCommander: true,
+            },
+          ],
+        },
+      }
+
+      validateCommanders(ctx, () => {
+        expect(ctx.state.commanderErrorMessages).toEqual([])
+        done()
+      })
+    })
+
+    test('is cool with valid partners', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }, { scryfallId: 2 }],
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Tymna the Weaver',
+              canBeCommander: true,
+              isPartner: true,
+            },
+            {
+              scryfallId: 2,
+              name: 'Thrasios, Triton Hero',
+              canBeCommander: true,
+              isPartner: true,
+            },
+          ],
+        },
+      }
+
+      validateCommanders(ctx, () => {
+        expect(ctx.state.commanderErrorMessages).toEqual([])
+        done()
+      })
+    })
+
+    test('is cool with valid partnerWiths', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }, { scryfallId: 2 }],
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Toothy, Imaginary Friend',
+              canBeCommander: true,
+              isPartner: true,
+              partnerWith: 'Pir, Imaginative Rascal',
+            },
+            {
+              scryfallId: 2,
+              name: 'Pir, Imaginative Rascal',
+              canBeCommander: true,
+              isPartner: true,
+              partnerWith: 'Toothy, Imaginary Friend',
+            },
+          ],
+        },
+      }
+
+      validateCommanders(ctx, () => {
+        expect(ctx.state.commanderErrorMessages).toEqual([])
+        done()
+      })
+    })
+
+    test('points out relevant problems with > 2 commanders', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [
+              { scryfallId: 1 },
+              { scryfallId: 2 },
+              { scryfallId: 2.5 },
+              { scryfallId: 3 },
+            ],
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Toothy, Imaginary Friend',
+              canBeCommander: true,
+              isPartner: true,
+              partnerWith: 'Pir, Imaginative Rascal',
+            },
+            {
+              scryfallId: 2,
+              name: 'Rafiq of the Many',
+              canBeCommander: true,
+              isPartner: false,
+            },
+            {
+              scryfallId: 2.5,
+              name: 'Rafiq of the Many',
+              canBeCommander: true,
+              isPartner: false,
+            },
+            {
+              scryfallId: 3,
+              name: 'Lightning Bolt',
+              canBeCommander: false,
+            },
+          ],
+        },
+      }
+
+      validateCommanders(ctx, () => {
+        expect(ctx.state.commanderErrorMessages).toEqual([
+          'Cannot have more than two commanders',
+          'Ineligible commander',
+        ])
+        done()
+      })
+    })
+
+    test('points out relevant problems with 2 commanders', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }, { scryfallId: 2 }],
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Toothy, Imaginary Friend',
+              canBeCommander: true,
+              isPartner: true,
+              partnerWith: 'Pir, Imaginative Rascal',
+            },
+            {
+              scryfallId: 2,
+              name: 'Rafiq of the Many',
+              canBeCommander: true,
+              isPartner: false,
+            },
+          ],
+        },
+      }
+
+      validateCommanders(ctx, () => {
+        expect(ctx.state.commanderErrorMessages).toEqual([
+          'Both commanders must have partner',
+          'Mismatch of specified partner',
+        ])
+        done()
+      })
+    })
+  })
+
+  describe('validateThe99', () => {
+    test('is cool with 100 for 2 commanders', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }, { scryfallId: 2 }],
+            the99: '_'
+              .repeat(98)
+              .split('')
+              .map((char, index) => ({
+                scryfallId: index + 3,
+              })),
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Tymna the Weaver',
+              canBeCommander: true,
+              isPartner: true,
+            },
+            {
+              scryfallId: 2,
+              name: 'Thrasios, Triton Hero',
+              canBeCommander: true,
+              isPartner: true,
+            },
+          ],
+          the99Sources: '_'
+            .repeat(98)
+            .split('')
+            .map((char, index) => ({
+              scryfallId: index + 3,
+              name: index,
+              canHaveMultiple: false,
+            })),
+        },
+      }
+
+      validateThe99(ctx, () => {
+        expect(ctx.state.the99ErrorMessages).toEqual([])
+        done()
+      })
+    })
+
+    test('is cool with 100 for 1 commander', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }],
+            the99: '_'
+              .repeat(99)
+              .split('')
+              .map((char, index) => ({
+                scryfallId: index + 2,
+              })),
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Tymna the Weaver',
+              canBeCommander: true,
+              isPartner: true,
+            },
+          ],
+          the99Sources: '_'
+            .repeat(99)
+            .split('')
+            .map((char, index) => ({
+              scryfallId: index + 2,
+              name: index,
+              canHaveMultiple: false,
+            })),
+        },
+      }
+
+      validateThe99(ctx, () => {
+        expect(ctx.state.the99ErrorMessages).toEqual([])
+        done()
+      })
+    })
+
+    test('complains for > 100 for 2 commanders', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }, { scryfallId: 2 }],
+            the99: '_'
+              .repeat(99)
+              .split('')
+              .map((char, index) => ({
+                scryfallId: index + 3,
+              })),
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Tymna the Weaver',
+              canBeCommander: true,
+              isPartner: true,
+            },
+            {
+              scryfallId: 2,
+              name: 'Thrasios, Triton Hero',
+              canBeCommander: true,
+              isPartner: true,
+            },
+          ],
+          the99Sources: '_'
+            .repeat(99)
+            .split('')
+            .map((char, index) => ({
+              scryfallId: index + 3,
+              name: index,
+              canHaveMultiple: false,
+            })),
+        },
+      }
+
+      validateThe99(ctx, () => {
+        expect(ctx.state.the99ErrorMessages).toEqual([
+          'Cannot have more than 100 cards total.',
+        ])
+        done()
+      })
+    })
+
+    test('complains for > 100 for 1 commander', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }],
+            the99: '_'
+              .repeat(100)
+              .split('')
+              .map((char, index) => ({
+                scryfallId: index + 2,
+              })),
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Tymna the Weaver',
+              canBeCommander: true,
+              isPartner: true,
+            },
+          ],
+          the99Sources: '_'
+            .repeat(100)
+            .split('')
+            .map((char, index) => ({
+              scryfallId: index + 2,
+              name: index,
+              canHaveMultiple: false,
+            })),
+        },
+      }
+
+      validateThe99(ctx, () => {
+        expect(ctx.state.the99ErrorMessages).toEqual([
+          'Cannot have more than 100 cards total.',
+        ])
+        done()
+      })
+    })
+
+    test('complains for illegal duplicates', done => {
+      const ctx = {
+        state: {
+          deck: {
+            commanders: [{ scryfallId: 1 }],
+            the99: '_'
+              .repeat(99)
+              .split('')
+              .map((char, index) => ({
+                scryfallId: index < 95 ? 2 : index < 97 ? 3 : 4,
+              })),
+          },
+          commanderSources: [
+            {
+              scryfallId: 1,
+              name: 'Tymna the Weaver',
+              canBeCommander: true,
+              isPartner: true,
+            },
+          ],
+          the99Sources: [
+            {
+              scryfallId: 2,
+              name: 'Plains',
+              canHaveMultiple: true,
+            },
+            {
+              scryfallId: 3,
+              name: 'Swords to Plowshares',
+              canHaveMultiple: false,
+            },
+            {
+              scryfallId: 4,
+              name: 'Vampiric Tutor',
+              canHaveMultiple: false,
+            },
+          ],
+        },
+      }
+
+      validateThe99(ctx, () => {
+        expect(ctx.state.the99ErrorMessages).toEqual([
+          'Illegal duplicates: Swords to Plowshares, Vampiric Tutor',
+        ])
+        done()
+      })
     })
   })
 })
