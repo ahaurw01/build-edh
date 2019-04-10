@@ -109,9 +109,7 @@ async function updateDeck(ctx) {
   else ctx.body = deck
 }
 
-async function bulkUpdateDeckAssembly(ctx, next) {
-  const { id } = ctx.params
-  const owner = ctx.state.user._id
+function bulkUpdateDeckAssembly(ctx, next) {
   const { updates = [] } = ctx.request.body
   const { deck } = ctx.state
 

@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const { Card, allCardFieldsGroup } = require('./models')
+const { Card } = require('./models')
 
 const bulkInputToNameRegex = (input = '') =>
   new RegExp(
@@ -42,14 +42,10 @@ module.exports = {
  * Sets ctx.state.bulkInputSources.
  */
 async function populateBulkInputSources(ctx, next) {
-  ctx.state.bulkInputSources = await Card.aggregate()
-    .match({
-      name: {
-        $in: (ctx.request.body.updates || []).map(bulkInputToNameRegex),
-      },
-    })
-    .group(allCardFieldsGroup)
-    .exec()
+  ctx.state.bulkInputSources = await Card.findWithNames(
+    (ctx.request.body.updates || []).map(bulkInputToNameRegex)
+  )
+
   return next()
 }
 

@@ -315,4 +315,76 @@ describe('deck endpoints', () => {
       expect(deck.the99).toHaveLength(1)
     })
   })
+
+  describe('bulk update deck', () => {
+    test('unsuccessful update - validation errors', async () => {
+      const updates = ['Lightning Bolt # pew pew', 'Lightning Bolt # pew pew']
+      const deck = new Deck({
+        commanders: [{ scryfallId: '1' }],
+        the99: [{ scryfallId: '3', uuid: 'xyz456' }],
+      })
+      deck.save = jest.fn(function() {
+        return Promise.resolve(this)
+      })
+
+      jest
+        .spyOn(Deck, 'findOne')
+        .mockImplementation(() => Promise.resolve(deck))
+
+      jest.spyOn(Card, 'findWithNames').mockImplementation(() =>
+        Promise.resolve([
+          new Card({
+            name: 'Lightning Bolt',
+            scryfallId: '4',
+            canHaveMultiple: false,
+          }),
+        ])
+      )
+
+      let cardFindCall = 0
+      jest.spyOn(Card, 'find').mockImplementation(() => {
+        cardFindCall++
+        if (cardFindCall === 1) {
+          // Populate commander sources
+          return Promise.resolve([
+            new Card({
+              scryfallId: '1',
+              name: 'Krenko',
+              canBeCommander: true,
+              canHaveMultiple: false,
+            }),
+          ])
+        }
+        if (cardFindCall === 2) {
+          // Populate the99 sources
+          return Promise.resolve([
+            new Card({
+              scryfallId: '3',
+              name: 'Goblin Bombardment',
+              canHaveMultiple: false,
+            }),
+            new Card({
+              name: 'Lightning Bolt',
+              scryfallId: '4',
+              canHaveMultiple: false,
+            }),
+          ])
+        }
+        throw new Error('Card.find not expected to be called more than twice')
+      })
+
+      await supertest(server)
+        .put('/api/decks/111/bulk')
+        .send({ updates })
+        .set('Authorization', tokenHeader)
+        .expect(400)
+        .expect({
+          missingCardInputs: [],
+          commanderErrorMessages: [],
+          the99ErrorMessages: ['Illegal duplicates: Lightning Bolt'],
+        })
+
+      expect(deck.save).not.toHaveBeenCalled()
+    })
+  })
 })

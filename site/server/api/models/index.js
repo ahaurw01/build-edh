@@ -181,6 +181,12 @@ const allCardFieldsGroup = {
   _id: '$name',
 }
 
+Card.findWithNames = names =>
+  Card.aggregate()
+    .match({ name: { $in: names } })
+    .group(allCardFieldsGroup)
+    .exec()
+
 module.exports = {
   User,
   Deck,
