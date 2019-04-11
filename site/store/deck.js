@@ -5,6 +5,7 @@ export const state = () => ({
   deck: null,
   owner: null,
   cardSuggestions: [],
+  bulkAddErrorMessages: [],
 })
 
 export const mutations = {
@@ -69,6 +70,10 @@ export const mutations = {
         existingCard => existingCard.uuid !== uuid
       ),
     }
+  },
+
+  bulkAddErrorMessages(state, messages) {
+    state.bulkAddErrorMessages = messages
   },
 }
 
@@ -169,6 +174,17 @@ export const actions = {
     await this.$axios.delete(`/api/decks/${state.deck._id}/the99/${uuid}`)
     commit('deleteCard', uuid)
   },
+
+  async bulkAdd({ commit, state }, updates) {
+    try {
+      await this.$axios.put(`/api/decks/${state.deck._id}/bulk`, {
+        updates,
+      })
+    } catch (err) {
+      debugger
+      commit('bulkAddErrorMessages', ['shite'])
+    }
+  },
 }
 
 export const getters = {
@@ -205,4 +221,5 @@ export const getters = {
       (commanders.length === 2 && the99.length < 98)
     )
   },
+  bulkAddErrorMessages: state => state.bulkAddErrorMessages,
 }
