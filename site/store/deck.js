@@ -178,9 +178,13 @@ export const actions = {
   async bulkAdd({ commit, state }, updates) {
     commit('bulkAddErrorMessages', [])
     try {
-      await this.$axios.put(`/api/decks/${state.deck._id}/bulk`, {
-        updates,
-      })
+      const { data: deck } = await this.$axios.put(
+        `/api/decks/${state.deck._id}/bulk`,
+        {
+          updates,
+        }
+      )
+      commit('deck', deck)
     } catch ({ response }) {
       if (!response || !response.data) {
         commit('bulkAddErrorMessages', [

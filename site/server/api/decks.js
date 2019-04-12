@@ -29,6 +29,7 @@ module.exports = {
     validateThe99,
     bulkUpdateValidationCheck,
     bulkUpdateSave,
+    getDeck,
   ],
   addDeckCommander,
   updateDeckCommander,
@@ -155,11 +156,10 @@ function bulkUpdateValidationCheck(ctx, next) {
   }
 }
 
-async function bulkUpdateSave(ctx) {
+async function bulkUpdateSave(ctx, next) {
   const { deck } = ctx.state
   await deck.save()
-  ctx.status = 200
-  ctx.body = deck
+  return next()
 }
 
 /*
