@@ -67,14 +67,18 @@
     <BModal :active.sync="isEditDescriptionModalActive" has-modal-card>
       <DeckPropertyModalForm property="description" type="textarea" />
     </BModal>
-    <BModal :active.sync="isBulkAddModalActive" has-modal-card>
+    <BModal
+      :active.sync="isBulkAddModalActive"
+      has-modal-card
+      @close="resetBulkAddErrorMessages"
+    >
       <BulkAddModalForm />
     </BModal>
   </section>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import DeckPropertyModalForm from '~/components/DeckPropertyModalForm'
 import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
@@ -109,6 +113,11 @@ export default {
       purpose: 'deck/purpose',
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
+    }),
+  },
+  methods: {
+    ...mapActions({
+      resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
     }),
   },
 }

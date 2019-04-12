@@ -176,14 +176,28 @@ export const actions = {
   },
 
   async bulkAdd({ commit, state }, updates) {
+    commit('bulkAddErrorMessages', [])
     try {
       await this.$axios.put(`/api/decks/${state.deck._id}/bulk`, {
         updates,
       })
-    } catch (err) {
-      debugger
-      commit('bulkAddErrorMessages', ['shite'])
+    } catch ({ response }) {
+      if (!response || !response.data) {
+        commit('bulkAddErrorMessages', [
+          'Something went wrong. Please try again.',
+        ])
+      } else {
+        commit('bulkAddErrorMessages', [
+          ...response.data.missingCardInputs,
+          ...response.data.commanderErrorMessages,
+          ...response.data.the99ErrorMessages,
+        ])
+      }
     }
+  },
+
+  resetBulkAddErrorMessages({ commit }) {
+    commit('bulkAddErrorMessages', [])
   },
 }
 

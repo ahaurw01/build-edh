@@ -7,12 +7,7 @@
         </p>
       </header>
       <section class="modal-card-body" style="overflow: visible">
-        <ul v-if="bulkAddErrorMessages">
-          <li v-for="message in bulkAddErrorMessages" :key="message">
-            {{ message }}
-          </li>
-        </ul>
-        <BField>
+        <BField :type="{ 'is-danger': hasErrors }" :message="fieldMessages">
           <BInput
             v-model="bulkInput"
             type="textarea"
@@ -45,7 +40,6 @@ export default {
     return {
       placeholder:
         "Atraxa, Praetors' Voice *CMDR* # Proliferate, Life gain\n3x Forest\n17 Persistent Petitioners # Mill",
-      errorMessages: [],
       bulkInput: '',
     }
   },
@@ -54,27 +48,35 @@ export default {
     ...mapGetters({
       bulkAddErrorMessages: 'deck/bulkAddErrorMessages',
     }),
+    hasErrors() {
+      return this.bulkAddErrorMessages.length > 0
+    },
+    fieldMessages() {
+      return this.bulkAddErrorMessages.reduce(
+        (acc, cur) => ({
+          ...acc,
+          [cur]: true,
+        }),
+        {}
+      )
+    },
   },
 
   mounted() {
     this.$refs.form.querySelector('textarea').focus()
   },
   methods: {
-    selectCard(card) {
-      this.selectedCard = card
-    },
-
     async onSave() {
       const updates = this.bulkInput
         .split('\n')
         .map(i => i.trim())
         .filter(i => i)
-      if (!updates.length) {
+      if (updates.length === 0) {
         return this.$parent.close()
       }
 
       await this.bulkAdd(updates)
-      if (!this.bulkAddErrorMessages) {
+      if (this.bulkAddErrorMessages.length === 0) {
         this.$parent.close()
       }
     },
