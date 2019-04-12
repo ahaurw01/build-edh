@@ -35,6 +35,7 @@ module.exports = {
   updateDeckCommander,
   deleteDeckCommander,
   addDeckCard,
+  updateDeckCard,
   deleteDeckCard,
 }
 
@@ -307,6 +308,39 @@ async function addDeckCard(ctx) {
   await deck.save()
   ctx.body = {
     ...card,
+    source: _.find(ctx.state.sources, { scryfallId: card.scryfallId }),
+  }
+}
+
+/*
+PUT
+{
+  card: {
+    purposes: ['Card draw', 'Sac outlet'],
+    isFoil: true,
+    scryfallId: <id>
+  }
+}
+
+*/
+async function updateDeckCard(ctx) {
+  const { uuid } = ctx.params
+  const { deck } = ctx.state
+
+  const card = _.find(deck.the99, { uuid })
+  ctx.assert(!!card, 400, 'UUID not found')
+  ctx.assert(ctx.request.body.card, 400, 'No updates provided')
+
+  const { isFoil, purposes, scryfallId } = ctx.request.body.card
+
+  if (isFoil != null) card.isFoil = isFoil
+  if (purposes != null) card.purposes = purposes
+  if (scryfallId != null) card.scryfallId = scryfallId
+
+  await oldValidateThe99(ctx)
+  await deck.save()
+  ctx.body = {
+    ...card.toJSON(),
     source: _.find(ctx.state.sources, { scryfallId: card.scryfallId }),
   }
 }
