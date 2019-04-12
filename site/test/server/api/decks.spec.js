@@ -446,7 +446,28 @@ describe('deck endpoints', () => {
             }),
           ])
         }
-        throw new Error('Card.find not expected to be called more than twice')
+        if (cardFindCall === 3) {
+          // Final deck source population
+          return Promise.resolve([
+            new Card({
+              scryfallId: '1',
+              name: 'Krenko',
+              canBeCommander: true,
+              canHaveMultiple: false,
+            }),
+            new Card({
+              scryfallId: '3',
+              name: 'Goblin Bombardment',
+              canHaveMultiple: false,
+            }),
+            new Card({
+              name: 'Lightning Bolt',
+              scryfallId: '4',
+              canHaveMultiple: false,
+            }),
+          ])
+        }
+        throw new Error('Card.find not expected to be called more than thrice')
       })
 
       await supertest(server)
@@ -454,6 +475,10 @@ describe('deck endpoints', () => {
         .send({ updates })
         .set('Authorization', tokenHeader)
         .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveProperty('commanders')
+          expect(body).toHaveProperty('the99')
+        })
 
       expect(deck.save).toHaveBeenCalledTimes(1)
       expect(deck.commanders).toHaveLength(1)
