@@ -2,6 +2,7 @@ const _ = require('lodash')
 const uuid = require('uuid/v4')
 const { Deck, Card } = require('./models')
 const {
+  parseBulkInputNumbers,
   populateBulkInputSources,
   populateCommanderSources,
   populateThe99Sources,
@@ -20,6 +21,7 @@ module.exports = {
   getDeck,
   updateDeck,
   bulkUpdateDeckMiddlewares: [
+    parseBulkInputNumbers,
     populateBulkInputSources,
     validateBulkInput,
     bulkUpdateDeckAssembly,

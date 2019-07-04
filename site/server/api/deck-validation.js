@@ -26,6 +26,7 @@ const scryfallIdForInput = (input = '', sources) => {
 }
 
 module.exports = {
+  parseBulkInputNumbers,
   populateBulkInputSources,
   populateCommanderSources,
   populateThe99Sources,
@@ -36,6 +37,25 @@ module.exports = {
   isBulkInputCommander,
   purposesFromBulkInput,
   scryfallIdForInput,
+}
+
+/**
+ * Turns number prefixes into repeat entries.
+ */
+function parseBulkInputNumbers(ctx, next) {
+  ctx.request.body.updates = (ctx.request.body.updates || []).reduce(
+    (acc, cur) => {
+      const line = cur.trim()
+      if (!line) return acc
+      const numRegexp = /^(\d+)[xX]?\s*/
+      const numCheck = numRegexp.exec(line)
+      const num = numCheck ? numCheck[1] : 1
+
+      return [...acc, ..._.times(num, () => line.replace(numRegexp, ''))]
+    },
+    []
+  )
+  return next()
 }
 
 /**

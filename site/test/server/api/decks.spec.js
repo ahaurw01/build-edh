@@ -388,7 +388,11 @@ describe('deck endpoints', () => {
     })
 
     test('successful update', async () => {
-      const updates = ['Krenko *CMDR* # bum rush', 'Lightning Bolt # pew pew']
+      const updates = [
+        'Krenko *CMDR* # bum rush',
+        'Lightning Bolt # pew pew',
+        '3 Mountain',
+      ]
       const deck = new Deck({
         commanders: [],
         the99: [{ scryfallId: '3', uuid: 'xyz456' }],
@@ -413,6 +417,11 @@ describe('deck endpoints', () => {
             name: 'Lightning Bolt',
             scryfallId: '4',
             canHaveMultiple: false,
+          }),
+          new Card({
+            name: 'Mountain',
+            scryfallId: '5',
+            canHaveMultiple: true,
           }),
         ])
       )
@@ -444,6 +453,11 @@ describe('deck endpoints', () => {
               scryfallId: '4',
               canHaveMultiple: false,
             }),
+            new Card({
+              name: 'Mountain',
+              scryfallId: '5',
+              canHaveMultiple: true,
+            }),
           ])
         }
         if (cardFindCall === 3) {
@@ -465,6 +479,11 @@ describe('deck endpoints', () => {
               scryfallId: '4',
               canHaveMultiple: false,
             }),
+            new Card({
+              name: 'Mountain',
+              scryfallId: '5',
+              canHaveMultiple: true,
+            }),
           ])
         }
         throw new Error('Card.find not expected to be called more than thrice')
@@ -484,10 +503,13 @@ describe('deck endpoints', () => {
       expect(deck.commanders).toHaveLength(1)
       expect(deck.commanders[0].scryfallId).toEqual('1')
       expect(deck.commanders[0].purposes[0]).toEqual('bum rush')
-      expect(deck.the99).toHaveLength(2)
+      expect(deck.the99).toHaveLength(5)
       expect(deck.the99[0].scryfallId).toEqual('3')
       expect(deck.the99[1].scryfallId).toEqual('4')
       expect(deck.the99[1].purposes[0]).toEqual('pew pew')
+      expect(deck.the99[2].scryfallId).toEqual('5')
+      expect(deck.the99[3].scryfallId).toEqual('5')
+      expect(deck.the99[4].scryfallId).toEqual('5')
     })
   })
 })

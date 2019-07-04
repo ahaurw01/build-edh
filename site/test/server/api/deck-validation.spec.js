@@ -6,6 +6,7 @@ import {
   validateBulkInput,
   validateCommanders,
   validateThe99,
+  parseBulkInputNumbers,
 } from '../../../server/api/deck-validation'
 
 describe('Deck Validation', () => {
@@ -90,6 +91,57 @@ describe('Deck Validation', () => {
       const input = 'rafiq of the many # double strike, looking left'
 
       expect(isBulkInputCommander(input)).toBe(false)
+    })
+  })
+
+  describe('parseBulkInputNumbers', () => {
+    test('does not impact input without numbers', done => {
+      const ctx = {
+        request: {
+          body: {
+            updates: ['Lightning Bolt', '*CMDR* Krenko', 'Mountain # basic'],
+          },
+        },
+      }
+
+      parseBulkInputNumbers(ctx, () => {
+        expect(ctx.request.body.updates).toEqual([
+          'Lightning Bolt',
+          '*CMDR* Krenko',
+          'Mountain # basic',
+        ])
+        done()
+      })
+    })
+
+    test('replaces numbers with row instances', done => {
+      const ctx = {
+        request: {
+          body: {
+            updates: [
+              'Lightning Bolt',
+              '*CMDR* Krenko',
+              '3 Mountain # basic',
+              '2x Snow-Covered Mountain',
+              '1 Wastes',
+            ],
+          },
+        },
+      }
+
+      parseBulkInputNumbers(ctx, () => {
+        expect(ctx.request.body.updates).toEqual([
+          'Lightning Bolt',
+          '*CMDR* Krenko',
+          'Mountain # basic',
+          'Mountain # basic',
+          'Mountain # basic',
+          'Snow-Covered Mountain',
+          'Snow-Covered Mountain',
+          'Wastes',
+        ])
+        done()
+      })
     })
   })
 
