@@ -100,6 +100,7 @@ cardSchema.statics.canHaveMultiple = function(scryfallData) {
 
   return (
     (scryfallData.type_line || '').startsWith(`Basic Land ${dash}`) ||
+    (scryfallData.type_line || '') === 'Basic Land' /* Wastes */ ||
     oracleText.includes('A deck can have any number of cards named')
   )
 }
