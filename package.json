@@ -17,7 +17,7 @@
     "koa-router": "7.4.0",
     "lodash": "4.17.11",
     "mongoose": "5.4.9",
-    "nuxt": "2.4.0",
+    "nuxt": "2.8.1",
     "nuxt-buefy": "0.3.3",
     "uuid": "3.3.2"
   },
