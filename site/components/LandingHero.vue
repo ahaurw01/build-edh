@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import Card from '~/components/Card.vue'
 import shuffle from 'array-shuffle'
+import Card from '~/components/Card.vue'
 const popularCardNames = [
   'Sol Ring',
   'Cyclonic Rift',

@@ -2,10 +2,10 @@ module.exports = {
   root: true,
   env: {
     browser: true,
-    node: true
+    node: true,
   },
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: 'babel-eslint',
   },
   extends: ['eslint:recommended', '@nuxtjs', 'plugin:prettier/recommended'],
   plugins: ['prettier'],
@@ -17,11 +17,12 @@ module.exports = {
         html: {
           void: 'always',
           normal: 'always',
-          component: 'always'
+          component: 'always',
         },
         svg: 'always',
-        math: 'always'
-      }
-    ]
-  }
+        math: 'always',
+      },
+    ],
+    'require-atomic-updates': 'off',
+  },
 }

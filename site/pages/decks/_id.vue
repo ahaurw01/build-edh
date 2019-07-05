@@ -84,6 +84,30 @@ import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
 import BulkAddModalForm from '~/components/BulkAddModalForm'
 export default {
+  components: {
+    DeckPropertyModalForm,
+    CommanderSection,
+    NinetyNineSection,
+    BulkAddModalForm,
+  },
+
+  data: () => ({
+    isEditNameModalActive: false,
+    isEditPurposeModalActive: false,
+    isEditDescriptionModalActive: false,
+    isBulkAddModalActive: false,
+  }),
+
+  computed: {
+    ...mapGetters({
+      ownerUsername: 'deck/ownerUsername',
+      name: 'deck/name',
+      purpose: 'deck/purpose',
+      description: 'deck/description',
+      descriptionParagraphs: 'deck/descriptionParagraphs',
+    }),
+  },
+
   async fetch({ store, params, error, $axios }) {
     try {
       const { data: deck } = await $axios.get(`/api/decks/${params.id}`)
@@ -94,27 +118,7 @@ export default {
       error({ statusCode: 404, message: 'Deck not found' })
     }
   },
-  components: {
-    DeckPropertyModalForm,
-    CommanderSection,
-    NinetyNineSection,
-    BulkAddModalForm,
-  },
-  data: () => ({
-    isEditNameModalActive: false,
-    isEditPurposeModalActive: false,
-    isEditDescriptionModalActive: false,
-    isBulkAddModalActive: false,
-  }),
-  computed: {
-    ...mapGetters({
-      ownerUsername: 'deck/ownerUsername',
-      name: 'deck/name',
-      purpose: 'deck/purpose',
-      description: 'deck/description',
-      descriptionParagraphs: 'deck/descriptionParagraphs',
-    }),
-  },
+
   methods: {
     ...mapActions({
       resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',

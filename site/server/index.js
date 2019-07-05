@@ -14,6 +14,7 @@ async function start() {
   await mongoose.connect('mongodb://localhost:27017/buildedh')
   // Instantiate nuxt.js
   const nuxt = new Nuxt(config)
+  await nuxt.ready()
 
   const {
     host = process.env.HOST || '127.0.0.1',
