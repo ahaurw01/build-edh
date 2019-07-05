@@ -46,6 +46,14 @@
     <CommanderSection />
     <NinetyNineSection />
 
+    <div class="columns is-vcentered">
+      <div class="column">
+        <button class="button" @click="isBulkAddModalActive = true">
+          Bulk input
+        </button>
+      </div>
+    </div>
+
     <BModal :active.sync="isEditNameModalActive" has-modal-card>
       <DeckPropertyModalForm property="name" />
     </BModal>
@@ -59,14 +67,22 @@
     <BModal :active.sync="isEditDescriptionModalActive" has-modal-card>
       <DeckPropertyModalForm property="description" type="textarea" />
     </BModal>
+    <BModal
+      :active.sync="isBulkAddModalActive"
+      has-modal-card
+      @close="resetBulkAddErrorMessages"
+    >
+      <BulkAddModalForm />
+    </BModal>
   </section>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import DeckPropertyModalForm from '~/components/DeckPropertyModalForm'
 import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
+import BulkAddModalForm from '~/components/BulkAddModalForm'
 export default {
   async fetch({ store, params, error, $axios }) {
     try {
@@ -82,11 +98,13 @@ export default {
     DeckPropertyModalForm,
     CommanderSection,
     NinetyNineSection,
+    BulkAddModalForm,
   },
   data: () => ({
     isEditNameModalActive: false,
     isEditPurposeModalActive: false,
     isEditDescriptionModalActive: false,
+    isBulkAddModalActive: false,
   }),
   computed: {
     ...mapGetters({
@@ -95,6 +113,11 @@ export default {
       purpose: 'deck/purpose',
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
+    }),
+  },
+  methods: {
+    ...mapActions({
+      resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
     }),
   },
 }

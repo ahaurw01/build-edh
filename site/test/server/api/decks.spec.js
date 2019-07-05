@@ -315,4 +315,201 @@ describe('deck endpoints', () => {
       expect(deck.the99).toHaveLength(1)
     })
   })
+
+  describe('bulk update deck', () => {
+    test('unsuccessful update - validation errors', async () => {
+      const updates = ['Lightning Bolt # pew pew', 'Lightning Bolt # pew pew']
+      const deck = new Deck({
+        commanders: [{ scryfallId: '1' }],
+        the99: [{ scryfallId: '3', uuid: 'xyz456' }],
+      })
+      deck.save = jest.fn(function() {
+        return Promise.resolve(this)
+      })
+
+      jest
+        .spyOn(Deck, 'findOne')
+        .mockImplementation(() => Promise.resolve(deck))
+
+      jest.spyOn(Card, 'findWithNames').mockImplementation(() =>
+        Promise.resolve([
+          new Card({
+            name: 'Lightning Bolt',
+            scryfallId: '4',
+            canHaveMultiple: false,
+          }),
+        ])
+      )
+
+      let cardFindCall = 0
+      jest.spyOn(Card, 'find').mockImplementation(() => {
+        cardFindCall++
+        if (cardFindCall === 1) {
+          // Populate commander sources
+          return Promise.resolve([
+            new Card({
+              scryfallId: '1',
+              name: 'Krenko',
+              canBeCommander: true,
+              canHaveMultiple: false,
+            }),
+          ])
+        }
+        if (cardFindCall === 2) {
+          // Populate the99 sources
+          return Promise.resolve([
+            new Card({
+              scryfallId: '3',
+              name: 'Goblin Bombardment',
+              canHaveMultiple: false,
+            }),
+            new Card({
+              name: 'Lightning Bolt',
+              scryfallId: '4',
+              canHaveMultiple: false,
+            }),
+          ])
+        }
+        throw new Error('Card.find not expected to be called more than twice')
+      })
+
+      await supertest(server)
+        .put('/api/decks/111/bulk')
+        .send({ updates })
+        .set('Authorization', tokenHeader)
+        .expect(400)
+        .expect({
+          missingCardInputs: [],
+          commanderErrorMessages: [],
+          the99ErrorMessages: ['Illegal duplicates: Lightning Bolt'],
+        })
+
+      expect(deck.save).not.toHaveBeenCalled()
+    })
+
+    test('successful update', async () => {
+      const updates = [
+        'Krenko *CMDR* # bum rush',
+        'Lightning Bolt # pew pew',
+        '3 Mountain',
+      ]
+      const deck = new Deck({
+        commanders: [],
+        the99: [{ scryfallId: '3', uuid: 'xyz456' }],
+      })
+      deck.save = jest.fn(function() {
+        return Promise.resolve(this)
+      })
+
+      jest
+        .spyOn(Deck, 'findOne')
+        .mockImplementation(() => Promise.resolve(deck))
+
+      jest.spyOn(Card, 'findWithNames').mockImplementation(() =>
+        Promise.resolve([
+          new Card({
+            scryfallId: '1',
+            name: 'Krenko',
+            canBeCommander: true,
+            canHaveMultiple: false,
+          }),
+          new Card({
+            name: 'Lightning Bolt',
+            scryfallId: '4',
+            canHaveMultiple: false,
+          }),
+          new Card({
+            name: 'Mountain',
+            scryfallId: '5',
+            canHaveMultiple: true,
+          }),
+        ])
+      )
+
+      let cardFindCall = 0
+      jest.spyOn(Card, 'find').mockImplementation(() => {
+        cardFindCall++
+        if (cardFindCall === 1) {
+          // Populate commander sources
+          return Promise.resolve([
+            new Card({
+              scryfallId: '1',
+              name: 'Krenko',
+              canBeCommander: true,
+              canHaveMultiple: false,
+            }),
+          ])
+        }
+        if (cardFindCall === 2) {
+          // Populate the99 sources
+          return Promise.resolve([
+            new Card({
+              scryfallId: '3',
+              name: 'Goblin Bombardment',
+              canHaveMultiple: false,
+            }),
+            new Card({
+              name: 'Lightning Bolt',
+              scryfallId: '4',
+              canHaveMultiple: false,
+            }),
+            new Card({
+              name: 'Mountain',
+              scryfallId: '5',
+              canHaveMultiple: true,
+            }),
+          ])
+        }
+        if (cardFindCall === 3) {
+          // Final deck source population
+          return Promise.resolve([
+            new Card({
+              scryfallId: '1',
+              name: 'Krenko',
+              canBeCommander: true,
+              canHaveMultiple: false,
+            }),
+            new Card({
+              scryfallId: '3',
+              name: 'Goblin Bombardment',
+              canHaveMultiple: false,
+            }),
+            new Card({
+              name: 'Lightning Bolt',
+              scryfallId: '4',
+              canHaveMultiple: false,
+            }),
+            new Card({
+              name: 'Mountain',
+              scryfallId: '5',
+              canHaveMultiple: true,
+            }),
+          ])
+        }
+        throw new Error('Card.find not expected to be called more than thrice')
+      })
+
+      await supertest(server)
+        .put('/api/decks/111/bulk')
+        .send({ updates })
+        .set('Authorization', tokenHeader)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveProperty('commanders')
+          expect(body).toHaveProperty('the99')
+        })
+
+      expect(deck.save).toHaveBeenCalledTimes(1)
+      expect(deck.commanders).toHaveLength(1)
+      expect(deck.commanders[0].scryfallId).toEqual('1')
+      expect(deck.commanders[0].purposes[0]).toEqual('bum rush')
+      expect(deck.the99).toHaveLength(5)
+      expect(deck.the99[0].scryfallId).toEqual('3')
+      expect(deck.the99[1].scryfallId).toEqual('4')
+      expect(deck.the99[1].purposes[0]).toEqual('pew pew')
+      expect(deck.the99[2].scryfallId).toEqual('5')
+      expect(deck.the99[3].scryfallId).toEqual('5')
+      expect(deck.the99[4].scryfallId).toEqual('5')
+    })
+  })
 })

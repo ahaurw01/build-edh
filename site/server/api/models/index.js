@@ -100,6 +100,7 @@ cardSchema.statics.canHaveMultiple = function(scryfallData) {
 
   return (
     (scryfallData.type_line || '').startsWith(`Basic Land ${dash}`) ||
+    (scryfallData.type_line || '') === 'Basic Land' /* Wastes */ ||
     oracleText.includes('A deck can have any number of cards named')
   )
 }
@@ -172,8 +173,24 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
 
 const Card = mongoose.model('Card', cardSchema)
 
+const allCardFieldsGroup = {
+  ...Object.keys(Card.schema.paths).reduce((acc, key) => {
+    key = key.split('.')[0]
+    acc[key] = { $first: `$${key}` }
+    return acc
+  }, {}),
+  _id: '$name',
+}
+
+Card.findWithNames = names =>
+  Card.aggregate()
+    .match({ name: { $in: names } })
+    .group(allCardFieldsGroup)
+    .exec()
+
 module.exports = {
   User,
   Deck,
   Card,
+  allCardFieldsGroup,
 }
