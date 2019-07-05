@@ -30,11 +30,6 @@ import { mapGetters } from 'vuex'
 import DeckTile from '~/components/DeckTile'
 
 export default {
-  async fetch({ store, $axios }) {
-    const { data: decks } = await $axios.get(`/api/decks/mine`)
-    store.commit('decks/decks', decks)
-  },
-
   components: {
     DeckTile,
   },
@@ -42,6 +37,12 @@ export default {
   computed: {
     ...mapGetters({ decks: 'decks/decks' }),
   },
+
+  async fetch({ store, $axios }) {
+    const { data: decks } = await $axios.get(`/api/decks/mine`)
+    store.commit('decks/decks', decks)
+  },
+
   methods: {
     async createDeck() {
       const { data: deck } = await this.$axios.post('/api/decks')
