@@ -23,7 +23,6 @@ export default {
         )
       },
     },
-    onClick: { type: Function, default: null },
   },
   computed: {
     imgSrc() {
