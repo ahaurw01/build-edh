@@ -1,5 +1,7 @@
 import uniq from 'lodash/uniq'
 import flatten from 'lodash/flatten'
+import sortBy from 'lodash/sortBy'
+import last from 'lodash/last'
 
 export const state = () => ({
   deck: null,
@@ -265,4 +267,49 @@ export const getters = {
     )
   },
   bulkAddErrorMessages: state => state.bulkAddErrorMessages,
+
+  // Assemble groupings of cards based on their assigned purposes.
+  // [
+  //  {purpose: 'Card draw', cards: [...]},
+  //  {purpose: 'Ramp', cards: [...]},
+  // ]
+  //
+  // Cards are deduplicated with a `count` property (if canHaveMultiple).
+  //
+  cardGroupingsByPurpose: (state, { the99 }) => {
+    const hashByPurpose = the99.reduce((hash, card) => {
+      let { purposes } = card
+      if (purposes.length === 0) {
+        purposes = ['Other']
+      }
+      purposes.forEach(purpose => {
+        hash[purpose] = [...(hash[purpose] || []), card]
+      })
+
+      return hash
+    }, {})
+
+    const groupings = Object.keys(hashByPurpose).map(purpose => ({
+      purpose,
+      cards: sortBy(hashByPurpose[purpose], 'source.name').reduce(
+        (cards, card, index) => {
+          const lastCard = last(cards)
+          if (lastCard && card.source.name === lastCard.source.name) {
+            lastCard.count += 1
+          } else {
+            cards = [...cards, { ...card, count: 1 }]
+          }
+
+          return cards
+        },
+        []
+      ),
+    }))
+
+    return sortBy(groupings, [
+      grouping =>
+        -1 * grouping.cards.reduce((count, card) => count + card.count, 0),
+      'purpose',
+    ])
+  },
 }
