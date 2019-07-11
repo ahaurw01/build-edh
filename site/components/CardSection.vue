@@ -4,14 +4,16 @@
       {{ title }}
     </h4>
 
-    <Card
-      v-for="card in cards"
-      :key="card.source.name"
-      :card="card.source"
-      :count="card.count"
-      size="medium"
-      @click.prevent="$emit('edit-card', card)"
-    />
+    <div class="cards-container">
+      <div v-for="card in cards" :key="card.source.name" class="card-container">
+        <Card
+          :card="card.source"
+          :count="card.count"
+          size="medium"
+          @click.prevent="$emit('edit-card', card)"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -31,4 +33,17 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-container {
+  height: 2.4rem;
+}
+.card-container:last-child {
+  height: auto;
+}
+</style>
