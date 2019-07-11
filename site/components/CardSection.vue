@@ -10,7 +10,8 @@
           :card="card.source"
           :count="card.count"
           size="medium"
-          @click.prevent="$emit('edit-card', card)"
+          show-edit-button
+          @edit-card="$emit('edit-card', card)"
         />
       </div>
     </div>

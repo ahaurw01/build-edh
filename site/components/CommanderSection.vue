@@ -8,7 +8,8 @@
       :key="commander.source.name"
       :card="commander.source"
       size="large"
-      @click.prevent="editCommander(commander)"
+      show-edit-button
+      @edit-card="editCommander(commander)"
     />
     <button
       v-if="canAddCommander"
