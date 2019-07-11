@@ -8,6 +8,7 @@
       v-for="card in cards"
       :key="card.source.name"
       :card="card.source"
+      :count="card.count"
       size="medium"
       @click.prevent="$emit('edit-card', card)"
     />

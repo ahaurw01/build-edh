@@ -5,6 +5,7 @@
     v-on="$listeners"
   >
     <div :class="size" class="mtg-card">
+      <span v-if="count > 1" class="count">x{{ count }}</span>
       <img :src="imgSrc" />
     </div>
   </Component>
@@ -23,6 +24,7 @@ export default {
         )
       },
     },
+    count: { type: Number, default: 1 },
   },
   computed: {
     imgSrc() {
@@ -41,6 +43,9 @@ export default {
 </script>
 
 <style scoped>
+.mtg-card {
+  position: relative;
+}
 .mtg-card:not(.auto):not(.x-small) {
   display: inline-block;
   margin: 0.25rem;
@@ -63,5 +68,18 @@ export default {
 }
 .x-small {
   max-width: 4rem;
+}
+
+.count {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #eee;
+  background: rgba(0, 0, 0, 0.75);
+  /*background: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0) 100%);*/
+  font-size: 0.9rem;
+  /*border-radius: 0.25rem;*/
+  padding: 0.1rem;
 }
 </style>
