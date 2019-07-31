@@ -6,17 +6,31 @@
 
     <div class="cards-container">
       <div v-for="card in cards" :key="card.source.name" class="card-container">
-        <div class="card-container-inner">
-          <Card
-            :card="card.source"
-            :count="card.count"
-            size="medium"
-            show-edit-button
-            @edit-card="$emit('edit-card', card)"
-          />
-        </div>
+        <button
+          class="card-container-inner"
+          @click="
+            isCardShowcaseOpen = true
+            cardToShowcase = card
+          "
+        >
+          <Card :card="card.source" :count="card.count" size="medium" />
+        </button>
       </div>
     </div>
+
+    <BModal :active.sync="isCardShowcaseOpen" has-modal-card>
+      <Card
+        v-if="cardToShowcase"
+        :card="cardToShowcase.source"
+        :count="cardToShowcase.count"
+        size="large"
+        show-edit-button
+        @edit-card="
+          isCardShowcaseOpen = false
+          $emit('edit-card', cardToShowcase)
+        "
+      />
+    </BModal>
   </div>
 </template>
 
@@ -30,6 +44,13 @@ export default {
   props: {
     title: { type: String, required: true },
     cards: { type: Array, required: true },
+  },
+
+  data() {
+    return {
+      isCardShowcaseOpen: false,
+      cardToShowcase: null,
+    }
   },
 
   methods: {},
@@ -52,6 +73,10 @@ export default {
 }
 
 .card-container-inner {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   transition: transform 250ms;
   transform-origin: bottom left;
 }
