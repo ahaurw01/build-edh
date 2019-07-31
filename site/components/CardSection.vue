@@ -6,13 +6,15 @@
 
     <div class="cards-container">
       <div v-for="card in cards" :key="card.source.name" class="card-container">
-        <Card
-          :card="card.source"
-          :count="card.count"
-          size="medium"
-          show-edit-button
-          @edit-card="$emit('edit-card', card)"
-        />
+        <div class="card-container-inner">
+          <Card
+            :card="card.source"
+            :count="card.count"
+            size="medium"
+            show-edit-button
+            @edit-card="$emit('edit-card', card)"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -44,7 +46,17 @@ export default {
 .card-container {
   height: 2.4rem;
 }
+
 .card-container:last-child {
   height: auto;
+}
+
+.card-container-inner {
+  transition: transform 250ms;
+  transform-origin: bottom left;
+}
+
+.card-container:hover .card-container-inner {
+  transform: rotate(-2deg) translateX(-0.1rem);
 }
 </style>
