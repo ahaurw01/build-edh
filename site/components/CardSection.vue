@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h4 class="title is-4">{{ title }} <BIcon v-if="isAuto" icon="flash" /></h4>
+    <h4 class="title is-4">
+      {{ title }}
+      <BIcon v-if="isAuto" icon="flash" />
+    </h4>
 
     <div class="cards-container">
       <div v-for="card in cards" :key="card.source.name" class="card-container">
