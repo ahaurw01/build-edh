@@ -16,18 +16,20 @@
       </div>
     </div>
 
-    <BModal :active.sync="isCardShowcaseOpen" has-modal-card>
-      <Card
-        v-if="cardToShowcase"
-        :card="cardToShowcase.source"
-        :count="cardToShowcase.count"
-        size="large"
-        show-edit-button
-        @edit-card="
-          isCardShowcaseOpen = false
-          $emit('edit-card', cardToShowcase)
-        "
-      />
+    <BModal :active.sync="isCardShowcaseOpen">
+      <div class="modal-centerer">
+        <Card
+          v-if="cardToShowcase"
+          :card="cardToShowcase.source"
+          :count="cardToShowcase.count"
+          size="large"
+          show-edit-button
+          @edit-card="
+            isCardShowcaseOpen = false
+            $emit('edit-card', cardToShowcase)
+          "
+        />
+      </div>
     </BModal>
   </div>
 </template>
@@ -84,7 +86,8 @@ export default {
   transform: rotate(-2deg) translateX(-0.1rem);
 }
 
-.title-auto {
-  font-style: italic;
+.modal-centerer {
+  display: flex;
+  justify-content: center;
 }
 </style>
