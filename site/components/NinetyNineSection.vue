@@ -10,12 +10,14 @@
     >
       Add Card
     </button>
-    <Card
-      v-for="card in the99"
-      :key="card.source.name"
-      :card="card.source"
-      size="medium"
-      @click.prevent="editCard(card)"
+
+    <CardSection
+      v-for="grouping in cardGroupingsByPurpose"
+      :key="grouping.purpose"
+      :title="grouping.purpose"
+      :is-auto="grouping.isAutomaticGroup"
+      :cards="grouping.cards"
+      @edit-card="editCard"
     />
 
     <BModal :active.sync="isNewCardModalActive" has-modal-card>
@@ -30,11 +32,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Card from '~/components/Card'
+import CardSection from '~/components/CardSection'
 import CardModalForm from '~/components/CardModalForm'
 export default {
   components: {
-    Card,
+    CardSection,
     CardModalForm,
   },
   data() {
@@ -50,10 +52,13 @@ export default {
       return this.commanders.length === 2 ? 'The 98' : 'The 99'
     },
     ...mapGetters(
-      ['commanders', 'the99', 'canAddCard'].reduce((acc, key) => {
-        acc[key] = `deck/${key}`
-        return acc
-      }, {})
+      ['commanders', 'the99', 'canAddCard', 'cardGroupingsByPurpose'].reduce(
+        (acc, key) => {
+          acc[key] = `deck/${key}`
+          return acc
+        },
+        {}
+      )
     ),
   },
   methods: {

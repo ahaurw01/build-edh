@@ -1,5 +1,8 @@
 import uniq from 'lodash/uniq'
 import flatten from 'lodash/flatten'
+import sortBy from 'lodash/sortBy'
+import last from 'lodash/last'
+import get from 'lodash/get'
 
 export const state = () => ({
   deck: null,
@@ -265,4 +268,94 @@ export const getters = {
     )
   },
   bulkAddErrorMessages: state => state.bulkAddErrorMessages,
+
+  // Assemble groupings of cards based on their assigned purposes.
+  // [
+  //  {purpose: 'Card draw', cards: [...]},
+  //  {purpose: 'Ramp', cards: [...]},
+  // ]
+  //
+  // Cards are deduplicated with a `count` property (if canHaveMultiple).
+  //
+  // We give automatic groups based on dominant card type if no purposes are present.
+  //
+  cardGroupingsByPurpose: (state, { the99 }) => {
+    const [hashByPurpose, hashByType] = the99.reduce(
+      ([purposeHash, typeHash], card) => {
+        const { purposes } = card
+        if (purposes.length) {
+          purposes.forEach(purpose => {
+            purposeHash[purpose] = [...(purposeHash[purpose] || []), card]
+          })
+        } else {
+          const type = dominantCardType(card)
+          typeHash[type] = [...(typeHash[type] || []), card]
+        }
+
+        return [purposeHash, typeHash]
+      },
+      [{}, {}]
+    )
+
+    function makeGroupedCards(hash, purpose) {
+      return sortBy(hash[purpose], 'source.name').reduce((cards, card) => {
+        const lastCard = last(cards)
+        if (lastCard && card.source.name === lastCard.source.name) {
+          lastCard.count += 1
+        } else {
+          cards = [...cards, { ...card, count: 1 }]
+        }
+
+        return cards
+      }, [])
+    }
+
+    const groupings = [
+      ...Object.keys(hashByPurpose).map(purpose => ({
+        purpose,
+        cards: makeGroupedCards(hashByPurpose, purpose),
+      })),
+      ...Object.keys(hashByType).map(purpose => ({
+        purpose,
+        isAutomaticGroup: true,
+        cards: makeGroupedCards(hashByType, purpose),
+      })),
+    ]
+
+    return sortBy(groupings, [
+      grouping =>
+        -1 * grouping.cards.reduce((count, card) => count + card.count, 0),
+      'purpose',
+    ])
+  },
+}
+
+/**
+ * Provide the card's dominant card type. Cards can have multiple types. Give the most "important" one.
+ *
+ * @param {Object} card
+ *
+ * @returns {string} The card's dominant type. One of:
+ *                   - land
+ *                   - creature
+ *                   - artifact
+ *                   - enchantment
+ *                   - planeswalker
+ *                   - instant
+ *                   - sorcery
+ */
+function dominantCardType(card) {
+  const typesInOrderOfDominance = [
+    'Instant',
+    'Sorcery',
+    'Planeswalker',
+    'Land',
+    'Creature',
+    'Artifact',
+    'Enchantment',
+  ]
+
+  const types = get(card, 'source.faces[0].types', [])
+
+  return typesInOrderOfDominance.filter(t => types.includes(t))[0] || 'Other'
 }

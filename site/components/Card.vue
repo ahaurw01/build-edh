@@ -1,13 +1,15 @@
 <template>
-  <Component
-    :is="wrappingElement"
-    v-bind="wrappingElementProps"
-    v-on="$listeners"
-  >
-    <div :class="size" class="mtg-card">
-      <img :src="imgSrc" />
-    </div>
-  </Component>
+  <div :class="size" class="mtg-card">
+    <span v-if="count > 1" class="count">x{{ count }}</span>
+    <img :src="imgSrc" />
+    <button
+      v-if="showEditButton"
+      class="button edit-button"
+      @click.prevent="$emit('edit-card')"
+    >
+      <BIcon icon="pencil" />
+    </button>
+  </div>
 </template>
 
 <script>
@@ -23,7 +25,8 @@ export default {
         )
       },
     },
-    onClick: { type: Function, default: null },
+    count: { type: Number, default: 1 },
+    showEditButton: { type: Boolean, default: false },
   },
   computed: {
     imgSrc() {
@@ -31,17 +34,14 @@ export default {
         ? this.card.imageUris.small
         : this.card.imageUris.large
     },
-    wrappingElement() {
-      return this.$listeners.click ? 'a' : 'div'
-    },
-    wrappingElementProps() {
-      return this.wrappingElement === 'a' ? { href: '#' } : {}
-    },
   },
 }
 </script>
 
 <style scoped>
+.mtg-card {
+  position: relative;
+}
 .mtg-card:not(.auto):not(.x-small) {
   display: inline-block;
   margin: 0.25rem;
@@ -64,5 +64,23 @@ export default {
 }
 .x-small {
   max-width: 4rem;
+}
+
+.count {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #eee;
+  background: rgba(0, 0, 0, 0.75);
+  font-size: 0.9rem;
+  padding: 0.1rem;
+}
+
+.edit-button {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  opacity: 0.75;
 }
 </style>
