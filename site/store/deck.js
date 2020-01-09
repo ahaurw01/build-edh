@@ -121,7 +121,7 @@ export const actions = {
     commit('deckMeta', deck)
   },
 
-  async getCardSuggestions({ commit, state }, query) {
+  async getCardSuggestions({ commit }, query) {
     if (!(query.nameLike || '').trim()) {
       return commit('cardSuggestions', [])
     }

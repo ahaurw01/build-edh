@@ -117,7 +117,7 @@ export default {
       this.selectedCard = card
     },
 
-    onSave(e) {
+    onSave() {
       if (this.edit) {
         this.updateCard({
           uuid: this.card.uuid,

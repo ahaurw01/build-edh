@@ -34,13 +34,13 @@ export default {
     DeckTile,
   },
 
-  computed: {
-    ...mapGetters({ decks: 'decks/decks' }),
-  },
-
   async fetch({ store, $axios }) {
     const { data: decks } = await $axios.get(`/api/decks/mine`)
     store.commit('decks/decks', decks)
+  },
+
+  computed: {
+    ...mapGetters({ decks: 'decks/decks' }),
   },
 
   methods: {

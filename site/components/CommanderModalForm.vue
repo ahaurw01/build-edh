@@ -119,7 +119,7 @@ export default {
       this.selectedCommander = card
     },
 
-    onSave(e) {
+    onSave() {
       if (this.edit) {
         this.updateCommander({
           uuid: this.commander.uuid,
