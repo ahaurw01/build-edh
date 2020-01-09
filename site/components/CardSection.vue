@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h4 class="title is-4">
-      {{ title }}
-    </h4>
+    <h4 class="title is-4">{{ title }} <BIcon v-if="isAuto" icon="flash" /></h4>
 
     <div class="cards-container">
       <div v-for="card in cards" :key="card.source.name" class="card-container">
@@ -44,6 +42,7 @@ export default {
   props: {
     title: { type: String, required: true },
     cards: { type: Array, required: true },
+    isAuto: { type: Boolean, required: false },
   },
 
   data() {
@@ -83,5 +82,9 @@ export default {
 
 .card-container:hover .card-container-inner {
   transform: rotate(-2deg) translateX(-0.1rem);
+}
+
+.title-auto {
+  font-style: italic;
 }
 </style>

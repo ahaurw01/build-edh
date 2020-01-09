@@ -83,23 +83,23 @@ describe('Deck Store', () => {
           },
           {
             source: { name: 'Mountain' },
-            purposes: [],
+            purposes: ['Land'],
           },
           {
             source: { name: 'Mountain' },
-            purposes: [],
+            purposes: ['Land'],
           },
           {
             source: { name: 'Mountain' },
-            purposes: [],
+            purposes: ['Land'],
           },
           {
             source: { name: 'Mountain' },
-            purposes: [],
+            purposes: ['Land'],
           },
           {
             source: { name: 'Mountain' },
-            purposes: [],
+            purposes: ['Land'],
           },
           {
             source: { name: 'Earthquake' },
@@ -107,7 +107,7 @@ describe('Deck Store', () => {
           },
           {
             source: { name: 'Sol Ring' },
-            purposes: [],
+            purposes: ['Ramp'],
           },
         ]
         const state = {}
@@ -116,10 +116,9 @@ describe('Deck Store', () => {
 
         expect(result).toEqual([
           {
-            purpose: 'Other',
+            purpose: 'Land',
             cards: [
-              { source: { name: 'Mountain' }, purposes: [], count: 5 },
-              { source: { name: 'Sol Ring' }, purposes: [], count: 1 },
+              { source: { name: 'Mountain' }, purposes: ['Land'], count: 5 },
             ],
           },
           {
@@ -145,6 +144,12 @@ describe('Deck Store', () => {
                 purposes: ['Burn', 'Board Wipe'],
                 count: 1,
               },
+            ],
+          },
+          {
+            purpose: 'Ramp',
+            cards: [
+              { source: { name: 'Sol Ring' }, purposes: ['Ramp'], count: 1 },
             ],
           },
           {
@@ -205,6 +210,7 @@ describe('Deck Store', () => {
         expect(result).toEqual([
           {
             purpose: 'Land',
+            isAutomaticGroup: true,
             cards: [
               {
                 source: {
@@ -223,6 +229,7 @@ describe('Deck Store', () => {
           },
           {
             purpose: 'Artifact',
+            isAutomaticGroup: true,
             cards: [
               {
                 source: { name: 'Sol Ring', faces: [{ types: ['Artifact'] }] },
@@ -243,6 +250,7 @@ describe('Deck Store', () => {
           },
           {
             purpose: 'Instant',
+            isAutomaticGroup: true,
             cards: [
               {
                 source: {
@@ -256,6 +264,7 @@ describe('Deck Store', () => {
           },
           {
             purpose: 'Sorcery',
+            isAutomaticGroup: true,
             cards: [
               {
                 source: { name: 'Earthquake', faces: [{ types: ['Sorcery'] }] },

@@ -280,34 +280,47 @@ export const getters = {
   // We give automatic groups based on dominant card type if no purposes are present.
   //
   cardGroupingsByPurpose: (state, { the99 }) => {
-    const hashByPurpose = the99.reduce((hash, card) => {
-      let { purposes } = card
-      if (purposes.length === 0) {
-        purposes = [dominantCardType(card)]
-      }
-      purposes.forEach(purpose => {
-        hash[purpose] = [...(hash[purpose] || []), card]
-      })
+    const [hashByPurpose, hashByType] = the99.reduce(
+      ([purposeHash, typeHash], card) => {
+        const { purposes } = card
+        if (purposes.length) {
+          purposes.forEach(purpose => {
+            purposeHash[purpose] = [...(purposeHash[purpose] || []), card]
+          })
+        } else {
+          const type = dominantCardType(card)
+          typeHash[type] = [...(typeHash[type] || []), card]
+        }
 
-      return hash
-    }, {})
+        return [purposeHash, typeHash]
+      },
+      [{}, {}]
+    )
 
-    const groupings = Object.keys(hashByPurpose).map(purpose => ({
-      purpose,
-      cards: sortBy(hashByPurpose[purpose], 'source.name').reduce(
-        (cards, card, index) => {
-          const lastCard = last(cards)
-          if (lastCard && card.source.name === lastCard.source.name) {
-            lastCard.count += 1
-          } else {
-            cards = [...cards, { ...card, count: 1 }]
-          }
+    function makeGroupedCards(hash, purpose) {
+      return sortBy(hash[purpose], 'source.name').reduce((cards, card) => {
+        const lastCard = last(cards)
+        if (lastCard && card.source.name === lastCard.source.name) {
+          lastCard.count += 1
+        } else {
+          cards = [...cards, { ...card, count: 1 }]
+        }
 
-          return cards
-        },
-        []
-      ),
-    }))
+        return cards
+      }, [])
+    }
+
+    const groupings = [
+      ...Object.keys(hashByPurpose).map(purpose => ({
+        purpose,
+        cards: makeGroupedCards(hashByPurpose, purpose),
+      })),
+      ...Object.keys(hashByType).map(purpose => ({
+        purpose,
+        isAutomaticGroup: true,
+        cards: makeGroupedCards(hashByType, purpose),
+      })),
+    ]
 
     return sortBy(groupings, [
       grouping =>

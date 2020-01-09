@@ -15,6 +15,7 @@
       v-for="grouping in cardGroupingsByPurpose"
       :key="grouping.purpose"
       :title="grouping.purpose"
+      :isAuto="grouping.isAutomaticGroup"
       :cards="grouping.cards"
       @edit-card="editCard"
     />
