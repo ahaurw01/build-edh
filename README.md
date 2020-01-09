@@ -8,6 +8,6 @@ See the [card-source README](./card-source/README.md).
 
 ```
 $ nvm install # or nvm use
-$ npm install
+$ yarn
 $ npm run dev
 ```
