@@ -2,6 +2,7 @@ import uniq from 'lodash/uniq'
 import flatten from 'lodash/flatten'
 import sortBy from 'lodash/sortBy'
 import last from 'lodash/last'
+import get from 'lodash/get'
 
 export const state = () => ({
   deck: null,
@@ -276,11 +277,13 @@ export const getters = {
   //
   // Cards are deduplicated with a `count` property (if canHaveMultiple).
   //
+  // We give automatic groups based on dominant card type if no purposes are present.
+  //
   cardGroupingsByPurpose: (state, { the99 }) => {
     const hashByPurpose = the99.reduce((hash, card) => {
       let { purposes } = card
       if (purposes.length === 0) {
-        purposes = ['Other']
+        purposes = [dominantCardType(card)]
       }
       purposes.forEach(purpose => {
         hash[purpose] = [...(hash[purpose] || []), card]
@@ -312,4 +315,34 @@ export const getters = {
       'purpose',
     ])
   },
+}
+
+/**
+ * Provide the card's dominant card type. Cards can have multiple types. Give the most "important" one.
+ *
+ * @param {Object} card
+ *
+ * @returns {string} The card's dominant type. One of:
+ *                   - land
+ *                   - creature
+ *                   - artifact
+ *                   - enchantment
+ *                   - planeswalker
+ *                   - instant
+ *                   - sorcery
+ */
+function dominantCardType(card) {
+  const typesInOrderOfDominance = [
+    'Instant',
+    'Sorcery',
+    'Planeswalker',
+    'Land',
+    'Creature',
+    'Artifact',
+    'Enchantment',
+  ]
+
+  const types = get(card, 'source.faces[0].types', [])
+
+  return typesInOrderOfDominance.filter(t => types.includes(t))[0] || 'Other'
 }

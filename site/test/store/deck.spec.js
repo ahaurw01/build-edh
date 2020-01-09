@@ -159,6 +159,113 @@ describe('Deck Store', () => {
           },
         ])
       })
+
+      test('groups cards by dominant type if no purposes', () => {
+        const the99 = [
+          {
+            source: { name: 'Lightning Bolt', faces: [{ types: ['Instant'] }] },
+            purposes: [],
+          },
+          {
+            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            purposes: ['Favorite Art'],
+          },
+          {
+            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            purposes: [],
+          },
+          {
+            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            purposes: [],
+          },
+          {
+            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            purposes: [],
+          },
+          {
+            source: {
+              name: 'Dryad Arbor',
+              faces: [{ types: ['Land', 'Creature'] }],
+            },
+            purposes: [],
+          },
+          {
+            source: { name: 'Earthquake', faces: [{ types: ['Sorcery'] }] },
+            purposes: [],
+          },
+          {
+            source: { name: 'Sol Ring', faces: [{ types: ['Artifact'] }] },
+            purposes: [],
+          },
+        ]
+        const state = {}
+
+        const result = getters.cardGroupingsByPurpose(state, { the99 })
+
+        expect(result).toEqual([
+          {
+            purpose: 'Land',
+            cards: [
+              {
+                source: {
+                  name: 'Dryad Arbor',
+                  faces: [{ types: ['Land', 'Creature'] }],
+                },
+                purposes: [],
+                count: 1,
+              },
+              {
+                source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+                purposes: [],
+                count: 3,
+              },
+            ],
+          },
+          {
+            purpose: 'Artifact',
+            cards: [
+              {
+                source: { name: 'Sol Ring', faces: [{ types: ['Artifact'] }] },
+                purposes: [],
+                count: 1,
+              },
+            ],
+          },
+          {
+            purpose: 'Favorite Art',
+            cards: [
+              {
+                source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+                purposes: ['Favorite Art'],
+                count: 1,
+              },
+            ],
+          },
+          {
+            purpose: 'Instant',
+            cards: [
+              {
+                source: {
+                  name: 'Lightning Bolt',
+                  faces: [{ types: ['Instant'] }],
+                },
+                purposes: [],
+                count: 1,
+              },
+            ],
+          },
+          {
+            purpose: 'Sorcery',
+            cards: [
+              {
+                source: { name: 'Earthquake', faces: [{ types: ['Sorcery'] }] },
+                purposes: [],
+                count: 1,
+              },
+            ],
+          },
+        ])
+      })
     })
   })
 })
