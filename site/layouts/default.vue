@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <nav class="navbar">
       <div class="navbar-brand">
         <div class="navbar-item">
@@ -31,11 +31,12 @@
         </div>
       </div>
     </nav>
-    <section class="section">
+    <Nuxt />
+    <!-- <section class="section main-content">
       <div class="container">
-        <Nuxt />
+        
       </div>
-    </section>
+    </section> -->
   </div>
 </template>
 
@@ -59,3 +60,10 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.main {
+  display: flex;
+  flex-direction: column;
+}
+</style>

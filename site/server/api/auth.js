@@ -23,7 +23,7 @@ async function login(ctx, next) {
   }
 }
 
-async function register(ctx, next) {
+async function register(ctx) {
   const username = _.get(ctx, 'request.body.username', '').trim()
   const password = _.get(ctx, 'request.body.password')
   if (!username || !password) {

@@ -9,6 +9,7 @@ export const state = () => ({
   owner: null,
   cardSuggestions: [],
   bulkAddErrorMessages: [],
+  usePurposeGroups: true,
 })
 
 export const mutations = {
@@ -88,6 +89,10 @@ export const mutations = {
   bulkAddErrorMessages(state, messages) {
     state.bulkAddErrorMessages = messages
   },
+
+  usePurposeGroups(state, value) {
+    state.usePurposeGroups = value
+  },
 }
 
 export const actions = {
@@ -121,7 +126,7 @@ export const actions = {
     commit('deckMeta', deck)
   },
 
-  async getCardSuggestions({ commit, state }, query) {
+  async getCardSuggestions({ commit }, query) {
     if (!(query.nameLike || '').trim()) {
       return commit('cardSuggestions', [])
     }
@@ -231,6 +236,10 @@ export const actions = {
   resetBulkAddErrorMessages({ commit }) {
     commit('bulkAddErrorMessages', [])
   },
+
+  setUsePurposeGroups({ commit }, value) {
+    commit('usePurposeGroups', value)
+  },
 }
 
 export const getters = {
@@ -246,6 +255,7 @@ export const getters = {
     (state.deck.commanders.length === 1 &&
       state.deck.commanders[0].source.isPartner),
   cardSuggestions: state => state.cardSuggestions,
+  usePurposeGroups: state => state.usePurposeGroups,
   suggestedPurposes: (state, { commanders }) =>
     uniq([
       ...flatten(commanders.map(c => c.purposes)),
@@ -269,7 +279,7 @@ export const getters = {
   },
   bulkAddErrorMessages: state => state.bulkAddErrorMessages,
 
-  // Assemble groupings of cards based on their assigned purposes.
+  // Assemble groupings of cards based on their assigned purposes or type.
   // [
   //  {purpose: 'Card draw', cards: [...]},
   //  {purpose: 'Ramp', cards: [...]},
@@ -279,11 +289,13 @@ export const getters = {
   //
   // We give automatic groups based on dominant card type if no purposes are present.
   //
-  cardGroupingsByPurpose: (state, { the99 }) => {
+  // Look at state.usePurposeGroups to determine grouping strategy.
+  //
+  cardGroupings: ({ usePurposeGroups }, { the99 }) => {
     const [hashByPurpose, hashByType] = the99.reduce(
       ([purposeHash, typeHash], card) => {
         const { purposes } = card
-        if (purposes.length) {
+        if (purposes.length && usePurposeGroups) {
           purposes.forEach(purpose => {
             purposeHash[purpose] = [...(purposeHash[purpose] || []), card]
           })
@@ -303,7 +315,13 @@ export const getters = {
         if (lastCard && card.source.name === lastCard.source.name) {
           lastCard.count += 1
         } else {
-          cards = [...cards, { ...card, count: 1 }]
+          cards = [
+            ...cards,
+            {
+              ...card,
+              count: 1,
+            },
+          ]
         }
 
         return cards
