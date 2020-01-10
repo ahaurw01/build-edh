@@ -75,7 +75,10 @@
       <BIcon icon="book-open" size="is-medium" />
     </button>
 
-    <DeckSidebar :is-open="isMobileSidebarOpen" />
+    <DeckSidebar
+      :is-open="isMobileSidebarOpen"
+      @close="isMobileSidebarOpen = false"
+    />
   </section>
 </template>
 

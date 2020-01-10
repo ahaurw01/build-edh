@@ -9,6 +9,7 @@ export const state = () => ({
   owner: null,
   cardSuggestions: [],
   bulkAddErrorMessages: [],
+  usePurposeGroups: true,
 })
 
 export const mutations = {
@@ -87,6 +88,10 @@ export const mutations = {
 
   bulkAddErrorMessages(state, messages) {
     state.bulkAddErrorMessages = messages
+  },
+
+  usePurposeGroups(state, value) {
+    state.usePurposeGroups = value
   },
 }
 
@@ -231,6 +236,10 @@ export const actions = {
   resetBulkAddErrorMessages({ commit }) {
     commit('bulkAddErrorMessages', [])
   },
+
+  setUsePurposeGroups({ commit }, value) {
+    commit('usePurposeGroups', value)
+  },
 }
 
 export const getters = {
@@ -246,6 +255,7 @@ export const getters = {
     (state.deck.commanders.length === 1 &&
       state.deck.commanders[0].source.isPartner),
   cardSuggestions: state => state.cardSuggestions,
+  usePurposeGroups: state => state.usePurposeGroups,
   suggestedPurposes: (state, { commanders }) =>
     uniq([
       ...flatten(commanders.map(c => c.purposes)),
