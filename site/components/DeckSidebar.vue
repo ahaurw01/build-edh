@@ -80,6 +80,7 @@ export default {
     transform: translateX(0);
     width: auto;
     min-width: auto;
+    margin-bottom: 1rem;
   }
 }
 </style>
