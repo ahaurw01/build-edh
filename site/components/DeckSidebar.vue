@@ -72,4 +72,16 @@ export default {
   padding: 0;
   margin: 0;
 }
+
+@media (min-width: 769px) {
+  .close-button {
+    display: none;
+  }
+
+  .deck-sidebar {
+    position: static;
+    transform: translateX(0);
+    width: auto;
+  }
+}
 </style>

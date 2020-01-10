@@ -1,27 +1,29 @@
 <template>
-  <section>
-    <h2 class="title is-2">
-      My decks
-    </h2>
+  <section class="section">
+    <div class="container">
+      <h2 class="title is-2">
+        My decks
+      </h2>
 
-    <div class="section has-text-centered">
-      <button class="button is-large is-primary" @click="createDeck">
-        <BIcon icon="plus" />
-        <span>
-          Create New Deck
-        </span>
-      </button>
-    </div>
-
-    <section class="tile is-ancestor">
-      <div class="tile is-vertical is-parent">
-        <div v-for="deck in decks" :key="deck._id" class="tile is-child ">
-          <NuxtLink :to="`/decks/${deck._id}`">
-            <DeckTile :deck="deck" />
-          </NuxtLink>
-        </div>
+      <div class="section has-text-centered">
+        <button class="button is-large is-primary" @click="createDeck">
+          <BIcon icon="plus" />
+          <span>
+            Create New Deck
+          </span>
+        </button>
       </div>
-    </section>
+
+      <section class="tile is-ancestor">
+        <div class="tile is-vertical is-parent">
+          <div v-for="deck in decks" :key="deck._id" class="tile is-child ">
+            <NuxtLink :to="`/decks/${deck._id}`">
+              <DeckTile :deck="deck" />
+            </NuxtLink>
+          </div>
+        </div>
+      </section>
+    </div>
   </section>
 </template>
 
