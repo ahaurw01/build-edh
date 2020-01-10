@@ -12,7 +12,7 @@
     </button>
 
     <CardSection
-      v-for="grouping in cardGroupingsByPurpose"
+      v-for="grouping in cardGroupings"
       :key="grouping.purpose"
       :title="grouping.purpose"
       :is-auto="grouping.isAutomaticGroup"
@@ -52,7 +52,7 @@ export default {
       return this.commanders.length === 2 ? 'The 98' : 'The 99'
     },
     ...mapGetters(
-      ['commanders', 'the99', 'canAddCard', 'cardGroupingsByPurpose'].reduce(
+      ['commanders', 'the99', 'canAddCard', 'cardGroupings'].reduce(
         (acc, key) => {
           acc[key] = `deck/${key}`
           return acc

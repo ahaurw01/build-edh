@@ -65,12 +65,12 @@ describe('Deck Store', () => {
       })
     })
 
-    describe('cardGroupingsByPurpose', () => {
+    describe('cardGroupings', () => {
       test('is empty array for no cards', () => {
         const the99 = []
-        const state = {}
+        const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupingsByPurpose(state, { the99 })
+        const result = getters.cardGroupings(state, { the99 })
 
         expect(result).toEqual([])
       })
@@ -110,9 +110,9 @@ describe('Deck Store', () => {
             purposes: ['Ramp'],
           },
         ]
-        const state = {}
+        const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupingsByPurpose(state, { the99 })
+        const result = getters.cardGroupings(state, { the99 })
 
         expect(result).toEqual([
           {
@@ -203,9 +203,9 @@ describe('Deck Store', () => {
             purposes: [],
           },
         ]
-        const state = {}
+        const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupingsByPurpose(state, { the99 })
+        const result = getters.cardGroupings(state, { the99 })
 
         expect(result).toEqual([
           {
@@ -244,6 +244,107 @@ describe('Deck Store', () => {
               {
                 source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
                 purposes: ['Favorite Art'],
+                count: 1,
+              },
+            ],
+          },
+          {
+            purpose: 'Instant',
+            isAutomaticGroup: true,
+            cards: [
+              {
+                source: {
+                  name: 'Lightning Bolt',
+                  faces: [{ types: ['Instant'] }],
+                },
+                purposes: [],
+                count: 1,
+              },
+            ],
+          },
+          {
+            purpose: 'Sorcery',
+            isAutomaticGroup: true,
+            cards: [
+              {
+                source: { name: 'Earthquake', faces: [{ types: ['Sorcery'] }] },
+                purposes: [],
+                count: 1,
+              },
+            ],
+          },
+        ])
+      })
+
+      test('groups all cards by type', () => {
+        const the99 = [
+          {
+            source: { name: 'Lightning Bolt', faces: [{ types: ['Instant'] }] },
+            purposes: [],
+          },
+          {
+            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            purposes: ['Favorite Art'],
+          },
+          {
+            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            purposes: [],
+          },
+          {
+            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            purposes: [],
+          },
+          {
+            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            purposes: [],
+          },
+          {
+            source: {
+              name: 'Dryad Arbor',
+              faces: [{ types: ['Land', 'Creature'] }],
+            },
+            purposes: [],
+          },
+          {
+            source: { name: 'Earthquake', faces: [{ types: ['Sorcery'] }] },
+            purposes: [],
+          },
+          {
+            source: { name: 'Sol Ring', faces: [{ types: ['Artifact'] }] },
+            purposes: [],
+          },
+        ]
+        const state = { usePurposeGroups: false }
+
+        const result = getters.cardGroupings(state, { the99 })
+
+        expect(result).toEqual([
+          {
+            purpose: 'Land',
+            isAutomaticGroup: true,
+            cards: [
+              {
+                source: {
+                  name: 'Dryad Arbor',
+                  faces: [{ types: ['Land', 'Creature'] }],
+                },
+                purposes: [],
+                count: 1,
+              },
+              {
+                source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+                purposes: ['Favorite Art'],
+                count: 4,
+              },
+            ],
+          },
+          {
+            purpose: 'Artifact',
+            isAutomaticGroup: true,
+            cards: [
+              {
+                source: { name: 'Sol Ring', faces: [{ types: ['Artifact'] }] },
+                purposes: [],
                 count: 1,
               },
             ],
