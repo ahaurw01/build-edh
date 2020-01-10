@@ -10,7 +10,7 @@
     <div>
       <h3 class="title is-3 ">Settings</h3>
       <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
-        {{ usePurposeGroups ? 'Group by purposes' : 'Group by card type' }}
+        Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
       </BSwitch>
     </div>
   </div>
