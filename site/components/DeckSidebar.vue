@@ -1,19 +1,15 @@
 <template>
-  <div class="deck-sidebar has-background-dark" :class="{ 'is-open': isOpen }">
-    <h2 class="title is-2 flex-title has-text-white">
-      <span>Insight stuff</span>
+  <div class="deck-sidebar box" :class="{ 'is-open': isOpen }">
+    <h2 class="title is-2 flex-title ">
+      <span>Insights</span>
       <button class="close-button" @click="$emit('close')">
-        <BIcon type="is-white" icon="close" />
+        <BIcon icon="close" />
       </button>
     </h2>
 
-    <div class="box has-background-dark ">
-      <h3 class="title is-3 has-text-white">Settings</h3>
-      <BSwitch
-        class="has-text-white"
-        :value="usePurposeGroups"
-        @input="setUsePurposeGroups"
-      >
+    <div>
+      <h3 class="title is-3 ">Settings</h3>
+      <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
         {{ usePurposeGroups ? 'Group by purposes' : 'Group by card type' }}
       </BSwitch>
     </div>
@@ -45,13 +41,14 @@ export default {
 <style scoped>
 .deck-sidebar {
   position: fixed;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  transform: translateX(100%);
+  right: 1rem;
+  top: 1rem;
+  bottom: 1rem;
+  transform: translateX(calc(100% + 1rem));
   transition: all 500ms;
   z-index: 999;
-  width: 100%;
+  width: auto;
+  min-width: 50%;
   padding: 1rem;
 }
 
@@ -82,6 +79,7 @@ export default {
     position: static;
     transform: translateX(0);
     width: auto;
+    min-width: auto;
   }
 }
 </style>
