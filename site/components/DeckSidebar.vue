@@ -46,7 +46,7 @@ export default {
   bottom: 1rem;
   transform: translateX(calc(100% + 1rem));
   transition: all 500ms;
-  z-index: 999;
+  z-index: 30;
   width: auto;
   min-width: 50%;
   padding: 1rem;
