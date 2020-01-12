@@ -18,6 +18,7 @@ module.exports = {
   // add your custom rules here
   rules: {
     'no-console': ['warn'],
+    'no-debugger': ['warn'],
     'vue/html-self-closing': [
       'error',
       {

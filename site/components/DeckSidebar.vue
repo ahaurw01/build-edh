@@ -8,20 +8,25 @@
         </button>
       </h2>
 
-      <div>
-        <h3 class="title is-3 ">Settings</h3>
-        <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
-          Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
-        </BSwitch>
-      </div>
+      <h3 class="title is-3 ">Settings</h3>
+      <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
+        Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
+      </BSwitch>
+
+      <hr />
+
+      <h3 class="title is-3">Computed Purposes</h3>
+      <CompuPurposes />
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import CompuPurposes from './CompuPurposes'
 
 export default {
+  components: { CompuPurposes },
   props: {
     isOpen: { type: Boolean, required: true },
   },
