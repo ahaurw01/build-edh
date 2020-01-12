@@ -310,22 +310,25 @@ export const getters = {
     )
 
     function makeGroupedCards(hash, purpose) {
-      return sortBy(hash[purpose], 'source.name').reduce((cards, card) => {
-        const lastCard = last(cards)
-        if (lastCard && card.source.name === lastCard.source.name) {
-          lastCard.count += 1
-        } else {
-          cards = [
-            ...cards,
-            {
-              ...card,
-              count: 1,
-            },
-          ]
-        }
+      return sortBy(hash[purpose], 'source.cmc', 'source.name').reduce(
+        (cards, card) => {
+          const lastCard = last(cards)
+          if (lastCard && card.source.name === lastCard.source.name) {
+            lastCard.count += 1
+          } else {
+            cards = [
+              ...cards,
+              {
+                ...card,
+                count: 1,
+              },
+            ]
+          }
 
-        return cards
-      }, [])
+          return cards
+        },
+        []
+      )
     }
 
     const groupings = [
