@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="box">
     <h4 class="title is-4">
       {{ title }}
       <BIcon v-if="isAuto" icon="flash" />
@@ -116,6 +116,7 @@ export default {
 <style scoped>
 .card-columns {
   display: flex;
+  justify-content: space-around;
 }
 
 .cards-container {

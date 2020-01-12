@@ -1,85 +1,92 @@
 <template>
   <section class="deck-section section">
-    <div class="deck-view container">
-      <div class="columns is-vcentered">
-        <div class="column">
-          <h2 class="title is-2">{{ name }}</h2>
-        </div>
-        <div class="column is-1">
-          <button class="button" @click="isEditNameModalActive = true">
-            <BIcon icon="pencil" />
-          </button>
-        </div>
-      </div>
+    <div class="container">
+      <div class="columns">
+        <div class="deck-view column">
+          <div class="columns is-vcentered">
+            <div class="column">
+              <h2 class="title is-2">{{ name }}</h2>
+            </div>
+            <div class="column is-1">
+              <button class="button" @click="isEditNameModalActive = true">
+                <BIcon icon="pencil" />
+              </button>
+            </div>
+          </div>
 
-      <div class="columns is-vcentered">
-        <div class="column">
-          <h4 class="subtitle is-4">{{ purpose }}</h4>
-        </div>
-        <div class="column is-1">
-          <button class="button" @click="isEditPurposeModalActive = true">
-            <BIcon icon="pencil" />
-          </button>
-        </div>
-      </div>
+          <div class="columns is-vcentered">
+            <div class="column">
+              <h4 class="subtitle is-4">{{ purpose }}</h4>
+            </div>
+            <div class="column is-1">
+              <button class="button" @click="isEditPurposeModalActive = true">
+                <BIcon icon="pencil" />
+              </button>
+            </div>
+          </div>
 
-      <div class="columns is-vcentered">
-        <div class="column">
-          <p
-            v-for="(paragraph, index) in descriptionParagraphs"
-            :key="index"
-            class="description-paragraph"
+          <div class="columns is-vcentered">
+            <div class="column">
+              <p
+                v-for="(paragraph, index) in descriptionParagraphs"
+                :key="index"
+                class="description-paragraph"
+              >
+                {{ paragraph }}
+              </p>
+            </div>
+            <div class="column is-1">
+              <button
+                class="button"
+                @click="isEditDescriptionModalActive = true"
+              >
+                <BIcon icon="pencil" />
+              </button>
+            </div>
+          </div>
+
+          <CommanderSection />
+          <NinetyNineSection />
+
+          <div class="columns is-vcentered">
+            <div class="column">
+              <button class="button" @click="isBulkAddModalActive = true">
+                Bulk input
+              </button>
+            </div>
+          </div>
+
+          <BModal :active.sync="isEditNameModalActive" has-modal-card>
+            <DeckPropertyModalForm property="name" />
+          </BModal>
+          <BModal :active.sync="isEditPurposeModalActive" has-modal-card>
+            <DeckPropertyModalForm
+              property="purpose"
+              type="textarea"
+              :maxlength="200"
+            />
+          </BModal>
+          <BModal :active.sync="isEditDescriptionModalActive" has-modal-card>
+            <DeckPropertyModalForm property="description" type="textarea" />
+          </BModal>
+          <BModal
+            :active.sync="isBulkAddModalActive"
+            has-modal-card
+            @close="resetBulkAddErrorMessages"
           >
-            {{ paragraph }}
-          </p>
-        </div>
-        <div class="column is-1">
-          <button class="button" @click="isEditDescriptionModalActive = true">
-            <BIcon icon="pencil" />
+            <BulkAddModalForm />
+          </BModal>
+
+          <button class="sidebar-opener" @click="isMobileSidebarOpen = true">
+            <BIcon icon="book-open" size="is-medium" />
           </button>
         </div>
-      </div>
-
-      <CommanderSection />
-      <NinetyNineSection />
-
-      <div class="columns is-vcentered">
-        <div class="column">
-          <button class="button" @click="isBulkAddModalActive = true">
-            Bulk input
-          </button>
-        </div>
-      </div>
-
-      <BModal :active.sync="isEditNameModalActive" has-modal-card>
-        <DeckPropertyModalForm property="name" />
-      </BModal>
-      <BModal :active.sync="isEditPurposeModalActive" has-modal-card>
-        <DeckPropertyModalForm
-          property="purpose"
-          type="textarea"
-          :maxlength="200"
+        <DeckSidebar
+          :is-open="isMobileSidebarOpen"
+          @close="isMobileSidebarOpen = false"
         />
-      </BModal>
-      <BModal :active.sync="isEditDescriptionModalActive" has-modal-card>
-        <DeckPropertyModalForm property="description" type="textarea" />
-      </BModal>
-      <BModal
-        :active.sync="isBulkAddModalActive"
-        has-modal-card
-        @close="resetBulkAddErrorMessages"
-      >
-        <BulkAddModalForm />
-      </BModal>
-
-      <button class="sidebar-opener" @click="isMobileSidebarOpen = true">
-        <BIcon icon="book-open" size="is-medium" />
-      </button>
+      </div>
     </div>
-    <DeckSidebar
-      :is-open="isMobileSidebarOpen"
-      @close="isMobileSidebarOpen = false"
-    />
   </section>
 </template>
 

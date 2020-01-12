@@ -1,17 +1,19 @@
 <template>
-  <div class="deck-sidebar box" :class="{ 'is-open': isOpen }">
-    <h2 class="title is-2 flex-title ">
-      <span>Insights</span>
-      <button class="close-button" @click="$emit('close')">
-        <BIcon icon="close" />
-      </button>
-    </h2>
+  <div class="deck-sidebar column is-narrow" :class="{ 'is-open': isOpen }">
+    <div class="box">
+      <h2 class="title is-2 flex-title ">
+        <span>Insights</span>
+        <button class="close-button" @click="$emit('close')">
+          <BIcon icon="close" />
+        </button>
+      </h2>
 
-    <div>
-      <h3 class="title is-3 ">Settings</h3>
-      <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
-        Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
-      </BSwitch>
+      <div>
+        <h3 class="title is-3 ">Settings</h3>
+        <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
+          Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
+        </BSwitch>
+      </div>
     </div>
   </div>
 </template>
