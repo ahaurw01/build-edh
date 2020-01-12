@@ -31,17 +31,29 @@
 
     <BModal :active.sync="isCardShowcaseOpen">
       <div class="modal-centerer">
-        <Card
-          v-if="cardToShowcase"
-          :card="cardToShowcase.source"
-          :count="cardToShowcase.count"
-          size="large"
-          show-edit-button
-          @edit-card="
-            isCardShowcaseOpen = false
-            $emit('edit-card', cardToShowcase)
-          "
-        />
+        <div class="modal-column">
+          <Card
+            v-if="cardToShowcase"
+            :card="cardToShowcase.source"
+            :count="cardToShowcase.count"
+            size="large"
+            show-edit-button
+            @edit-card="
+              isCardShowcaseOpen = false
+              $emit('edit-card', cardToShowcase)
+            "
+          />
+          <BTaglist v-if="cardToShowcase && cardToShowcase.purposes.length > 0">
+            <BTag
+              v-for="purpose in cardToShowcase.purposes"
+              :key="purpose"
+              type="is-primary"
+              size="is-medium"
+            >
+              {{ purpose }}
+            </BTag>
+          </BTaglist>
+        </div>
       </div>
     </BModal>
   </div>
@@ -149,5 +161,11 @@ export default {
 .modal-centerer {
   display: flex;
   justify-content: center;
+}
+
+.modal-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
