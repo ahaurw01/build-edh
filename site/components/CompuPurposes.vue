@@ -36,6 +36,8 @@ export default {
         rule,
         ...this.allRules.slice(index + 1),
       ]
+
+      this.$emit('onChange', this.allRules)
     },
   },
 }

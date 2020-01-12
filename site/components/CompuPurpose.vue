@@ -66,7 +66,6 @@ export default {
     },
 
     onConditionsChange(conditions) {
-      console.log(JSON.stringify(conditions))
       this.conditions = conditions
       this.$emit('onRuleChange', {
         field: this.field,

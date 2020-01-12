@@ -26,6 +26,13 @@ export const mutations = {
     }
   },
 
+  deckRules(state, deck) {
+    state.deck = {
+      ...state.deck,
+      rules: deck.rules,
+    }
+  },
+
   owner(state, owner) {
     state.owner = owner
   },
@@ -124,6 +131,16 @@ export const actions = {
       }
     )
     commit('deckMeta', deck)
+  },
+
+  async updateRules({ commit, state }, newRules) {
+    const { data: deck } = await this.$axios.put(
+      `/api/decks/${state.deck._id}`,
+      {
+        rules: newRules,
+      }
+    )
+    commit('deckRules', deck)
   },
 
   async getCardSuggestions({ commit }, query) {
@@ -249,6 +266,11 @@ export const getters = {
   description: state => state.deck.description || 'No description',
   descriptionParagraphs: state =>
     (state.deck.description || 'No description').split('\n'),
+  rules: state => {
+    let rules = get(state, 'deck.rules', [{}])
+    if (!rules.length) rules = [{}]
+    return rules
+  },
   commanders: state => state.deck.commanders,
   canAddCommander: state =>
     state.deck.commanders.length === 0 ||
