@@ -6,6 +6,9 @@
       :rule="rule"
       @onRuleChange="onRuleChange(index, $event)"
     />
+    <button v-if="allRulesAreValid" class="button" @click="addEmptyRule">
+      And...
+    </button>
   </div>
 </template>
 
@@ -26,17 +29,6 @@ import CompuPurpose, {
   // TWOSIDED,
 } from './CompuPurpose'
 
-function areAllRulesValid(rules) {
-  return rules.every(rule => {
-    switch (rule.field) {
-      case TYPE:
-        return rule.conditions.every(c => c.type)
-      default:
-        return false
-    }
-  })
-}
-
 export default {
   components: { CompuPurpose },
   props: {
@@ -53,7 +45,18 @@ export default {
     }
   },
 
-  computed: {},
+  computed: {
+    allRulesAreValid() {
+      return this.allRules.every(rule => {
+        switch (rule.field) {
+          case TYPE:
+            return rule.conditions.every(c => c.type)
+          default:
+            return false
+        }
+      })
+    },
+  },
 
   methods: {
     onRuleChange(index, rule) {
@@ -63,7 +66,12 @@ export default {
         ...this.allRules.slice(index + 1),
       ]
 
-      if (areAllRulesValid(this.allRules)) this.$emit('onChange', this.allRules)
+      if (this.allRulesAreValid) this.$emit('onChange', this.allRules)
+    },
+
+    addEmptyRule() {
+      this.allRules = [...this.allRules, {}]
+      this.$emit('onChange', this.allRules)
     },
   },
 }
