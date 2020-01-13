@@ -4,6 +4,7 @@
       <section class="modal-card-body">
         <CompuPurpose
           :compu-purpose="localCompuPurpose"
+          editing
           @change="localCompuPurpose = $event"
         />
       </section>

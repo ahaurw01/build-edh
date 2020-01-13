@@ -1,7 +1,17 @@
 <template>
   <div class="box">
-    <BButton type="is-danger" icon-right="delete" @click="$emit('delete')" />
-    <BSelect placeholder="Select a field" :value="field" @input="onSelectField">
+    <BButton
+      v-if="editing"
+      type="is-danger"
+      icon-right="delete"
+      @click="$emit('delete')"
+    />
+    <BSelect
+      v-if="editing"
+      placeholder="Select a field"
+      :value="field"
+      @input="onSelectField"
+    >
       <option
         v-for="[key, displayName] in topLevelFields"
         :key="key"
@@ -10,10 +20,13 @@
         {{ displayName }}
       </option>
     </BSelect>
+    <span v-else>{{ fieldDisplayName }}</span>
+
     <component
       :is="fieldToComponent(field)"
       v-if="field"
       :conditions="conditions"
+      :editing="editing"
       @onConditionsChange="onConditionsChange"
     /></div
 ></template>
@@ -57,6 +70,12 @@ export default {
       type: Object,
       required: true,
     },
+    editing: {
+      type: Boolean,
+      default() {
+        return false
+      },
+    },
   },
 
   data() {
@@ -68,6 +87,13 @@ export default {
           ? this.rule.conditions
           : [{}],
     }
+  },
+
+  computed: {
+    fieldDisplayName() {
+      const pair = topLevelFields.find(([field]) => field === this.field)
+      return pair ? pair[1] : 'None'
+    },
   },
 
   methods: {

@@ -1,23 +1,29 @@
 <template>
   <div>
-    <div v-for="(condition, index) in conditions" :key="condition.type + index">
-      is:
-      <BSelect
-        placeholder="Select a type"
-        :value="condition.type"
-        @input="onSelectType(index, $event)"
+    <div v-if="editing">
+      <div
+        v-for="(condition, index) in conditions"
+        :key="condition.type + index"
       >
-        <option v-for="type in types" :key="type" :value="type">
-          {{ type }}
-        </option>
-      </BSelect>
-      <BButton
-        v-if="conditions.length > 1"
-        type="is-danger"
-        icon-right="delete"
-        @click="deleteCondition(index)"
-      />
+        is:
+        <BSelect
+          placeholder="Select a type"
+          :value="condition.type"
+          @input="onSelectType(index, $event)"
+        >
+          <option v-for="type in types" :key="type" :value="type">
+            {{ type }}
+          </option>
+        </BSelect>
+        <BButton
+          v-if="conditions.length > 1"
+          type="is-danger"
+          icon-right="delete"
+          @click="deleteCondition(index)"
+        />
+      </div>
     </div>
+    <span v-else>{{ displayString }}</span>
     <button
       v-if="canAddAnotherCondition"
       class="button"
@@ -50,6 +56,12 @@ export default {
         return [{}]
       },
     },
+    editing: {
+      type: Boolean,
+      default() {
+        return false
+      },
+    },
   },
 
   data() {
@@ -58,7 +70,11 @@ export default {
 
   computed: {
     canAddAnotherCondition() {
-      return !!get(last(this.conditions), 'type')
+      return this.editing && !!get(last(this.conditions), 'type')
+    },
+
+    displayString() {
+      return `is ${this.conditions.map(c => c.type).join(' or ')}`
     },
   },
 
