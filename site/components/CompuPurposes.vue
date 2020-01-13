@@ -4,8 +4,7 @@
       v-for="(compuPurpose, index) in allCompuPurposes"
       :key="index"
       :compu-purpose="compuPurpose"
-      @change="changeCompuPurpose(index, $event)"
-      @delete="deleteCompuPurpose(index)"
+      @edit="editCompuPurpose(index)"
     />
 
     <BButton v-if="allCompuPurposesAreValid" @click="addEmptyCompuPurpose">
@@ -14,8 +13,10 @@
 
     <BModal :active.sync="isEditModalActive" has-modal-card>
       <CompuPurposeModalForm
+        :can-delete="canDeleteCompuPurposeToEdit"
         :compu-purpose="compuPurposeToEdit"
         @save="saveCompuPurpose"
+        @delete="deleteCompuPurpose"
       />
     </BModal>
   </div>
@@ -54,6 +55,7 @@ export default {
       isEditModalActive: false,
       compuPurposeToEdit: null,
       compuPurposeToEditIndex: 0,
+      canDeleteCompuPurposeToEdit: false,
     }
   },
 
@@ -89,15 +91,25 @@ export default {
     addEmptyCompuPurpose() {
       this.compuPurposeToEdit = {}
       this.compuPurposeToEditIndex = this.allCompuPurposes.length
+      this.canDeleteCompuPurposeToEdit = false
       this.isEditModalActive = true
     },
 
-    deleteCompuPurpose(index) {
+    editCompuPurpose(index) {
+      this.compuPurposeToEdit = this.allCompuPurposes[index]
+      this.compuPurposeToEditIndex = index
+      this.canDeleteCompuPurposeToEdit = true
+      this.isEditModalActive = true
+    },
+
+    deleteCompuPurpose() {
+      const index = this.compuPurposeToEditIndex
       this.allCompuPurposes = [
         ...this.allCompuPurposes.slice(0, index),
         ...this.allCompuPurposes.slice(index + 1),
       ]
       this.$emit('change', this.allCompuPurposes)
+      this.isEditModalActive = false
     },
 
     saveCompuPurpose(newCompuPurpose) {

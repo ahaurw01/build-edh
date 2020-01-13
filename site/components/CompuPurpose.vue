@@ -1,6 +1,6 @@
 <template>
   <div class="box">
-    <BButton type="is-danger" icon-right="delete" @click="$emit('delete')" />
+    <BButton icon-right="pencil" @click="$emit('edit')" />
     <BField label="Description">
       <BInput
         placeholder="Title"
