@@ -66,7 +66,7 @@ export default {
 
 .is-open {
   /* Used for opening/closing on mobile. */
-  transform: translateX(0);
+  transform: none;
 }
 
 .flex-title {
@@ -89,7 +89,7 @@ export default {
 
   .deck-sidebar {
     position: static;
-    transform: translateX(0);
+    transform: none;
     width: auto;
     min-width: auto;
     margin-bottom: 1rem;

@@ -7,13 +7,17 @@
       @change="changeCompuPurpose(index, $event)"
       @delete="deleteCompuPurpose(index)"
     />
-    <button
-      v-if="allCompuPurposesAreValid"
-      class="button"
-      @click="addEmptyCompuPurpose"
-    >
+
+    <BButton v-if="allCompuPurposesAreValid" @click="addEmptyCompuPurpose">
       Create
-    </button>
+    </BButton>
+
+    <BModal :active.sync="isEditModalActive" has-modal-card>
+      <CompuPurposeModalForm
+        :compu-purpose="compuPurposeToEdit"
+        @save="saveCompuPurpose"
+      />
+    </BModal>
   </div>
 </template>
 
@@ -34,9 +38,10 @@ import {
   // TWOSIDED,
 } from './CompuPurposes/Rule'
 import CompuPurpose from './CompuPurpose'
+import CompuPurposeModalForm from './CompuPurposeModalForm'
 
 export default {
-  components: { CompuPurpose },
+  components: { CompuPurpose, CompuPurposeModalForm },
   props: {
     compuPurposes: {
       type: Array,
@@ -46,6 +51,9 @@ export default {
   data() {
     return {
       allCompuPurposes: this.compuPurposes,
+      isEditModalActive: false,
+      compuPurposeToEdit: null,
+      compuPurposeToEditIndex: 0,
     }
   },
 
@@ -79,10 +87,9 @@ export default {
     },
 
     addEmptyCompuPurpose() {
-      this.allCompuPurposes = [
-        ...this.allCompuPurposes,
-        { title: '', rules: [{}] },
-      ]
+      this.compuPurposeToEdit = {}
+      this.compuPurposeToEditIndex = this.allCompuPurposes.length
+      this.isEditModalActive = true
     },
 
     deleteCompuPurpose(index) {
@@ -91,6 +98,19 @@ export default {
         ...this.allCompuPurposes.slice(index + 1),
       ]
       this.$emit('change', this.allCompuPurposes)
+    },
+
+    saveCompuPurpose(newCompuPurpose) {
+      this.allCompuPurposes = [
+        ...this.allCompuPurposes.slice(0, this.compuPurposeToEditIndex),
+        newCompuPurpose,
+        ...this.allCompuPurposes.slice(this.compuPurposeToEditIndex + 1),
+      ]
+
+      if (this.allCompuPurposesAreValid)
+        this.$emit('change', this.allCompuPurposes)
+
+      this.isEditModalActive = false
     },
   },
 }
