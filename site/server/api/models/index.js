@@ -25,7 +25,7 @@ const deckSchema = new Schema({
   name: String,
   purpose: String,
   description: String,
-  rules: [Object],
+  compuPurposes: [Object],
   owner: Schema.Types.ObjectId,
   createdAt: Date,
   commanders: [deckCardSchema],

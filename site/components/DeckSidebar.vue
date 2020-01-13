@@ -16,7 +16,10 @@
       <hr />
 
       <h3 class="title is-3">Computed Purposes</h3>
-      <CompuPurposes :rules="rules" @onChange="updateRules" />
+      <CompuPurposes
+        :compu-purposes="compuPurposes"
+        @change="updateCompuPurposes"
+      />
     </div>
   </div>
 </template>
@@ -34,14 +37,14 @@ export default {
   computed: {
     ...mapGetters({
       usePurposeGroups: 'deck/usePurposeGroups',
-      rules: 'deck/rules',
+      compuPurposes: 'deck/compuPurposes',
     }),
   },
 
   methods: {
     ...mapActions({
       setUsePurposeGroups: 'deck/setUsePurposeGroups',
-      updateRules: 'deck/updateRules',
+      updateCompuPurposes: 'deck/updateCompuPurposes',
     }),
   },
 }

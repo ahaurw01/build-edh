@@ -1,20 +1,24 @@
 <template>
   <div>
     <CompuPurpose
-      v-for="(rule, index) in allRules"
-      :key="rule.field + index"
-      :rule="rule"
-      @onRuleChange="onRuleChange(index, $event)"
-      @delete="deleteRule(index)"
+      v-for="(compuPurpose, index) in allCompuPurposes"
+      :key="index"
+      :compu-purpose="compuPurpose"
+      @change="changeCompuPurpose(index, $event)"
+      @delete="deleteCompuPurpose(index)"
     />
-    <button v-if="allRulesAreValid" class="button" @click="addEmptyRule">
+    <button
+      v-if="allCompuPurposesAreValid"
+      class="button"
+      @click="addEmptyCompuPurpose"
+    >
       And...
     </button>
   </div>
 </template>
 
 <script>
-import CompuPurpose, {
+import {
   TYPE,
   // SUPERTYPE,
   // SUBTYPE,
@@ -28,27 +32,28 @@ import CompuPurpose, {
   // MONOCOLOR,
   // MULTICOLOR,
   // TWOSIDED,
-} from './CompuPurpose'
+} from './CompuPurposes/Rule'
+import CompuPurpose from './CompuPurpose'
 
 export default {
   components: { CompuPurpose },
   props: {
-    rules: {
+    compuPurposes: {
       type: Array,
-      default() {
-        return [{}]
-      },
+      required: true,
     },
   },
   data() {
     return {
-      allRules: this.rules,
+      allCompuPurposes: this.compuPurposes,
     }
   },
 
   computed: {
-    allRulesAreValid() {
-      return this.allRules.every(rule => this.isRuleValid(rule))
+    allCompuPurposesAreValid() {
+      return this.allCompuPurposes.every(({ rules = [{}] }) =>
+        rules.every(rule => this.isRuleValid(rule))
+      )
     },
   },
 
@@ -62,27 +67,30 @@ export default {
       }
     },
 
-    onRuleChange(index, rule) {
-      this.allRules = [
-        ...this.allRules.slice(0, index),
-        rule,
-        ...this.allRules.slice(index + 1),
+    changeCompuPurpose(index, compuPurpose) {
+      this.allCompuPurposes = [
+        ...this.allCompuPurposes.slice(0, index),
+        compuPurpose,
+        ...this.allCompuPurposes.slice(index + 1),
       ]
 
-      if (this.allRulesAreValid) this.$emit('onChange', this.allRules)
+      if (this.allCompuPurposesAreValid)
+        this.$emit('change', this.allCompuPurposes)
     },
 
-    addEmptyRule() {
-      this.allRules = [...this.allRules, {}]
-      this.$emit('onChange', this.allRules)
-    },
-
-    deleteRule(index) {
-      this.allRules = [
-        ...this.allRules.slice(0, index),
-        ...this.allRules.slice(index + 1),
+    addEmptyCompuPurpose() {
+      this.allCompuPurposes = [
+        ...this.allCompuPurposes,
+        { title: '', rules: [{}] },
       ]
-      this.$emit('onChange', this.allRules)
+    },
+
+    deleteCompuPurpose(index) {
+      this.allCompuPurposes = [
+        ...this.allCompuPurposes.slice(0, index),
+        ...this.allCompuPurposes.slice(index + 1),
+      ]
+      this.$emit('change', this.allCompuPurposes)
     },
   },
 }

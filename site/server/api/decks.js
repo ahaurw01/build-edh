@@ -98,14 +98,14 @@ async function getDeck(ctx) {
 }
 
 async function updateDeck(ctx) {
-  const { name, purpose, description, rules } = ctx.request.body
+  const { name, purpose, description, compuPurposes } = ctx.request.body
   const { id } = ctx.params
   const owner = ctx.state.user._id
   const updates = {}
   if (name != null) updates.name = name
   if (purpose != null) updates.purpose = purpose
   if (description != null) updates.description = description
-  if (rules != null) updates.rules = rules
+  if (compuPurposes != null) updates.compuPurposes = compuPurposes
 
   const deck = await Deck.findOneAndUpdate({ _id: id, owner }, updates, {
     new: true,

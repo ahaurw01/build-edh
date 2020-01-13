@@ -1,100 +1,70 @@
 <template>
   <div class="box">
     <BButton type="is-danger" icon-right="delete" @click="$emit('delete')" />
-    <BSelect placeholder="Select a field" :value="field" @input="onSelectField">
-      <option
-        v-for="[key, displayName] in topLevelFields"
-        :key="key"
-        :value="key"
-      >
-        {{ displayName }}
-      </option>
-    </BSelect>
-    <component
-      :is="fieldToComponent(field)"
-      v-if="field"
-      :conditions="conditions"
-      @onConditionsChange="onConditionsChange"
+    <BField label="Description">
+      <BInput
+        placeholder="Title"
+        :value="compuPurpose.title"
+        @input="changeTitle"
+      />
+    </BField>
+    <Rule
+      v-for="(rule, index) in rules"
+      :key="rule.field + index"
+      :rule="rule"
+      @change="changeRule(index, $event)"
     />
+    <button class="button" @click="addEmptyRule">
+      And...
+    </button>
   </div>
 </template>
 
 <script>
-import Type from './CompuPurposes/Type'
-
-export const TYPE = 'type'
-export const SUPERTYPE = 'supertype'
-export const SUBTYPE = 'subtype'
-export const CMC = 'cmc'
-export const POWER = 'power'
-export const TOUGHNESS = 'toughness'
-export const LOYALTY = 'loyalty'
-export const NAME = 'name'
-export const RULES = 'rules'
-export const COLOR = 'color'
-export const MONOCOLOR = 'monocolor'
-export const MULTICOLOR = 'multicolor'
-export const TWOSIDED = 'twosided'
-
-const topLevelFields = [
-  [TYPE, 'Type'],
-  [SUPERTYPE, 'Supertype'],
-  [SUBTYPE, 'Subtype'],
-  [CMC, 'Converted Mana Cost'],
-  [POWER, 'Power'],
-  [TOUGHNESS, 'Toughness'],
-  [LOYALTY, 'Loyalty'],
-  [NAME, 'Name Text'],
-  [RULES, 'Rules Text'],
-  [COLOR, 'Color'],
-  [MONOCOLOR, 'Is Monocolor'],
-  [MULTICOLOR, 'Is Multicolor'],
-  [TWOSIDED, 'Is Two-Sided'],
-]
+import Rule from './CompuPurposes/Rule'
 
 export default {
+  components: { Rule },
+
   props: {
-    rule: {
+    compuPurpose: {
       type: Object,
-      default() {
-        return {}
-      },
+      required: true,
     },
   },
-  data() {
-    return {
-      topLevelFields,
-      field: this.rule.field,
-      conditions: this.rule.conditions || [{}],
-    }
-  },
 
-  computed: {},
+  computed: {
+    rules() {
+      return this.compuPurpose.rules || [{}]
+    },
+  },
 
   methods: {
-    onSelectField(field) {
-      this.field = field
-      this.$emit('onRuleChange', {
-        field: this.field,
-        conditions: this.conditions,
+    changeTitle(title) {
+      this.$emit('change', {
+        ...this.compuPurpose,
+        title,
       })
     },
 
-    onConditionsChange(conditions) {
-      this.conditions = conditions
-      this.$emit('onRuleChange', {
-        field: this.field,
-        conditions: this.conditions,
-      })
-    },
-
-    fieldToComponent(field) {
-      switch (field) {
-        case 'type':
-          return Type
-        default:
-          return 'div'
+    changeRule(index, rule) {
+      const update = {
+        ...this.compuPurpose,
+        rules: [
+          ...this.rules.slice(0, index),
+          rule,
+          ...this.rules.slice(index + 1),
+        ],
       }
+      this.$emit('change', update)
+    },
+
+    addEmptyRule() {
+      const update = {
+        ...this.compuPurpose,
+        rules: [...this.rules, {}],
+      }
+      this.$emit('change', update)
     },
   },
 }

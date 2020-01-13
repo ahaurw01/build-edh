@@ -12,6 +12,7 @@
         </option>
       </BSelect>
       <BButton
+        v-if="conditions.length > 1"
         type="is-danger"
         icon-right="delete"
         @click="deleteCondition(index)"
