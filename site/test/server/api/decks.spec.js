@@ -54,6 +54,7 @@ describe('deck endpoints', () => {
             source: expect.any(Object),
           },
         ],
+        compuPurposes: [],
       })
     })
   })
