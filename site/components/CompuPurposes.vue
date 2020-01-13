@@ -12,7 +12,7 @@
       class="button"
       @click="addEmptyCompuPurpose"
     >
-      And...
+      Create
     </button>
   </div>
 </template>

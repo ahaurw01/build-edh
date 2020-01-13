@@ -266,11 +266,7 @@ export const getters = {
   description: state => state.deck.description || 'No description',
   descriptionParagraphs: state =>
     (state.deck.description || 'No description').split('\n'),
-  compuPurposes: state => {
-    let compuPurposes = get(state, 'deck.compuPurposes', [{}])
-    if (!compuPurposes.length) compuPurposes = [{}]
-    return compuPurposes
-  },
+  compuPurposes: state => state.deck.compuPurposes,
   commanders: state => state.deck.commanders,
   canAddCommander: state =>
     state.deck.commanders.length === 0 ||
