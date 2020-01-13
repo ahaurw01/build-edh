@@ -11,6 +11,11 @@
           {{ type }}
         </option>
       </BSelect>
+      <BButton
+        type="is-danger"
+        icon-right="delete"
+        @click="deleteCondition(index)"
+      />
     </div>
     <button
       v-if="canAddAnotherCondition"
@@ -67,6 +72,13 @@ export default {
 
     addAnotherCondition() {
       this.$emit('onConditionsChange', [...this.conditions, {}])
+    },
+
+    deleteCondition(index) {
+      this.$emit('onConditionsChange', [
+        ...this.conditions.slice(0, index),
+        ...this.conditions.slice(index + 1),
+      ])
     },
   },
 }
