@@ -5,6 +5,7 @@
       :key="rule.field + index"
       :rule="rule"
       @onRuleChange="onRuleChange(index, $event)"
+      @delete="deleteRule(index)"
     />
     <button v-if="allRulesAreValid" class="button" @click="addEmptyRule">
       And...
@@ -47,18 +48,20 @@ export default {
 
   computed: {
     allRulesAreValid() {
-      return this.allRules.every(rule => {
-        switch (rule.field) {
-          case TYPE:
-            return rule.conditions.every(c => c.type)
-          default:
-            return false
-        }
-      })
+      return this.allRules.every(rule => this.isRuleValid(rule))
     },
   },
 
   methods: {
+    isRuleValid(rule) {
+      switch (rule.field) {
+        case TYPE:
+          return rule.conditions.every(c => c.type)
+        default:
+          return false
+      }
+    },
+
     onRuleChange(index, rule) {
       this.allRules = [
         ...this.allRules.slice(0, index),
@@ -71,6 +74,14 @@ export default {
 
     addEmptyRule() {
       this.allRules = [...this.allRules, {}]
+      this.$emit('onChange', this.allRules)
+    },
+
+    deleteRule(index) {
+      this.allRules = [
+        ...this.allRules.slice(0, index),
+        ...this.allRules.slice(index + 1),
+      ]
       this.$emit('onChange', this.allRules)
     },
   },

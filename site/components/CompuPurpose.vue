@@ -1,5 +1,6 @@
 <template>
   <div class="box">
+    <BButton type="is-danger" icon-right="delete" @click="$emit('delete')" />
     <BSelect placeholder="Select a field" :value="field" @input="onSelectField">
       <option
         v-for="[key, displayName] in topLevelFields"
