@@ -10,7 +10,33 @@
 </template>
 
 <script>
-import CompuPurpose from './CompuPurpose'
+import CompuPurpose, {
+  TYPE,
+  // SUPERTYPE,
+  // SUBTYPE,
+  // CMC,
+  // POWER,
+  // TOUGHNESS,
+  // LOYALTY,
+  // NAME,
+  // RULES,
+  // COLOR,
+  // MONOCOLOR,
+  // MULTICOLOR,
+  // TWOSIDED,
+} from './CompuPurpose'
+
+function areAllRulesValid(rules) {
+  return rules.every(rule => {
+    switch (rule.field) {
+      case TYPE:
+        return rule.conditions.every(c => c.type)
+      default:
+        return false
+    }
+  })
+}
+
 export default {
   components: { CompuPurpose },
   props: {
@@ -37,7 +63,7 @@ export default {
         ...this.allRules.slice(index + 1),
       ]
 
-      this.$emit('onChange', this.allRules)
+      if (areAllRulesValid(this.allRules)) this.$emit('onChange', this.allRules)
     },
   },
 }

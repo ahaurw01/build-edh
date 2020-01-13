@@ -21,20 +21,34 @@
 <script>
 import Type from './CompuPurposes/Type'
 
+export const TYPE = 'type'
+export const SUPERTYPE = 'supertype'
+export const SUBTYPE = 'subtype'
+export const CMC = 'cmc'
+export const POWER = 'power'
+export const TOUGHNESS = 'toughness'
+export const LOYALTY = 'loyalty'
+export const NAME = 'name'
+export const RULES = 'rules'
+export const COLOR = 'color'
+export const MONOCOLOR = 'monocolor'
+export const MULTICOLOR = 'multicolor'
+export const TWOSIDED = 'twosided'
+
 const topLevelFields = [
-  ['type', 'Type'],
-  ['supertype', 'Supertype'],
-  ['subtype', 'Subtype'],
-  ['cmc', 'Converted Mana Cost'],
-  ['power', 'Power'],
-  ['toughness', 'Toughness'],
-  ['loyalty', 'Loyalty'],
-  ['name', 'Name Text'],
-  ['rules', 'Rules Text'],
-  ['color', 'Color'],
-  ['monocolor', 'Is Monocolor'],
-  ['multicolor', 'Is Multicolor'],
-  ['twosided', 'Is Two-Sided'],
+  [TYPE, 'Type'],
+  [SUPERTYPE, 'Supertype'],
+  [SUBTYPE, 'Subtype'],
+  [CMC, 'Converted Mana Cost'],
+  [POWER, 'Power'],
+  [TOUGHNESS, 'Toughness'],
+  [LOYALTY, 'Loyalty'],
+  [NAME, 'Name Text'],
+  [RULES, 'Rules Text'],
+  [COLOR, 'Color'],
+  [MONOCOLOR, 'Is Monocolor'],
+  [MULTICOLOR, 'Is Multicolor'],
+  [TWOSIDED, 'Is Two-Sided'],
 ]
 
 export default {
