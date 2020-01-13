@@ -1,6 +1,5 @@
 <template>
   <div class="box">
-    <BButton v-if="!editing" icon-right="pencil" @click="$emit('edit')" />
     <BField v-if="editing" label="Description">
       <BInput
         placeholder="Title"
@@ -8,7 +7,20 @@
         @input="changeTitle"
       />
     </BField>
-    <h4 v-else class="title is-4">{{ compuPurpose.title }}</h4>
+
+    <div v-else class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <h4 class="title is-4">{{ compuPurpose.title }}</h4>
+        </div>
+      </div>
+      <div class="level-right">
+        <div class="level-item">
+          <BButton icon-right="pencil" type="is-info" @click="$emit('edit')" />
+        </div>
+      </div>
+    </div>
+
     <Rule
       v-for="(rule, index) in rules"
       :key="rule.field + index"
@@ -78,4 +90,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.title {
+  max-width: 17rem;
+}
+</style>

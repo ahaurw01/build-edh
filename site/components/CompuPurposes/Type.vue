@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="type">
     <div v-if="editing">
       <div
         v-for="(condition, index) in conditions"
@@ -101,4 +101,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.type {
+  display: inline;
+}
+</style>

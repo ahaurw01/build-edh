@@ -20,7 +20,7 @@
         {{ displayName }}
       </option>
     </BSelect>
-    <span v-else>{{ fieldDisplayName }}</span>
+    <b v-else>{{ fieldDisplayName }}</b>
 
     <component
       :is="fieldToComponent(field)"
