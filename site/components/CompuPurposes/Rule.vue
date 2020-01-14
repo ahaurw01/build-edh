@@ -25,7 +25,7 @@
     <component
       :is="fieldToComponent(field)"
       v-if="field"
-      :conditions="conditions"
+      :conditions="rule.conditions"
       :editing="editing"
       @onConditionsChange="onConditionsChange"
     /></div
@@ -81,11 +81,6 @@ export default {
   data() {
     return {
       topLevelFields,
-      field: this.rule.field,
-      conditions:
-        this.rule.conditions && this.rule.conditions.length
-          ? this.rule.conditions
-          : [{}],
     }
   },
 
@@ -94,22 +89,30 @@ export default {
       const pair = topLevelFields.find(([field]) => field === this.field)
       return pair ? pair[1] : 'None'
     },
+
+    field() {
+      return this.rule.field
+    },
+
+    conditions() {
+      return this.rule.conditions && this.rule.conditions.length
+        ? this.rule.conditions
+        : [{}]
+    },
   },
 
   methods: {
     onSelectField(field) {
-      this.field = field
       this.$emit('change', {
-        field: this.field,
+        field,
         conditions: this.conditions,
       })
     },
 
     onConditionsChange(conditions) {
-      this.conditions = conditions
       this.$emit('change', {
         field: this.field,
-        conditions: this.conditions,
+        conditions,
       })
     },
 
