@@ -1,6 +1,9 @@
 <template>
   <form @submit.prevent="$emit('save', localCompuPurpose)">
     <div class="modal-card" style="width: auto">
+      <header class="modal-card-head">
+        <p class="modal-card-title"><BIcon icon="pencil" /> Computed Purpose</p>
+      </header>
       <section class="modal-card-body">
         <CompuPurpose
           :compu-purpose="localCompuPurpose"
