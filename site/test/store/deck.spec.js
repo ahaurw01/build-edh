@@ -68,9 +68,10 @@ describe('Deck Store', () => {
     describe('cardGroupings', () => {
       test('is empty array for no cards', () => {
         const the99 = []
+        const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99 })
+        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
 
         expect(result).toEqual([])
       })
@@ -110,9 +111,10 @@ describe('Deck Store', () => {
             purposes: ['Ramp'],
           },
         ]
+        const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99 })
+        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
 
         expect(result).toEqual([
           {
@@ -203,9 +205,10 @@ describe('Deck Store', () => {
             purposes: [],
           },
         ]
+        const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99 })
+        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
 
         expect(result).toEqual([
           {
@@ -314,9 +317,10 @@ describe('Deck Store', () => {
             purposes: [],
           },
         ]
+        const compuPurposeHash = {}
         const state = { usePurposeGroups: false }
 
-        const result = getters.cardGroupings(state, { the99 })
+        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
 
         expect(result).toEqual([
           {
