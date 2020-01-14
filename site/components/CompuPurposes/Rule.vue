@@ -54,6 +54,7 @@
 
 <script>
 import Type from './Type'
+import Supertype from './Supertype'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -143,8 +144,10 @@ export default {
 
     fieldToComponent(field) {
       switch (field) {
-        case 'type':
+        case TYPE:
           return Type
+        case SUPERTYPE:
+          return Supertype
         default:
           return 'div'
       }
