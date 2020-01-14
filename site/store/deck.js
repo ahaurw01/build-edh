@@ -392,20 +392,20 @@ export const getters = {
             switch (field) {
               case 'type':
                 return [...(front.types || []), ...(back.types || [])].includes(
-                  condition.type
+                  condition.value
                 )
               case 'subtype':
                 return [
                   ...(front.subTypes || []),
                   ...(back.subTypes || []),
-                ].includes(condition.type)
+                ].includes(condition.value)
               case 'supertype':
                 return [
                   ...(front.superTypes || []),
                   ...(back.superTypes || []),
-                ].includes(condition.type)
+                ].includes(condition.value)
               case 'cmc':
-                return source.cmc === condition.type
+                return source.cmc === condition.value
               default:
                 return false
             }

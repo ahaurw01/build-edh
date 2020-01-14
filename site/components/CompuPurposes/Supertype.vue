@@ -1,17 +1,17 @@
 <template>
-  <FlexType
+  <FlexValue
     v-bind="$props"
-    :types="['Basic', 'Legendary', 'Snow', 'World']"
-    type-display-name="Supertype"
+    :values="['Basic', 'Legendary', 'Snow', 'World']"
+    value-display-name="Supertype"
     v-on="$listeners"
   />
 </template>
 
 <script>
-import FlexType from './FlexType'
+import FlexValue from './FlexValue'
 
 export default {
-  components: { FlexType },
+  components: { FlexValue },
   props: {
     conditions: {
       type: Array,

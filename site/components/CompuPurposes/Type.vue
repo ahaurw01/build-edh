@@ -1,14 +1,14 @@
 <template>
-  <FlexType
+  <FlexValue
     v-bind="$props"
-    :types="types"
-    type-display-name="Type"
+    :values="types"
+    value-display-name="Type"
     v-on="$listeners"
   />
 </template>
 
 <script>
-import FlexType from './FlexType'
+import FlexValue from './FlexValue'
 
 const types = [
   'Instant',
@@ -21,7 +21,7 @@ const types = [
   'Tribal',
 ]
 export default {
-  components: { FlexType },
+  components: { FlexValue },
   props: {
     conditions: {
       type: Array,

@@ -1,18 +1,18 @@
 <template>
-  <FlexType
+  <FlexValue
     v-bind="$props"
-    :types="subtypes"
-    type-display-name="Subtype"
+    :values="subtypes"
+    value-display-name="Subtype"
     v-on="$listeners"
   />
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import FlexType from './FlexType'
+import FlexValue from './FlexValue'
 
 export default {
-  components: { FlexType },
+  components: { FlexValue },
 
   props: {
     conditions: {

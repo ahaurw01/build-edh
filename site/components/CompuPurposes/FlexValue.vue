@@ -1,20 +1,20 @@
 <template>
-  <div class="type">
+  <div class="value">
     <div v-if="editing">
       <div
         v-for="(condition, index) in conditions"
-        :key="condition.type + index"
+        :key="condition.value + index"
         class="level is-mobile"
       >
         <div class="level-item">is:</div>
         <div class="level-item">
           <BSelect
-            :placeholder="`Select ${typeDisplayName}`"
-            :value="condition.type"
-            @input="onSelectType(index, $event)"
+            :placeholder="`Select ${valueDisplayName}`"
+            :value="condition.value"
+            @input="onSelectValue(index, $event)"
           >
-            <option v-for="type in types" :key="type" :value="type">
-              {{ type }}
+            <option v-for="value in values" :key="value" :value="value">
+              {{ value }}
             </option>
           </BSelect>
         </div>
@@ -46,11 +46,11 @@ import last from 'lodash/last'
 
 export default {
   props: {
-    types: {
+    values: {
       type: Array,
       required: true,
     },
-    typeDisplayName: {
+    valueDisplayName: {
       type: String,
       required: true,
     },
@@ -70,19 +70,19 @@ export default {
 
   computed: {
     canAddAnotherCondition() {
-      return this.editing && !!get(last(this.conditions), 'type')
+      return this.editing && !!get(last(this.conditions), 'value')
     },
 
     displayString() {
-      return `is ${this.conditions.map(c => c.type).join(' or ')}`
+      return `is ${this.conditions.map(c => c.value).join(' or ')}`
     },
   },
 
   methods: {
-    onSelectType(index, type) {
+    onSelectValue(index, value) {
       this.$emit('onConditionsChange', [
         ...this.conditions.slice(0, index),
-        { type },
+        { value },
         ...this.conditions.slice(index + 1),
       ])
     },
@@ -102,7 +102,7 @@ export default {
 </script>
 
 <style scoped>
-.type {
+.value {
   display: inline;
 }
 </style>

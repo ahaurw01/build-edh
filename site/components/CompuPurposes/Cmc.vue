@@ -1,18 +1,18 @@
 <template>
-  <FlexType
+  <FlexValue
     v-bind="$props"
-    :types="convertedManaCosts"
-    type-display-name="CMC"
+    :values="convertedManaCosts"
+    value-display-name="CMC"
     v-on="$listeners"
   />
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import FlexType from './FlexType'
+import FlexValue from './FlexValue'
 
 export default {
-  components: { FlexType },
+  components: { FlexValue },
 
   props: {
     conditions: {

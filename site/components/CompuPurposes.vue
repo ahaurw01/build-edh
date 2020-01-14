@@ -79,7 +79,7 @@ export default {
         case SUPERTYPE:
         case SUBTYPE:
         case CMC:
-          return rule.conditions.every(c => c.type)
+          return rule.conditions.every(c => c.value)
         default:
           return false
       }
