@@ -7,8 +7,12 @@
       @edit="editCompuPurpose(index)"
     />
 
-    <BButton v-if="allCompuPurposesAreValid" @click="addEmptyCompuPurpose">
-      Create
+    <BButton
+      v-if="allCompuPurposesAreValid"
+      type="is-dark"
+      @click="addEmptyCompuPurpose"
+    >
+      Create new computed purpose
     </BButton>
 
     <BModal :active.sync="isEditModalActive" has-modal-card>
