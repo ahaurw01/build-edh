@@ -28,13 +28,9 @@
           />
         </div>
       </div>
-      <div class="level">
+      <div v-if="canAddAnotherCondition" class="level">
         <div class="level-item">
-          <button
-            v-if="canAddAnotherCondition"
-            class="button"
-            @click="addAnotherCondition"
-          >
+          <button class="button" @click="addAnotherCondition">
             Or...
           </button>
         </div>

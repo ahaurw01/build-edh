@@ -55,6 +55,7 @@
 <script>
 import Type from './Type'
 import Supertype from './Supertype'
+import Subtype from './Subtype'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -148,6 +149,8 @@ export default {
           return Type
         case SUPERTYPE:
           return Supertype
+        case SUBTYPE:
+          return Subtype
         default:
           return 'div'
       }

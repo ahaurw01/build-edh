@@ -367,6 +367,14 @@ export const getters = {
       'purpose',
     ])
   },
+
+  subtypes: (state, getters) => {
+    const { commanders, the99 } = getters
+    const getSubtypes = c => get(c, 'source.faces[0].subTypes')
+    return sortBy(
+      uniq(flatten([...commanders.map(getSubtypes), ...the99.map(getSubtypes)]))
+    )
+  },
 }
 
 /**
