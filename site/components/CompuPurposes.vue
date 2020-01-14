@@ -29,8 +29,8 @@
 <script>
 import {
   TYPE,
-  // SUPERTYPE,
-  // SUBTYPE,
+  SUPERTYPE,
+  SUBTYPE,
   // CMC,
   // POWER,
   // TOUGHNESS,
@@ -75,6 +75,8 @@ export default {
     isRuleValid(rule) {
       switch (rule.field) {
         case TYPE:
+        case SUPERTYPE:
+        case SUBTYPE:
           return rule.conditions.every(c => c.type)
         default:
           return false
