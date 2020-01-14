@@ -309,7 +309,8 @@ export const getters = {
   //
   // Look at state.usePurposeGroups to determine grouping strategy.
   //
-  cardGroupings: ({ usePurposeGroups }, { the99 }) => {
+  cardGroupings: ({ usePurposeGroups }, { the99, compuPurposeHash }) => {
+    const hashByCompuPurpose = usePurposeGroups ? compuPurposeHash : {}
     const [hashByPurpose, hashByType] = the99.reduce(
       ([purposeHash, typeHash], card) => {
         const { purposes } = card
@@ -354,6 +355,11 @@ export const getters = {
         purpose,
         cards: makeGroupedCards(hashByPurpose, purpose),
       })),
+      ...Object.keys(hashByCompuPurpose).map(purpose => ({
+        purpose,
+        isCompuPurposeGroup: true,
+        cards: makeGroupedCards(hashByCompuPurpose, purpose),
+      })),
       ...Object.keys(hashByType).map(purpose => ({
         purpose,
         isAutomaticGroup: true,
@@ -368,8 +374,41 @@ export const getters = {
     ])
   },
 
-  subtypes: (state, getters) => {
-    const { commanders, the99 } = getters
+  // Hash of compuPurpose title => cards that match the rules.
+  //
+  compuPurposeHash: (state, { the99, compuPurposes }) => {
+    return compuPurposes.reduce((hash, compuPurpose) => {
+      hash[compuPurpose.title] = the99.filter(({ source }) => {
+        // Check that the card's details matches the rules and conditions.
+        return compuPurpose.rules.every(({ field, conditions }) => {
+          return conditions.some(condition => {
+            const [front = {}, back = {}] = source.faces
+            switch (field) {
+              case 'type':
+                return [...(front.types || []), ...(back.types || [])].includes(
+                  condition.type
+                )
+              case 'subtype':
+                return [
+                  ...(front.subTypes || []),
+                  ...(back.subTypes || []),
+                ].includes(condition.type)
+              case 'supertype':
+                return [
+                  ...(front.superTypes || []),
+                  ...(back.superTypes || []),
+                ].includes(condition.type)
+              default:
+                return false
+            }
+          })
+        })
+      })
+      return hash
+    }, {})
+  },
+
+  subtypes: (state, { commanders, the99 }) => {
     const getSubtypes = c => get(c, 'source.faces[0].subTypes')
     return sortBy(
       uniq(flatten([...commanders.map(getSubtypes), ...the99.map(getSubtypes)]))

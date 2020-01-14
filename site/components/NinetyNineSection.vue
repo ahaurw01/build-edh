@@ -16,6 +16,7 @@
       :key="grouping.purpose"
       :title="grouping.purpose"
       :is-auto="grouping.isAutomaticGroup"
+      :is-compu="grouping.isCompuPurposeGroup"
       :cards="grouping.cards"
       @edit-card="editCard"
     />
