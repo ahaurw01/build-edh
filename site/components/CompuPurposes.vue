@@ -32,7 +32,7 @@ import {
   TYPE,
   SUPERTYPE,
   SUBTYPE,
-  // CMC,
+  CMC,
   // POWER,
   // TOUGHNESS,
   // LOYALTY,
@@ -78,6 +78,7 @@ export default {
         case TYPE:
         case SUPERTYPE:
         case SUBTYPE:
+        case CMC:
           return rule.conditions.every(c => c.type)
         default:
           return false

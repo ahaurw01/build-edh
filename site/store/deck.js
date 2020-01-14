@@ -404,6 +404,8 @@ export const getters = {
                   ...(front.superTypes || []),
                   ...(back.superTypes || []),
                 ].includes(condition.type)
+              case 'cmc':
+                return source.cmc === condition.type
               default:
                 return false
             }
@@ -418,6 +420,13 @@ export const getters = {
     const getSubtypes = c => get(c, 'source.faces[0].subTypes')
     return sortBy(
       uniq(flatten([...commanders.map(getSubtypes), ...the99.map(getSubtypes)]))
+    )
+  },
+
+  convertedManaCosts: (state, { commanders, the99 }) => {
+    const getCMC = c => get(c, 'source.cmc')
+    return sortBy(
+      uniq(flatten([...commanders.map(getCMC), ...the99.map(getCMC)]))
     )
   },
 }

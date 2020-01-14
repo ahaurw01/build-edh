@@ -56,6 +56,7 @@
 import Type from './Type'
 import Supertype from './Supertype'
 import Subtype from './Subtype'
+import Cmc from './Cmc'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -151,6 +152,8 @@ export default {
           return Supertype
         case SUBTYPE:
           return Subtype
+        case CMC:
+          return Cmc
         default:
           return 'div'
       }
