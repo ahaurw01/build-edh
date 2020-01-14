@@ -105,7 +105,7 @@ export default {
     onSelectField(field) {
       this.$emit('change', {
         field,
-        conditions: this.conditions,
+        conditions: [{}],
       })
     },
 
