@@ -311,6 +311,9 @@ export const getters = {
   //
   cardGroupings: ({ usePurposeGroups }, { the99, compuPurposeHash }) => {
     const hashByCompuPurpose = usePurposeGroups ? compuPurposeHash : {}
+    const cardNamesInCompuPurposeGroups = flatten(
+      Object.values(compuPurposeHash)
+    ).map(c => c.source.name)
     const [hashByPurpose, hashByType] = the99.reduce(
       ([purposeHash, typeHash], card) => {
         const { purposes } = card
@@ -318,7 +321,10 @@ export const getters = {
           purposes.forEach(purpose => {
             purposeHash[purpose] = [...(purposeHash[purpose] || []), card]
           })
-        } else {
+        } else if (
+          !usePurposeGroups ||
+          !cardNamesInCompuPurposeGroups.includes(card.source.name)
+        ) {
           const type = dominantCardType(card)
           typeHash[type] = [...(typeHash[type] || []), card]
         }
