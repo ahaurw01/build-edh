@@ -9,7 +9,7 @@
         />
       </section>
       <footer class="modal-card-foot">
-        <div class="level" style="width: 100%">
+        <div class="level is-mobile" style="width: 100%">
           <div class="level-left">
             <div class="level-item">
               <button class="button" type="button" @click="$parent.close()">

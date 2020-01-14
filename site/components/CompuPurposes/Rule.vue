@@ -1,35 +1,56 @@
 <template>
   <div class="box">
-    <BButton
-      v-if="editing"
-      type="is-danger"
-      icon-right="delete"
-      @click="$emit('delete')"
-    />
-    <BSelect
-      v-if="editing"
-      placeholder="Select a field"
-      :value="field"
-      @input="onSelectField"
-    >
-      <option
-        v-for="[key, displayName] in topLevelFields"
-        :key="key"
-        :value="key"
-      >
-        {{ displayName }}
-      </option>
-    </BSelect>
-    <b v-else>{{ fieldDisplayName }}</b>
+    <div v-if="editing" class="level">
+      <div class="level-left select-container">
+        <div class="level is-mobile">
+          <div class="level-item">
+            <BButton
+              type="is-danger"
+              icon-right="delete"
+              :disabled="!canDelete"
+              @click="$emit('delete')"
+            />
+          </div>
+          <div class="level-item">
+            <BSelect
+              v-if="editing"
+              placeholder="Select a field"
+              :value="field"
+              @input="onSelectField"
+            >
+              <option
+                v-for="[key, displayName] in topLevelFields"
+                :key="key"
+                :value="key"
+              >
+                {{ displayName }}
+              </option>
+            </BSelect>
+          </div>
+        </div>
+      </div>
 
-    <component
-      :is="fieldToComponent(field)"
-      v-if="field"
-      :conditions="rule.conditions"
-      :editing="editing"
-      @onConditionsChange="onConditionsChange"
-    /></div
-></template>
+      <div class="level-right">
+        <component
+          :is="fieldToComponent(field)"
+          v-if="field"
+          :conditions="rule.conditions"
+          editing
+          @onConditionsChange="onConditionsChange"
+        />
+      </div>
+    </div>
+
+    <div v-else>
+      <b>{{ fieldDisplayName }}</b>
+      <component
+        :is="fieldToComponent(field)"
+        v-if="field"
+        :conditions="rule.conditions"
+      />
+    </div>
+  </div>
+</template>
 
 <script>
 import Type from './Type'
@@ -75,6 +96,10 @@ export default {
       default() {
         return false
       },
+    },
+    canDelete: {
+      type: Boolean,
+      required: true,
     },
   },
 
@@ -128,4 +153,10 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+@media (min-width: 768px) {
+  .select-container {
+    margin-right: 1rem;
+  }
+}
+</style>

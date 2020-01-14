@@ -8,7 +8,7 @@
       />
     </BField>
 
-    <div v-else class="level">
+    <div v-else class="level is-mobile">
       <div class="level-left">
         <div class="level-item">
           <h4 class="title is-4">{{ compuPurpose.title }}</h4>
@@ -26,9 +26,11 @@
       :key="rule.field + index"
       :rule="rule"
       :editing="editing"
+      :can-delete="rules.length > 1"
       @change="changeRule(index, $event)"
+      @delete="deleteRule(index)"
     />
-    <button v-if="editing" class="button" @click="addEmptyRule">
+    <button v-if="editing" class="button" @click.prevent="addEmptyRule">
       And...
     </button>
   </div>
@@ -83,6 +85,14 @@ export default {
       const update = {
         ...this.compuPurpose,
         rules: [...this.rules, {}],
+      }
+      this.$emit('change', update)
+    },
+
+    deleteRule(index) {
+      const update = {
+        ...this.compuPurpose,
+        rules: [...this.rules.slice(0, index), ...this.rules.slice(index + 1)],
       }
       this.$emit('change', update)
     },

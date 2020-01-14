@@ -4,33 +4,43 @@
       <div
         v-for="(condition, index) in conditions"
         :key="condition.type + index"
+        class="level is-mobile"
       >
-        is:
-        <BSelect
-          placeholder="Select a type"
-          :value="condition.type"
-          @input="onSelectType(index, $event)"
-        >
-          <option v-for="type in types" :key="type" :value="type">
-            {{ type }}
-          </option>
-        </BSelect>
-        <BButton
-          v-if="conditions.length > 1"
-          type="is-danger"
-          icon-right="delete"
-          @click="deleteCondition(index)"
-        />
+        <div class="level-item">is:</div>
+        <div class="level-item">
+          <BSelect
+            placeholder="Select a type"
+            :value="condition.type"
+            @input="onSelectType(index, $event)"
+          >
+            <option v-for="type in types" :key="type" :value="type">
+              {{ type }}
+            </option>
+          </BSelect>
+        </div>
+
+        <div class="level-item">
+          <BButton
+            :disabled="conditions.length < 2"
+            type="is-danger"
+            icon-right="delete"
+            @click="deleteCondition(index)"
+          />
+        </div>
+      </div>
+      <div class="level">
+        <div class="level-item">
+          <button
+            v-if="canAddAnotherCondition"
+            class="button"
+            @click="addAnotherCondition"
+          >
+            Or...
+          </button>
+        </div>
       </div>
     </div>
     <span v-else>{{ displayString }}</span>
-    <button
-      v-if="canAddAnotherCondition"
-      class="button"
-      @click="addAnotherCondition"
-    >
-      Or...
-    </button>
   </div>
 </template>
 
