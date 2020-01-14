@@ -10,6 +10,7 @@
     <BButton
       v-if="allCompuPurposesAreValid"
       type="is-dark"
+      icon-left="auto-fix"
       @click="addEmptyCompuPurpose"
     >
       Create new computed purpose
