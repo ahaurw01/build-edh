@@ -406,6 +406,15 @@ export const getters = {
                 ].includes(condition.value)
               case 'cmc':
                 return source.cmc === condition.value
+              case 'power':
+                return [front.power || -999, back.power || -999].includes(
+                  condition.value
+                )
+              case 'toughness':
+                return [
+                  front.toughness || -999,
+                  back.toughness || -999,
+                ].includes(condition.value)
               default:
                 return false
             }
@@ -427,6 +436,22 @@ export const getters = {
     const getCMC = c => get(c, 'source.cmc')
     return sortBy(
       uniq(flatten([...commanders.map(getCMC), ...the99.map(getCMC)]))
+    )
+  },
+
+  powers: (state, { commanders, the99 }) => {
+    const getPower = c => get(c, 'source.faces[0].power')
+    return sortBy(
+      uniq(flatten([...commanders.map(getPower), ...the99.map(getPower)]))
+    )
+  },
+
+  toughnesses: (state, { commanders, the99 }) => {
+    const getToughness = c => get(c, 'source.faces[0].toughness')
+    return sortBy(
+      uniq(
+        flatten([...commanders.map(getToughness), ...the99.map(getToughness)])
+      )
     )
   },
 }

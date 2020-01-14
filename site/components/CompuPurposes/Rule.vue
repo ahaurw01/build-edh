@@ -57,6 +57,8 @@ import Type from './Type'
 import Supertype from './Supertype'
 import Subtype from './Subtype'
 import Cmc from './Cmc'
+import Power from './Power'
+import Toughness from './Toughness'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -154,6 +156,10 @@ export default {
           return Subtype
         case CMC:
           return Cmc
+        case POWER:
+          return Power
+        case TOUGHNESS:
+          return Toughness
         default:
           return 'div'
       }
