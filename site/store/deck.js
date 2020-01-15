@@ -415,6 +415,10 @@ export const getters = {
                   front.toughness || -999,
                   back.toughness || -999,
                 ].includes(condition.value)
+              case 'loyalty':
+                return [front.loyalty || -999, back.loyalty || -999].includes(
+                  condition.value
+                )
               default:
                 return false
             }
@@ -452,6 +456,13 @@ export const getters = {
       uniq(
         flatten([...commanders.map(getToughness), ...the99.map(getToughness)])
       )
+    )
+  },
+
+  loyalties: (state, { commanders, the99 }) => {
+    const getLoyalty = c => get(c, 'source.faces[0].loyalty')
+    return sortBy(
+      uniq(flatten([...commanders.map(getLoyalty), ...the99.map(getLoyalty)]))
     )
   },
 }

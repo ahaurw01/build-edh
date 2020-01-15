@@ -35,7 +35,7 @@ import {
   CMC,
   POWER,
   TOUGHNESS,
-  // LOYALTY,
+  LOYALTY,
   // NAME,
   // RULES,
   // COLOR,
@@ -81,6 +81,7 @@ export default {
         case CMC:
         case POWER:
         case TOUGHNESS:
+        case LOYALTY:
           return rule.conditions.every(c => c.value)
         default:
           return false

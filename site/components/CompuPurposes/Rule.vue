@@ -59,6 +59,7 @@ import Subtype from './Subtype'
 import Cmc from './Cmc'
 import Power from './Power'
 import Toughness from './Toughness'
+import Loyalty from './Loyalty'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -160,6 +161,8 @@ export default {
           return Power
         case TOUGHNESS:
           return Toughness
+        case LOYALTY:
+          return Loyalty
         default:
           return 'div'
       }
