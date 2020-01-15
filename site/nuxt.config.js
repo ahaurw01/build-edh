@@ -45,7 +45,7 @@ module.exports = {
    ** Axios module configuration
    */
   axios: {
-    baseURL: 'http://localhost:3333',
+    baseURL: process.env.BASE_URL || 'http://localhost:3333',
   },
 
   /*
@@ -98,7 +98,7 @@ module.exports = {
   },
 
   server: {
-    port: 3333,
+    port: process.env.SERVER_PORT || 3333,
   },
   srcDir: 'site',
 }
