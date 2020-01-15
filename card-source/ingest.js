@@ -7,9 +7,10 @@ const mongoose = require('mongoose')
 const debug = require('debug')('ingest')
 
 const { Card } = require('../site/server/api/models')
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/buildedh'
 
 async function connectToDb() {
-  await mongoose.connect('mongodb://localhost:27017/buildedh')
+  await mongoose.connect(MONGO_URI)
   debug('connected to db')
 }
 
