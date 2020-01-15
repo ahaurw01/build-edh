@@ -386,38 +386,55 @@ export const getters = {
     return compuPurposes.reduce((hash, compuPurpose) => {
       hash[compuPurpose.title] = the99.filter(({ source }) => {
         // Check that the card's details matches the rules and conditions.
-        return compuPurpose.rules.every(({ field, conditions }) => {
-          return conditions.some(condition => {
+        // If "is" is true, we are checking that at least one condition of the
+        // rule matches the card.
+        // If "is" is false, we are checking that every condition of the rule
+        // does not match the card.
+        //
+        return compuPurpose.rules.every(({ field, conditions, is }) => {
+          const method = is ? 'some' : 'every'
+          return conditions[method](condition => {
             const [front = {}, back = {}] = source.faces
             switch (field) {
               case 'type':
-                return [...(front.types || []), ...(back.types || [])].includes(
-                  condition.value
+                return (
+                  [...(front.types || []), ...(back.types || [])].includes(
+                    condition.value
+                  ) === is
                 )
               case 'subtype':
-                return [
-                  ...(front.subTypes || []),
-                  ...(back.subTypes || []),
-                ].includes(condition.value)
+                return (
+                  [
+                    ...(front.subTypes || []),
+                    ...(back.subTypes || []),
+                  ].includes(condition.value) === is
+                )
               case 'supertype':
-                return [
-                  ...(front.superTypes || []),
-                  ...(back.superTypes || []),
-                ].includes(condition.value)
+                return (
+                  [
+                    ...(front.superTypes || []),
+                    ...(back.superTypes || []),
+                  ].includes(condition.value) === is
+                )
               case 'cmc':
                 return source.cmc === condition.value
               case 'power':
-                return [front.power || -999, back.power || -999].includes(
-                  condition.value
+                return (
+                  [front.power || -999, back.power || -999].includes(
+                    condition.value
+                  ) === is
                 )
               case 'toughness':
-                return [
-                  front.toughness || -999,
-                  back.toughness || -999,
-                ].includes(condition.value)
+                return (
+                  [front.toughness || -999, back.toughness || -999].includes(
+                    condition.value
+                  ) === is
+                )
               case 'loyalty':
-                return [front.loyalty || -999, back.loyalty || -999].includes(
-                  condition.value
+                return (
+                  [front.loyalty || -999, back.loyalty || -999].includes(
+                    condition.value
+                  ) === is
                 )
               default:
                 return false

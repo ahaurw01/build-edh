@@ -6,7 +6,6 @@
         :key="condition.value + index"
         class="level is-mobile"
       >
-        <div class="level-item">is:</div>
         <div class="level-item">
           <BSelect
             :placeholder="`Select ${valueDisplayName}`"
@@ -74,7 +73,7 @@ export default {
     },
 
     displayString() {
-      return `is ${this.conditions.map(c => c.value).join(' or ')}`
+      return this.conditions.map(c => c.value).join(' or ')
     },
   },
 

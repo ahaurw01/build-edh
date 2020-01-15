@@ -27,6 +27,12 @@
               </option>
             </BSelect>
           </div>
+          <div class="level-item">
+            <BSelect :value="is" @input="onIsChange">
+              <option :value="true">is</option>
+              <option :value="false">is not</option>
+            </BSelect>
+          </div>
         </div>
       </div>
 
@@ -42,7 +48,8 @@
     </div>
 
     <div v-else>
-      <b>{{ fieldDisplayName }}</b>
+      <b>{{ fieldDisplayName }} </b>
+      {{ is ? 'is' : 'is not' }}
       <component
         :is="fieldToComponent(field)"
         v-if="field"
@@ -130,12 +137,17 @@ export default {
         ? this.rule.conditions
         : [{}]
     },
+
+    is() {
+      return this.rule.is != null ? this.rule.is : true
+    },
   },
 
   methods: {
     onSelectField(field) {
       this.$emit('change', {
         field,
+        is: this.is,
         conditions: [{}],
       })
     },
@@ -143,7 +155,16 @@ export default {
     onConditionsChange(conditions) {
       this.$emit('change', {
         field: this.field,
+        is: this.is,
         conditions,
+      })
+    },
+
+    onIsChange(is) {
+      this.$emit('change', {
+        field: this.field,
+        is,
+        conditions: this.conditions,
       })
     },
 
