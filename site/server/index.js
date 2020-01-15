@@ -10,8 +10,10 @@ app.use(apiRouter.routes()).use(apiRouter.allowedMethods())
 
 config.dev = !(app.env === 'production')
 
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/buildedh'
+
 async function start() {
-  await mongoose.connect('mongodb://localhost:27017/buildedh')
+  await mongoose.connect(MONGO_URI)
   // Instantiate nuxt.js
   const nuxt = new Nuxt(config)
   await nuxt.ready()
