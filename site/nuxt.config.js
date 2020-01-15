@@ -98,7 +98,7 @@ module.exports = {
   },
 
   server: {
-    port: process.env.SERVER_PORT || 3333,
+    port: process.env.PORT || 3333,
   },
   srcDir: 'site',
 }
