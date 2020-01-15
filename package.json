@@ -49,7 +49,7 @@
   "scripts": {
     "test": "jest",
     "dev": "cross-env NODE_ENV=development nodemon site/server/index.js --watch site/server",
-    "build": "nuxt build",
+    "build": "nuxt build -c site/nuxt.config.js",
     "start": "cross-env NODE_ENV=production node site/server/index.js",
     "lint": "eslint -c site/.eslintrc.js --ext .js,.vue --ignore-path .gitignore .",
     "precommit": "npm run lint"
