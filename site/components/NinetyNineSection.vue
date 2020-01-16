@@ -1,7 +1,7 @@
 <template>
   <section>
     <h3 class="title is-3">
-      {{ title }}
+      The Deck
     </h3>
     <button
       v-if="canAddCard"
@@ -49,17 +49,11 @@ export default {
   },
 
   computed: {
-    title() {
-      return this.commanders.length === 2 ? 'The 98' : 'The 99'
-    },
     ...mapGetters(
-      ['commanders', 'the99', 'canAddCard', 'cardGroupings'].reduce(
-        (acc, key) => {
-          acc[key] = `deck/${key}`
-          return acc
-        },
-        {}
-      )
+      ['canAddCard', 'cardGroupings'].reduce((acc, key) => {
+        acc[key] = `deck/${key}`
+        return acc
+      }, {})
     ),
   },
   methods: {
