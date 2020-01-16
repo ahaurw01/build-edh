@@ -28,7 +28,7 @@
             </BSelect>
           </div>
           <div class="level-item">
-            <BSelect :value="is" @input="onIsChange">
+            <BSelect :value="is" :disabled="!field" @input="onIsChange">
               <option :value="true">{{ operators[0] }}</option>
               <option :value="false">{{ operators[1] }}</option>
             </BSelect>
