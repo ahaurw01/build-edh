@@ -418,7 +418,7 @@ export const getters = {
                   ].includes(condition.value) === is
                 )
               case 'cmc':
-                return source.cmc === condition.value
+                return (source.cmc === condition.value) === is
               case 'power':
                 return (
                   [front.power || -999, back.power || -999].includes(
