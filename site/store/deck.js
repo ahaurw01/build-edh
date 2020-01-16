@@ -3,6 +3,7 @@ import flatten from 'lodash/flatten'
 import sortBy from 'lodash/sortBy'
 import last from 'lodash/last'
 import get from 'lodash/get'
+import compact from 'lodash/compact'
 
 export const state = () => ({
   deck: null,
@@ -443,6 +444,8 @@ export const getters = {
               }
               case 'numcolors':
                 return ((front.colors || []).length === condition.value) === is
+              case 'name':
+                return new RegExp(condition.value, 'i').test(source.name)
               default:
                 return false
             }
@@ -470,7 +473,9 @@ export const getters = {
   powers: (state, { commanders, the99 }) => {
     const getPower = c => get(c, 'source.faces[0].power')
     return sortBy(
-      uniq(flatten([...commanders.map(getPower), ...the99.map(getPower)]))
+      uniq(
+        compact(flatten([...commanders.map(getPower), ...the99.map(getPower)]))
+      )
     )
   },
 
@@ -478,7 +483,9 @@ export const getters = {
     const getToughness = c => get(c, 'source.faces[0].toughness')
     return sortBy(
       uniq(
-        flatten([...commanders.map(getToughness), ...the99.map(getToughness)])
+        compact(
+          flatten([...commanders.map(getToughness), ...the99.map(getToughness)])
+        )
       )
     )
   },
@@ -486,7 +493,11 @@ export const getters = {
   loyalties: (state, { commanders, the99 }) => {
     const getLoyalty = c => get(c, 'source.faces[0].loyalty')
     return sortBy(
-      uniq(flatten([...commanders.map(getLoyalty), ...the99.map(getLoyalty)]))
+      uniq(
+        compact(
+          flatten([...commanders.map(getLoyalty), ...the99.map(getLoyalty)])
+        )
+      )
     )
   },
 

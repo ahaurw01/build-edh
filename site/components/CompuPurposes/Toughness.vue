@@ -2,7 +2,7 @@
   <FlexValue
     v-bind="$props"
     :values="toughnesses"
-    value-display-name="Power"
+    value-display-name="Toughness"
     v-on="$listeners"
   />
 </template>

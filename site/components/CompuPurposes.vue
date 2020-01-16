@@ -36,11 +36,10 @@ import {
   POWER,
   TOUGHNESS,
   LOYALTY,
-  // NAME,
+  NAME,
   // RULES,
   COLOR,
   NUMCOLORS,
-  // TWOSIDED,
 } from './CompuPurposes/Rule'
 import CompuPurpose from './CompuPurpose'
 import CompuPurposeModalForm from './CompuPurposeModalForm'
@@ -83,6 +82,7 @@ export default {
         case LOYALTY:
         case COLOR:
         case NUMCOLORS:
+        case NAME:
           return rule.conditions.every(c => c.value)
         default:
           return false

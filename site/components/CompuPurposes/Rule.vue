@@ -29,8 +29,8 @@
           </div>
           <div class="level-item">
             <BSelect :value="is" @input="onIsChange">
-              <option :value="true">is</option>
-              <option :value="false">is not</option>
+              <option :value="true">{{ operators[0] }}</option>
+              <option :value="false">{{ operators[1] }}</option>
             </BSelect>
           </div>
         </div>
@@ -49,7 +49,7 @@
 
     <div v-else>
       <b>{{ fieldDisplayName }} </b>
-      {{ is ? 'is' : 'is not' }}
+      {{ is ? operators[0] : operators[1] }}
       <component
         :is="fieldToComponent(field)"
         v-if="field"
@@ -69,6 +69,7 @@ import Toughness from './Toughness'
 import Loyalty from './Loyalty'
 import Color from './Color'
 import NumColors from './NumColors'
+import NameText from './NameText'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -81,7 +82,6 @@ export const NAME = 'name'
 export const RULES = 'rules'
 export const COLOR = 'color'
 export const NUMCOLORS = 'numcolors'
-export const TWOSIDED = 'twosided'
 
 const topLevelFields = [
   [TYPE, 'Type'],
@@ -95,7 +95,6 @@ const topLevelFields = [
   [RULES, 'Rules Text'],
   [COLOR, 'Color'],
   [NUMCOLORS, 'Number of Colors'],
-  [TWOSIDED, 'Is Two-Sided'],
 ]
 
 export default {
@@ -130,6 +129,16 @@ export default {
 
     field() {
       return this.rule.field
+    },
+
+    operators() {
+      switch (this.rule.field) {
+        case NAME:
+        case RULES:
+          return ['contains', 'does non contain']
+        default:
+          return ['is', 'is not']
+      }
     },
 
     conditions() {
@@ -188,6 +197,8 @@ export default {
           return Color
         case NUMCOLORS:
           return NumColors
+        case NAME:
+          return NameText
         default:
           return 'div'
       }
