@@ -68,9 +68,10 @@ describe('Deck Store', () => {
     describe('cardGroupings', () => {
       test('is empty array for no cards', () => {
         const the99 = []
+        const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99 })
+        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
 
         expect(result).toEqual([])
       })
@@ -110,9 +111,10 @@ describe('Deck Store', () => {
             purposes: ['Ramp'],
           },
         ]
+        const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99 })
+        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
 
         expect(result).toEqual([
           {
@@ -203,9 +205,10 @@ describe('Deck Store', () => {
             purposes: [],
           },
         ]
+        const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99 })
+        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
 
         expect(result).toEqual([
           {
@@ -314,9 +317,10 @@ describe('Deck Store', () => {
             purposes: [],
           },
         ]
+        const compuPurposeHash = {}
         const state = { usePurposeGroups: false }
 
-        const result = getters.cardGroupings(state, { the99 })
+        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
 
         expect(result).toEqual([
           {
@@ -375,6 +379,116 @@ describe('Deck Store', () => {
             ],
           },
         ])
+      })
+    })
+
+    describe('compuPurposeHash', () => {
+      test('type', () => {
+        const the99 = [
+          { source: { faces: [{ types: ['Artifact', 'Creature'] }] } },
+          { source: { faces: [{ types: ['Artifact'] }] } },
+          { source: { faces: [{ types: ['Instant'] }] } },
+        ]
+
+        const compuPurposes = [
+          {
+            title: 'artifacts',
+            rules: [
+              {
+                field: 'type',
+                is: true,
+                conditions: [{ value: 'Artifact' }],
+              },
+            ],
+          },
+        ]
+
+        const result = getters.compuPurposeHash({}, { the99, compuPurposes })
+
+        expect(Object.keys(result)).toEqual(['artifacts'])
+        expect(result.artifacts).toHaveLength(2)
+      })
+
+      test('not type', () => {
+        const the99 = [
+          { source: { faces: [{ types: ['Artifact', 'Creature'] }] } },
+          { source: { faces: [{ types: ['Artifact'] }] } },
+          { source: { faces: [{ types: ['Instant'] }] } },
+        ]
+
+        const compuPurposes = [
+          {
+            title: 'artifacts',
+            rules: [
+              {
+                field: 'type',
+                is: false,
+                conditions: [{ value: 'Artifact' }],
+              },
+            ],
+          },
+        ]
+
+        const result = getters.compuPurposeHash({}, { the99, compuPurposes })
+
+        expect(Object.keys(result)).toEqual(['artifacts'])
+        expect(result.artifacts).toHaveLength(1)
+        expect(result.artifacts[0].source.faces[0].types[0]).toBe('Instant')
+      })
+
+      test('cmc', () => {
+        const the99 = [
+          { source: { cmc: 1, faces: [] } },
+          { source: { cmc: 2, faces: [] } },
+          { source: { cmc: 3, faces: [] } },
+        ]
+
+        const compuPurposes = [
+          {
+            title: 'ones',
+            rules: [
+              {
+                field: 'cmc',
+                is: true,
+                conditions: [{ value: 1 }],
+              },
+            ],
+          },
+        ]
+
+        const result = getters.compuPurposeHash({}, { the99, compuPurposes })
+
+        expect(Object.keys(result)).toEqual(['ones'])
+        expect(result.ones).toHaveLength(1)
+        expect(result.ones[0].source.cmc).toBe(1)
+      })
+
+      test('not cmc', () => {
+        const the99 = [
+          { source: { cmc: 1, faces: [] } },
+          { source: { cmc: 2, faces: [] } },
+          { source: { cmc: 3, faces: [] } },
+        ]
+
+        const compuPurposes = [
+          {
+            title: 'notones',
+            rules: [
+              {
+                field: 'cmc',
+                is: false,
+                conditions: [{ value: 1 }],
+              },
+            ],
+          },
+        ]
+
+        const result = getters.compuPurposeHash({}, { the99, compuPurposes })
+
+        expect(Object.keys(result)).toEqual(['notones'])
+        expect(result.notones).toHaveLength(2)
+        expect(result.notones[0].source.cmc).toBe(2)
+        expect(result.notones[1].source.cmc).toBe(3)
       })
     })
   })

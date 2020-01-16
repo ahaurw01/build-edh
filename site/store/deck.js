@@ -3,6 +3,7 @@ import flatten from 'lodash/flatten'
 import sortBy from 'lodash/sortBy'
 import last from 'lodash/last'
 import get from 'lodash/get'
+import compact from 'lodash/compact'
 
 export const state = () => ({
   deck: null,
@@ -23,6 +24,13 @@ export const mutations = {
       name: deck.name,
       purpose: deck.purpose,
       description: deck.description,
+    }
+  },
+
+  deckCompuPurposes(state, deck) {
+    state.deck = {
+      ...state.deck,
+      compuPurposes: deck.compuPurposes,
     }
   },
 
@@ -124,6 +132,16 @@ export const actions = {
       }
     )
     commit('deckMeta', deck)
+  },
+
+  async updateCompuPurposes({ commit, state }, newCompuPurposes) {
+    const { data: deck } = await this.$axios.put(
+      `/api/decks/${state.deck._id}`,
+      {
+        compuPurposes: newCompuPurposes,
+      }
+    )
+    commit('deckCompuPurposes', deck)
   },
 
   async getCardSuggestions({ commit }, query) {
@@ -249,6 +267,7 @@ export const getters = {
   description: state => state.deck.description || 'No description',
   descriptionParagraphs: state =>
     (state.deck.description || 'No description').split('\n'),
+  compuPurposes: state => state.deck.compuPurposes,
   commanders: state => state.deck.commanders,
   canAddCommander: state =>
     state.deck.commanders.length === 0 ||
@@ -291,7 +310,11 @@ export const getters = {
   //
   // Look at state.usePurposeGroups to determine grouping strategy.
   //
-  cardGroupings: ({ usePurposeGroups }, { the99 }) => {
+  cardGroupings: ({ usePurposeGroups }, { the99, compuPurposeHash }) => {
+    const hashByCompuPurpose = usePurposeGroups ? compuPurposeHash : {}
+    const cardNamesInCompuPurposeGroups = flatten(
+      Object.values(compuPurposeHash)
+    ).map(c => c.source.name)
     const [hashByPurpose, hashByType] = the99.reduce(
       ([purposeHash, typeHash], card) => {
         const { purposes } = card
@@ -299,7 +322,10 @@ export const getters = {
           purposes.forEach(purpose => {
             purposeHash[purpose] = [...(purposeHash[purpose] || []), card]
           })
-        } else {
+        } else if (
+          !usePurposeGroups ||
+          !cardNamesInCompuPurposeGroups.includes(card.source.name)
+        ) {
           const type = dominantCardType(card)
           typeHash[type] = [...(typeHash[type] || []), card]
         }
@@ -336,6 +362,11 @@ export const getters = {
         purpose,
         cards: makeGroupedCards(hashByPurpose, purpose),
       })),
+      ...Object.keys(hashByCompuPurpose).map(purpose => ({
+        purpose,
+        isCompuPurposeGroup: true,
+        cards: makeGroupedCards(hashByCompuPurpose, purpose),
+      })),
       ...Object.keys(hashByType).map(purpose => ({
         purpose,
         isAutomaticGroup: true,
@@ -348,6 +379,157 @@ export const getters = {
         -1 * grouping.cards.reduce((count, card) => count + card.count, 0),
       'purpose',
     ])
+  },
+
+  // Hash of compuPurpose title => cards that match the rules.
+  //
+  compuPurposeHash: (state, { the99, compuPurposes }) => {
+    return compuPurposes.reduce((hash, compuPurpose) => {
+      hash[compuPurpose.title] = the99.filter(({ source }) => {
+        // Check that the card's details matches the rules and conditions.
+        // If "is" is true, we are checking that at least one condition of the
+        // rule matches the card.
+        // If "is" is false, we are checking that every condition of the rule
+        // does not match the card.
+        //
+        return compuPurpose.rules.every(({ field, conditions, is }) => {
+          const method = is ? 'some' : 'every'
+          return conditions[method](condition => {
+            const [front = {}, back = {}] = source.faces
+            switch (field) {
+              case 'type':
+                return (
+                  [...(front.types || []), ...(back.types || [])].includes(
+                    condition.value
+                  ) === is
+                )
+              case 'subtype':
+                return (
+                  [
+                    ...(front.subTypes || []),
+                    ...(back.subTypes || []),
+                  ].includes(condition.value) === is
+                )
+              case 'supertype':
+                return (
+                  [
+                    ...(front.superTypes || []),
+                    ...(back.superTypes || []),
+                  ].includes(condition.value) === is
+                )
+              case 'cmc':
+                return (source.cmc === condition.value) === is
+              case 'power':
+                return (
+                  [front.power || -999, back.power || -999].includes(
+                    condition.value
+                  ) === is
+                )
+              case 'toughness':
+                return (
+                  [front.toughness || -999, back.toughness || -999].includes(
+                    condition.value
+                  ) === is
+                )
+              case 'loyalty':
+                return (
+                  [front.loyalty || -999, back.loyalty || -999].includes(
+                    condition.value
+                  ) === is
+                )
+              case 'color': {
+                let colors = [...(front.colors || []), ...(back.colors || [])]
+                if (!colors.length) colors = ['C']
+                return colors.includes(condition.value) === is
+              }
+              case 'numcolors':
+                return ((front.colors || []).length === condition.value) === is
+              case 'name':
+                return new RegExp(condition.value, 'i').test(source.name) === is
+              case 'rules':
+                return (
+                  new RegExp(condition.value, 'i').test(
+                    source.faces.map(({ oracleText }) => oracleText).join('\n')
+                  ) === is
+                )
+              default:
+                return false
+            }
+          })
+        })
+      })
+      return hash
+    }, {})
+  },
+
+  subtypes: (state, { commanders, the99 }) => {
+    const getSubtypes = c => get(c, 'source.faces[0].subTypes')
+    return sortBy(
+      uniq(flatten([...commanders.map(getSubtypes), ...the99.map(getSubtypes)]))
+    )
+  },
+
+  convertedManaCosts: (state, { commanders, the99 }) => {
+    const getCMC = c => get(c, 'source.cmc')
+    return sortBy(
+      uniq(flatten([...commanders.map(getCMC), ...the99.map(getCMC)]))
+    )
+  },
+
+  powers: (state, { commanders, the99 }) => {
+    const getPower = c => get(c, 'source.faces[0].power')
+    return sortBy(
+      uniq(
+        compact(flatten([...commanders.map(getPower), ...the99.map(getPower)]))
+      )
+    )
+  },
+
+  toughnesses: (state, { commanders, the99 }) => {
+    const getToughness = c => get(c, 'source.faces[0].toughness')
+    return sortBy(
+      uniq(
+        compact(
+          flatten([...commanders.map(getToughness), ...the99.map(getToughness)])
+        )
+      )
+    )
+  },
+
+  loyalties: (state, { commanders, the99 }) => {
+    const getLoyalty = c => get(c, 'source.faces[0].loyalty')
+    return sortBy(
+      uniq(
+        compact(
+          flatten([...commanders.map(getLoyalty), ...the99.map(getLoyalty)])
+        )
+      )
+    )
+  },
+
+  colors: (state, { commanders }) => {
+    const commanderColorIdentities = flatten(
+      commanders.map(({ source }) => source.ci)
+    )
+    return [
+      ...[
+        { key: 'W', value: 'White' },
+        { key: 'U', value: 'Blue' },
+        { key: 'B', value: 'Black' },
+        { key: 'R', value: 'Red' },
+        { key: 'G', value: 'Green' },
+      ].filter(({ key }) => commanderColorIdentities.includes(key)),
+      { key: 'C', value: 'Colorless' },
+    ]
+  },
+
+  numColors: (state, { commanders }) => {
+    return [
+      0,
+      ...uniq(flatten(commanders.map(({ source }) => source.ci))).map(
+        (_, index) => index + 1
+      ),
+    ]
   },
 }
 

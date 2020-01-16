@@ -3,6 +3,7 @@
     <h4 class="title is-4">
       {{ title }}
       <BIcon v-if="isAuto" icon="flash" />
+      <BIcon v-if="isCompu" icon="auto-fix" />
     </h4>
 
     <div class="card-columns">
@@ -71,6 +72,7 @@ export default {
     title: { type: String, required: true },
     cards: { type: Array, required: true },
     isAuto: { type: Boolean, required: false },
+    isCompu: { type: Boolean, required: false },
   },
 
   data() {

@@ -8,20 +8,28 @@
         </button>
       </h2>
 
-      <div>
-        <h3 class="title is-3 ">Settings</h3>
-        <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
-          Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
-        </BSwitch>
-      </div>
+      <h3 class="title is-3 ">Settings</h3>
+      <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
+        Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
+      </BSwitch>
+
+      <hr />
+
+      <h3 class="title is-3">Computed Purposes</h3>
+      <CompuPurposes
+        :compu-purposes="compuPurposes"
+        @change="updateCompuPurposes"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import CompuPurposes from './CompuPurposes'
 
 export default {
+  components: { CompuPurposes },
   props: {
     isOpen: { type: Boolean, required: true },
   },
@@ -29,12 +37,14 @@ export default {
   computed: {
     ...mapGetters({
       usePurposeGroups: 'deck/usePurposeGroups',
+      compuPurposes: 'deck/compuPurposes',
     }),
   },
 
   methods: {
     ...mapActions({
       setUsePurposeGroups: 'deck/setUsePurposeGroups',
+      updateCompuPurposes: 'deck/updateCompuPurposes',
     }),
   },
 }
@@ -56,7 +66,7 @@ export default {
 
 .is-open {
   /* Used for opening/closing on mobile. */
-  transform: translateX(0);
+  transform: none;
 }
 
 .flex-title {
@@ -79,7 +89,7 @@ export default {
 
   .deck-sidebar {
     position: static;
-    transform: translateX(0);
+    transform: none;
     width: auto;
     min-width: auto;
     margin-bottom: 1rem;

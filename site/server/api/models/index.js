@@ -25,6 +25,7 @@ const deckSchema = new Schema({
   name: String,
   purpose: String,
   description: String,
+  compuPurposes: [Object],
   owner: Schema.Types.ObjectId,
   createdAt: Date,
   commanders: [deckCardSchema],
@@ -63,6 +64,7 @@ const cardSchema = new Schema({
       power: String,
       toughness: String,
       colors: [String],
+      loyalty: String,
     },
   ],
 })
@@ -75,6 +77,7 @@ const types = [
   'Planeswalker',
   'Instant',
   'Sorcery',
+  'Tribal',
 ]
 cardSchema.statics.typeLineToTypes = function(typeLine = '') {
   return typeLine
@@ -162,6 +165,7 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
       power: rawFace.power,
       toughness: rawFace.toughness,
       colors: rawFace.colors,
+      loyalty: rawFace.loyalty,
     })),
   }
   doc.canBeCommander = Card.canBeCommander(doc)
