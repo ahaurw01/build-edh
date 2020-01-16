@@ -268,7 +268,8 @@ export const getters = {
   descriptionParagraphs: state =>
     (state.deck.description || 'No description').split('\n'),
   compuPurposes: state => state.deck.compuPurposes,
-  commanders: state => state.deck.commanders,
+  commanders: state =>
+    state.deck.commanders.map(c => ({ ...c, isCommander: true })),
   canAddCommander: state =>
     state.deck.commanders.length === 0 ||
     (state.deck.commanders.length === 1 &&
@@ -310,12 +311,15 @@ export const getters = {
   //
   // Look at state.usePurposeGroups to determine grouping strategy.
   //
-  cardGroupings: ({ usePurposeGroups }, { the99, compuPurposeHash }) => {
+  cardGroupings: (
+    { usePurposeGroups },
+    { commanders, the99, compuPurposeHash }
+  ) => {
     const hashByCompuPurpose = usePurposeGroups ? compuPurposeHash : {}
     const cardNamesInCompuPurposeGroups = flatten(
       Object.values(compuPurposeHash)
     ).map(c => c.source.name)
-    const [hashByPurpose, hashByType] = the99.reduce(
+    const [hashByPurpose, hashByType] = [...commanders, ...the99].reduce(
       ([purposeHash, typeHash], card) => {
         const { purposes } = card
         if (purposes.length && usePurposeGroups) {
@@ -383,81 +387,89 @@ export const getters = {
 
   // Hash of compuPurpose title => cards that match the rules.
   //
-  compuPurposeHash: (state, { the99, compuPurposes }) => {
+  compuPurposeHash: (state, { commanders, the99, compuPurposes }) => {
     return compuPurposes.reduce((hash, compuPurpose) => {
-      hash[compuPurpose.title] = the99.filter(({ source }) => {
-        // Check that the card's details matches the rules and conditions.
-        // If "is" is true, we are checking that at least one condition of the
-        // rule matches the card.
-        // If "is" is false, we are checking that every condition of the rule
-        // does not match the card.
-        //
-        return compuPurpose.rules.every(({ field, conditions, is }) => {
-          const method = is ? 'some' : 'every'
-          return conditions[method](condition => {
-            const [front = {}, back = {}] = source.faces
-            switch (field) {
-              case 'type':
-                return (
-                  [...(front.types || []), ...(back.types || [])].includes(
-                    condition.value
-                  ) === is
-                )
-              case 'subtype':
-                return (
-                  [
-                    ...(front.subTypes || []),
-                    ...(back.subTypes || []),
-                  ].includes(condition.value) === is
-                )
-              case 'supertype':
-                return (
-                  [
-                    ...(front.superTypes || []),
-                    ...(back.superTypes || []),
-                  ].includes(condition.value) === is
-                )
-              case 'cmc':
-                return (source.cmc === condition.value) === is
-              case 'power':
-                return (
-                  [front.power || -999, back.power || -999].includes(
-                    condition.value
-                  ) === is
-                )
-              case 'toughness':
-                return (
-                  [front.toughness || -999, back.toughness || -999].includes(
-                    condition.value
-                  ) === is
-                )
-              case 'loyalty':
-                return (
-                  [front.loyalty || -999, back.loyalty || -999].includes(
-                    condition.value
-                  ) === is
-                )
-              case 'color': {
-                let colors = [...(front.colors || []), ...(back.colors || [])]
-                if (!colors.length) colors = ['C']
-                return colors.includes(condition.value) === is
+      hash[compuPurpose.title] = [...commanders, ...the99].filter(
+        ({ source }) => {
+          // Check that the card's details matches the rules and conditions.
+          // If "is" is true, we are checking that at least one condition of the
+          // rule matches the card.
+          // If "is" is false, we are checking that every condition of the rule
+          // does not match the card.
+          //
+          return compuPurpose.rules.every(({ field, conditions, is }) => {
+            const method = is ? 'some' : 'every'
+            return conditions[method](condition => {
+              const [front = {}, back = {}] = source.faces
+              switch (field) {
+                case 'type':
+                  return (
+                    [...(front.types || []), ...(back.types || [])].includes(
+                      condition.value
+                    ) === is
+                  )
+                case 'subtype':
+                  return (
+                    [
+                      ...(front.subTypes || []),
+                      ...(back.subTypes || []),
+                    ].includes(condition.value) === is
+                  )
+                case 'supertype':
+                  return (
+                    [
+                      ...(front.superTypes || []),
+                      ...(back.superTypes || []),
+                    ].includes(condition.value) === is
+                  )
+                case 'cmc':
+                  return (source.cmc === condition.value) === is
+                case 'power':
+                  return (
+                    [front.power || -999, back.power || -999].includes(
+                      condition.value
+                    ) === is
+                  )
+                case 'toughness':
+                  return (
+                    [front.toughness || -999, back.toughness || -999].includes(
+                      condition.value
+                    ) === is
+                  )
+                case 'loyalty':
+                  return (
+                    [front.loyalty || -999, back.loyalty || -999].includes(
+                      condition.value
+                    ) === is
+                  )
+                case 'color': {
+                  let colors = [...(front.colors || []), ...(back.colors || [])]
+                  if (!colors.length) colors = ['C']
+                  return colors.includes(condition.value) === is
+                }
+                case 'numcolors':
+                  return (
+                    ((front.colors || []).length === condition.value) === is
+                  )
+                case 'name':
+                  return (
+                    new RegExp(condition.value, 'i').test(source.name) === is
+                  )
+                case 'rules':
+                  return (
+                    new RegExp(condition.value, 'i').test(
+                      source.faces
+                        .map(({ oracleText }) => oracleText)
+                        .join('\n')
+                    ) === is
+                  )
+                default:
+                  return false
               }
-              case 'numcolors':
-                return ((front.colors || []).length === condition.value) === is
-              case 'name':
-                return new RegExp(condition.value, 'i').test(source.name) === is
-              case 'rules':
-                return (
-                  new RegExp(condition.value, 'i').test(
-                    source.faces.map(({ oracleText }) => oracleText).join('\n')
-                  ) === is
-                )
-              default:
-                return false
-            }
+            })
           })
-        })
-      })
+        }
+      )
       return hash
     }, {})
   },
