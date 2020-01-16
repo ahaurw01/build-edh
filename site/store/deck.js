@@ -441,6 +441,8 @@ export const getters = {
                 if (!colors.length) colors = ['C']
                 return colors.includes(condition.value) === is
               }
+              case 'numcolors':
+                return ((front.colors || []).length === condition.value) === is
               default:
                 return false
             }
@@ -501,6 +503,15 @@ export const getters = {
         { key: 'G', value: 'Green' },
       ].filter(({ key }) => commanderColorIdentities.includes(key)),
       { key: 'C', value: 'Colorless' },
+    ]
+  },
+
+  numColors: (state, { commanders }) => {
+    return [
+      0,
+      ...uniq(flatten(commanders.map(({ source }) => source.ci))).map(
+        (_, index) => index + 1
+      ),
     ]
   },
 }

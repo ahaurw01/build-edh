@@ -39,8 +39,7 @@ import {
   // NAME,
   // RULES,
   COLOR,
-  // MONOCOLOR,
-  // MULTICOLOR,
+  NUMCOLORS,
   // TWOSIDED,
 } from './CompuPurposes/Rule'
 import CompuPurpose from './CompuPurpose'
@@ -83,6 +82,7 @@ export default {
         case TOUGHNESS:
         case LOYALTY:
         case COLOR:
+        case NUMCOLORS:
           return rule.conditions.every(c => c.value)
         default:
           return false

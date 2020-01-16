@@ -68,6 +68,7 @@ import Power from './Power'
 import Toughness from './Toughness'
 import Loyalty from './Loyalty'
 import Color from './Color'
+import NumColors from './NumColors'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -79,8 +80,7 @@ export const LOYALTY = 'loyalty'
 export const NAME = 'name'
 export const RULES = 'rules'
 export const COLOR = 'color'
-export const MONOCOLOR = 'monocolor'
-export const MULTICOLOR = 'multicolor'
+export const NUMCOLORS = 'numcolors'
 export const TWOSIDED = 'twosided'
 
 const topLevelFields = [
@@ -94,8 +94,7 @@ const topLevelFields = [
   [NAME, 'Name Text'],
   [RULES, 'Rules Text'],
   [COLOR, 'Color'],
-  [MONOCOLOR, 'Is Monocolor'],
-  [MULTICOLOR, 'Is Multicolor'],
+  [NUMCOLORS, 'Number of Colors'],
   [TWOSIDED, 'Is Two-Sided'],
 ]
 
@@ -187,6 +186,8 @@ export default {
           return Loyalty
         case COLOR:
           return Color
+        case NUMCOLORS:
+          return NumColors
         default:
           return 'div'
       }
