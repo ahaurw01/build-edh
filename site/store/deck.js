@@ -446,6 +446,10 @@ export const getters = {
                 return ((front.colors || []).length === condition.value) === is
               case 'name':
                 return new RegExp(condition.value, 'i').test(source.name)
+              case 'rules':
+                return new RegExp(condition.value, 'i').test(
+                  source.faces.map(({ oracleText }) => oracleText).join('\n')
+                )
               default:
                 return false
             }

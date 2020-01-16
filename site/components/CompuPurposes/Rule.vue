@@ -70,6 +70,7 @@ import Loyalty from './Loyalty'
 import Color from './Color'
 import NumColors from './NumColors'
 import NameText from './NameText'
+import RuleText from './RuleText'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -199,6 +200,8 @@ export default {
           return NumColors
         case NAME:
           return NameText
+        case RULES:
+          return RuleText
         default:
           return 'div'
       }

@@ -28,19 +28,6 @@
 </template>
 
 <script>
-import {
-  TYPE,
-  SUPERTYPE,
-  SUBTYPE,
-  CMC,
-  POWER,
-  TOUGHNESS,
-  LOYALTY,
-  NAME,
-  // RULES,
-  COLOR,
-  NUMCOLORS,
-} from './CompuPurposes/Rule'
 import CompuPurpose from './CompuPurpose'
 import CompuPurposeModalForm from './CompuPurposeModalForm'
 
@@ -72,21 +59,7 @@ export default {
 
   methods: {
     isRuleValid(rule) {
-      switch (rule.field) {
-        case TYPE:
-        case SUPERTYPE:
-        case SUBTYPE:
-        case CMC:
-        case POWER:
-        case TOUGHNESS:
-        case LOYALTY:
-        case COLOR:
-        case NUMCOLORS:
-        case NAME:
-          return rule.conditions.every(c => c.value)
-        default:
-          return false
-      }
+      return rule.conditions.every(c => c.value)
     },
 
     changeCompuPurpose(index, compuPurpose) {
