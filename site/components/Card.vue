@@ -1,7 +1,7 @@
 <template>
   <div :class="size" class="mtg-card">
     <span v-if="count > 1" class="count">x{{ count }}</span>
-    <img :src="imgSrc" />
+    <img :src="imgSrc" :class="{ 'special-shadow': specialShadow }" />
     <button
       v-if="showEditButton"
       class="button edit-button"
@@ -27,6 +27,7 @@ export default {
     },
     count: { type: Number, default: 1 },
     showEditButton: { type: Boolean, default: false },
+    specialShadow: { type: Boolean, default: false },
   },
   computed: {
     imgSrc() {
@@ -51,6 +52,10 @@ export default {
   border-radius: 4.75% / 3.5%;
   width: 100%;
   box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+img.special-shadow {
+  box-shadow: 0 0 6px 6px hsl(48, 100%, 67%);
 }
 
 .large {

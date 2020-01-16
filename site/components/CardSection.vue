@@ -24,7 +24,12 @@
               cardToShowcase = card
             "
           >
-            <Card :card="card.source" :count="card.count" size="medium" />
+            <Card
+              :card="card.source"
+              :count="card.count"
+              :special-shadow="card.isCommander"
+              size="medium"
+            />
           </button>
         </div>
       </div>
@@ -37,8 +42,9 @@
             v-if="cardToShowcase"
             :card="cardToShowcase.source"
             :count="cardToShowcase.count"
+            :show-edit-button="!cardToShowcase.isCommander"
+            :special-shadow="cardToShowcase.isCommander"
             size="large"
-            show-edit-button
             @edit-card="
               isCardShowcaseOpen = false
               $emit('edit-card', cardToShowcase)
@@ -169,5 +175,6 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 1rem;
 }
 </style>

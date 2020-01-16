@@ -67,16 +67,22 @@ describe('Deck Store', () => {
 
     describe('cardGroupings', () => {
       test('is empty array for no cards', () => {
+        const commanders = []
         const the99 = []
         const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
+        const result = getters.cardGroupings(state, {
+          commanders,
+          the99,
+          compuPurposeHash,
+        })
 
         expect(result).toEqual([])
       })
 
       test('groups all cards by purpose', () => {
+        const commanders = []
         const the99 = [
           {
             source: { name: 'Lightning Bolt' },
@@ -114,7 +120,11 @@ describe('Deck Store', () => {
         const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
+        const result = getters.cardGroupings(state, {
+          commanders,
+          the99,
+          compuPurposeHash,
+        })
 
         expect(result).toEqual([
           {
@@ -168,6 +178,7 @@ describe('Deck Store', () => {
       })
 
       test('groups cards by dominant type if no purposes', () => {
+        const commanders = []
         const the99 = [
           {
             source: { name: 'Lightning Bolt', faces: [{ types: ['Instant'] }] },
@@ -208,7 +219,11 @@ describe('Deck Store', () => {
         const compuPurposeHash = {}
         const state = { usePurposeGroups: true }
 
-        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
+        const result = getters.cardGroupings(state, {
+          commanders,
+          the99,
+          compuPurposeHash,
+        })
 
         expect(result).toEqual([
           {
@@ -280,6 +295,7 @@ describe('Deck Store', () => {
       })
 
       test('groups all cards by type', () => {
+        const commanders = []
         const the99 = [
           {
             source: { name: 'Lightning Bolt', faces: [{ types: ['Instant'] }] },
@@ -320,7 +336,11 @@ describe('Deck Store', () => {
         const compuPurposeHash = {}
         const state = { usePurposeGroups: false }
 
-        const result = getters.cardGroupings(state, { the99, compuPurposeHash })
+        const result = getters.cardGroupings(state, {
+          commanders,
+          the99,
+          compuPurposeHash,
+        })
 
         expect(result).toEqual([
           {
@@ -380,10 +400,44 @@ describe('Deck Store', () => {
           },
         ])
       })
+
+      test('includes commanders', () => {
+        const commanders = [
+          {
+            source: { name: 'Krenko, Mob Boss' },
+            purposes: ['Token Generation'],
+          },
+        ]
+        const the99 = []
+        const compuPurposeHash = {}
+        const state = { usePurposeGroups: true }
+
+        const result = getters.cardGroupings(state, {
+          commanders,
+          the99,
+          compuPurposeHash,
+        })
+
+        expect(result).toEqual([
+          {
+            purpose: 'Token Generation',
+            cards: [
+              {
+                source: { name: 'Krenko, Mob Boss' },
+                purposes: ['Token Generation'],
+                count: 1,
+              },
+            ],
+          },
+        ])
+      })
     })
 
     describe('compuPurposeHash', () => {
       test('type', () => {
+        const commanders = [
+          { source: { faces: [{ types: ['Artifact', 'Creature'] }] } },
+        ]
         const the99 = [
           { source: { faces: [{ types: ['Artifact', 'Creature'] }] } },
           { source: { faces: [{ types: ['Artifact'] }] } },
@@ -403,13 +457,19 @@ describe('Deck Store', () => {
           },
         ]
 
-        const result = getters.compuPurposeHash({}, { the99, compuPurposes })
+        const result = getters.compuPurposeHash(
+          {},
+          { commanders, the99, compuPurposes }
+        )
 
         expect(Object.keys(result)).toEqual(['artifacts'])
-        expect(result.artifacts).toHaveLength(2)
+        expect(result.artifacts).toHaveLength(3)
       })
 
       test('not type', () => {
+        const commanders = [
+          { source: { faces: [{ types: ['Artifact', 'Creature'] }] } },
+        ]
         const the99 = [
           { source: { faces: [{ types: ['Artifact', 'Creature'] }] } },
           { source: { faces: [{ types: ['Artifact'] }] } },
@@ -418,7 +478,7 @@ describe('Deck Store', () => {
 
         const compuPurposes = [
           {
-            title: 'artifacts',
+            title: 'not artifacts',
             rules: [
               {
                 field: 'type',
@@ -429,14 +489,20 @@ describe('Deck Store', () => {
           },
         ]
 
-        const result = getters.compuPurposeHash({}, { the99, compuPurposes })
+        const result = getters.compuPurposeHash(
+          {},
+          { commanders, the99, compuPurposes }
+        )
 
-        expect(Object.keys(result)).toEqual(['artifacts'])
-        expect(result.artifacts).toHaveLength(1)
-        expect(result.artifacts[0].source.faces[0].types[0]).toBe('Instant')
+        expect(Object.keys(result)).toEqual(['not artifacts'])
+        expect(result['not artifacts']).toHaveLength(1)
+        expect(result['not artifacts'][0].source.faces[0].types[0]).toBe(
+          'Instant'
+        )
       })
 
       test('cmc', () => {
+        const commanders = []
         const the99 = [
           { source: { cmc: 1, faces: [] } },
           { source: { cmc: 2, faces: [] } },
@@ -456,7 +522,10 @@ describe('Deck Store', () => {
           },
         ]
 
-        const result = getters.compuPurposeHash({}, { the99, compuPurposes })
+        const result = getters.compuPurposeHash(
+          {},
+          { commanders, the99, compuPurposes }
+        )
 
         expect(Object.keys(result)).toEqual(['ones'])
         expect(result.ones).toHaveLength(1)
@@ -464,6 +533,7 @@ describe('Deck Store', () => {
       })
 
       test('not cmc', () => {
+        const commanders = []
         const the99 = [
           { source: { cmc: 1, faces: [] } },
           { source: { cmc: 2, faces: [] } },
@@ -483,7 +553,10 @@ describe('Deck Store', () => {
           },
         ]
 
-        const result = getters.compuPurposeHash({}, { the99, compuPurposes })
+        const result = getters.compuPurposeHash(
+          {},
+          { commanders, the99, compuPurposes }
+        )
 
         expect(Object.keys(result)).toEqual(['notones'])
         expect(result.notones).toHaveLength(2)
