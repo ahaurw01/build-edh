@@ -39,7 +39,12 @@
         </div>
       </div>
     </div>
-    <span v-else>{{ displayString }}</span>
+    <span v-else>
+      <span v-for="(condition, index) in conditions" :key="index">
+        <i>{{ condition.value }}</i>
+        <span v-if="index < conditions.length - 1"> or </span>
+      </span>
+    </span>
   </div>
 </template>
 

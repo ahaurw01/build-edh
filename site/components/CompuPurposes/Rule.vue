@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div :class="{ box: editing }">
     <div v-if="editing" class="level">
       <div class="level-left select-container">
         <div class="level is-mobile">

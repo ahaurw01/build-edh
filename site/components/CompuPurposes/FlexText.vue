@@ -68,10 +68,6 @@ export default {
     canAddAnotherCondition() {
       return this.editing && !!get(last(this.conditions), 'value')
     },
-
-    displayString() {
-      return this.conditions.map(c => c.value).join(' or ')
-    },
   },
 
   methods: {
