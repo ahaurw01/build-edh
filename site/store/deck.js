@@ -436,6 +436,11 @@ export const getters = {
                     condition.value
                   ) === is
                 )
+              case 'color': {
+                let colors = [...(front.colors || []), ...(back.colors || [])]
+                if (!colors.length) colors = ['C']
+                return colors.includes(condition.value) === is
+              }
               default:
                 return false
             }
@@ -481,6 +486,22 @@ export const getters = {
     return sortBy(
       uniq(flatten([...commanders.map(getLoyalty), ...the99.map(getLoyalty)]))
     )
+  },
+
+  colors: (state, { commanders }) => {
+    const commanderColorIdentities = flatten(
+      commanders.map(({ source }) => source.ci)
+    )
+    return [
+      ...[
+        { key: 'W', value: 'White' },
+        { key: 'U', value: 'Blue' },
+        { key: 'B', value: 'Black' },
+        { key: 'R', value: 'Red' },
+        { key: 'G', value: 'Green' },
+      ].filter(({ key }) => commanderColorIdentities.includes(key)),
+      { key: 'C', value: 'Colorless' },
+    ]
   },
 }
 

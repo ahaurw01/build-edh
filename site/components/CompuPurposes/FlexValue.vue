@@ -12,8 +12,12 @@
             :value="condition.value"
             @input="onSelectValue(index, $event)"
           >
-            <option v-for="value in values" :key="value" :value="value">
-              {{ value }}
+            <option
+              v-for="value in values"
+              :key="value.key || value"
+              :value="value.key || value"
+            >
+              {{ value.value || value }}
             </option>
           </BSelect>
         </div>

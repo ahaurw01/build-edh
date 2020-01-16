@@ -67,6 +67,7 @@ import Cmc from './Cmc'
 import Power from './Power'
 import Toughness from './Toughness'
 import Loyalty from './Loyalty'
+import Color from './Color'
 
 export const TYPE = 'type'
 export const SUPERTYPE = 'supertype'
@@ -184,6 +185,8 @@ export default {
           return Toughness
         case LOYALTY:
           return Loyalty
+        case COLOR:
+          return Color
         default:
           return 'div'
       }

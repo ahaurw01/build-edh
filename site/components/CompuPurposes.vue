@@ -38,7 +38,7 @@ import {
   LOYALTY,
   // NAME,
   // RULES,
-  // COLOR,
+  COLOR,
   // MONOCOLOR,
   // MULTICOLOR,
   // TWOSIDED,
@@ -82,6 +82,7 @@ export default {
         case POWER:
         case TOUGHNESS:
         case LOYALTY:
+        case COLOR:
           return rule.conditions.every(c => c.value)
         default:
           return false
