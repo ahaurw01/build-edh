@@ -99,7 +99,6 @@ export default {
     transform: none;
     width: auto;
     min-width: auto;
-    margin-bottom: 1rem;
     max-height: calc(100vh - 40px);
     overflow: auto;
   }
