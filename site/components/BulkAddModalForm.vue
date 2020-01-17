@@ -1,35 +1,28 @@
 <template>
   <form ref="form" @submit.prevent="onSave">
-    <div class="modal-card" style="overflow: visible">
-      <header class="modal-card-head">
-        <p class="modal-card-title">
-          Bulk Input
-        </p>
-      </header>
-      <section class="modal-card-body" style="overflow: visible">
-        <BField :type="{ 'is-danger': hasErrors }" :message="fieldMessages">
-          <BInput
-            v-model="bulkInput"
-            type="textarea"
-            :placeholder="placeholder"
-          />
-        </BField>
-      </section>
-      <footer class="modal-card-foot">
-        <div class="level" style="width: 100%">
-          <div class="level-left">
-            <div class="level-item">
-              <button class="button" type="button" @click="$parent.close()">
-                Cancel
-              </button>
-              <button class="button is-primary">
-                Add all
-              </button>
-            </div>
+    <section class="modal-card-body" style="overflow: visible">
+      <BField :type="{ 'is-danger': hasErrors }" :message="fieldMessages">
+        <BInput
+          v-model="bulkInput"
+          type="textarea"
+          :placeholder="placeholder"
+        />
+      </BField>
+    </section>
+    <footer class="modal-card-foot">
+      <div class="level" style="width: 100%">
+        <div class="level-left">
+          <div class="level-item">
+            <button class="button" type="button" @click="parent.close()">
+              Cancel
+            </button>
+            <button class="button is-primary">
+              Add all
+            </button>
           </div>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   </form>
 </template>
 
@@ -60,6 +53,15 @@ export default {
         {}
       )
     },
+    parent() {
+      function findParent(vm) {
+        if ('function' === typeof vm.close) {
+          return vm
+        }
+        return findParent(vm.$parent)
+      }
+      return findParent(this.$parent)
+    },
   },
 
   mounted() {
@@ -72,12 +74,12 @@ export default {
         .map(i => i.trim())
         .filter(i => i)
       if (updates.length === 0) {
-        return this.$parent.close()
+        return this.parent.close()
       }
 
       await this.bulkAdd(updates)
       if (this.bulkAddErrorMessages.length === 0) {
-        this.$parent.close()
+        this.parent.close()
       }
     },
 

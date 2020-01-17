@@ -3,13 +3,14 @@
     <h3 class="title is-3">
       The Deck
     </h3>
-    <button
+    <BButton
       v-if="canAddCard"
-      class="button is-primary is-large"
+      type="is-primary"
+      size="is-large"
       @click="isNewCardModalActive = true"
     >
-      Add Card
-    </button>
+      Add Card(s)
+    </BButton>
 
     <CardSection
       v-for="grouping in cardGroupings"
@@ -22,11 +23,18 @@
     />
 
     <BModal :active.sync="isNewCardModalActive" has-modal-card>
-      <CardModalForm />
+      <AddSingleOrBulkModal />
     </BModal>
 
     <BModal :active.sync="isEditCardModalActive" has-modal-card>
-      <CardModalForm :card="cardToEdit" edit />
+      <div class="modal-card" style="overflow: visible">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            Edit Card
+          </p>
+        </header>
+        <CardModalForm :card="cardToEdit" edit />
+      </div>
     </BModal>
   </section>
 </template>
@@ -34,9 +42,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import CardSection from '~/components/CardSection'
+import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 import CardModalForm from '~/components/CardModalForm'
 export default {
   components: {
+    AddSingleOrBulkModal,
     CardSection,
     CardModalForm,
   },
