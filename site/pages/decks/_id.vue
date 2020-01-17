@@ -61,7 +61,21 @@
           <BModal :active.sync="isEditDescriptionModalActive" has-modal-card>
             <DeckPropertyModalForm property="description" type="textarea" />
           </BModal>
+          <BModal
+            :active.sync="isNewCardModalActive"
+            has-modal-card
+            @close="resetBulkAddErrorMessages"
+          >
+            <AddSingleOrBulkModal />
+          </BModal>
 
+          <BButton
+            size="is-medium"
+            icon-left="plus"
+            type="is-info"
+            class="new-card-modal-opener"
+            @click="isNewCardModalActive = true"
+          />
           <BButton
             size="is-medium"
             icon-left="book-open"
@@ -80,17 +94,19 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import DeckPropertyModalForm from '~/components/DeckPropertyModalForm'
 import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
 import DeckSidebar from '~/components/DeckSidebar'
+import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 export default {
   components: {
     DeckPropertyModalForm,
     CommanderSection,
     NinetyNineSection,
     DeckSidebar,
+    AddSingleOrBulkModal,
   },
 
   async fetch({ store, params, error, $axios }) {
@@ -109,6 +125,7 @@ export default {
     isEditPurposeModalActive: false,
     isEditDescriptionModalActive: false,
     isMobileSidebarOpen: false,
+    isNewCardModalActive: false,
   }),
 
   computed: {
@@ -118,6 +135,12 @@ export default {
       purpose: 'deck/purpose',
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
+    }),
+  },
+
+  methods: {
+    ...mapActions({
+      resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
     }),
   },
 }
@@ -145,6 +168,12 @@ export default {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
+}
+
+.new-card-modal-opener {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
 }
 
 @media (min-width: 769px) {

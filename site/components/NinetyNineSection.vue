@@ -3,14 +3,6 @@
     <h3 class="title is-3">
       The Deck
     </h3>
-    <BButton
-      v-if="canAddCard"
-      type="is-primary"
-      size="is-large"
-      @click="isNewCardModalActive = true"
-    >
-      Add Card(s)
-    </BButton>
 
     <CardSection
       v-for="grouping in cardGroupings"
@@ -21,14 +13,6 @@
       :cards="grouping.cards"
       @edit-card="editCard"
     />
-
-    <BModal
-      :active.sync="isNewCardModalActive"
-      has-modal-card
-      @close="resetBulkAddErrorMessages"
-    >
-      <AddSingleOrBulkModal />
-    </BModal>
 
     <BModal :active.sync="isEditCardModalActive" has-modal-card>
       <div class="modal-card" style="overflow: visible">
@@ -44,19 +28,16 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import CardSection from '~/components/CardSection'
-import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 import CardModalForm from '~/components/CardModalForm'
 export default {
   components: {
-    AddSingleOrBulkModal,
     CardSection,
     CardModalForm,
   },
   data() {
     return {
-      isNewCardModalActive: false,
       isEditCardModalActive: false,
       cardToEdit: null,
     }
@@ -71,10 +52,6 @@ export default {
     ),
   },
   methods: {
-    ...mapActions({
-      resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
-    }),
-
     editCard(card) {
       this.cardToEdit = card
       this.isEditCardModalActive = true
