@@ -1,11 +1,16 @@
 <template>
   <div class="deck-sidebar column is-narrow" :class="{ 'is-open': isOpen }">
+    <BButton
+      icon-left="close-circle-outline"
+      size="is-medium"
+      type="is-dark"
+      class="close-button"
+      @click="$emit('close')"
+    />
+
     <div class="box deck-sidebar-content">
-      <h2 class="title is-2 flex-title ">
+      <h2 class="title is-2">
         <span>Insights</span>
-        <button class="close-button" @click="$emit('close')">
-          <BIcon icon="close" />
-        </button>
       </h2>
 
       <h3 class="title is-3 ">Settings</h3>
@@ -57,7 +62,7 @@ export default {
   right: 0;
   left: 0;
   transform: translateX(calc(100% + 1rem));
-  transition: all 500ms;
+  transition: transform 200ms;
   z-index: 30;
   width: auto;
   min-width: 50%;
@@ -71,17 +76,11 @@ export default {
   transform: none;
 }
 
-.flex-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .close-button {
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1;
 }
 
 @media (max-width: 768px) {

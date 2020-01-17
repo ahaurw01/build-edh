@@ -78,9 +78,9 @@
           </BModal>
 
           <BButton
-            size="is-large"
+            size="is-medium"
             icon-left="book-open"
-            type="is-info"
+            type="is-primary"
             class="sidebar-opener"
             @click="isMobileSidebarOpen = true"
           />
