@@ -243,9 +243,9 @@ export const actions = {
         ])
       } else {
         commit('bulkAddErrorMessages', [
-          ...response.data.missingCardInputs,
-          ...response.data.commanderErrorMessages,
-          ...response.data.the99ErrorMessages,
+          ...get(response, 'data.missingCardInputs', []),
+          ...get(response, 'data.commanderErrorMessages', []),
+          ...get(response, 'data.the99ErrorMessages', []),
         ])
       }
     }

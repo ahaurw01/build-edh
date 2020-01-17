@@ -69,13 +69,6 @@
           <BModal :active.sync="isEditDescriptionModalActive" has-modal-card>
             <DeckPropertyModalForm property="description" type="textarea" />
           </BModal>
-          <BModal
-            :active.sync="isBulkAddModalActive"
-            has-modal-card
-            @close="resetBulkAddErrorMessages"
-          >
-            <BulkAddModalForm />
-          </BModal>
 
           <BButton
             size="is-medium"
@@ -95,18 +88,16 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import DeckPropertyModalForm from '~/components/DeckPropertyModalForm'
 import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
-import BulkAddModalForm from '~/components/BulkAddModalForm'
 import DeckSidebar from '~/components/DeckSidebar'
 export default {
   components: {
     DeckPropertyModalForm,
     CommanderSection,
     NinetyNineSection,
-    BulkAddModalForm,
     DeckSidebar,
   },
 
@@ -125,7 +116,6 @@ export default {
     isEditNameModalActive: false,
     isEditPurposeModalActive: false,
     isEditDescriptionModalActive: false,
-    isBulkAddModalActive: false,
     isMobileSidebarOpen: false,
   }),
 
@@ -136,12 +126,6 @@ export default {
       purpose: 'deck/purpose',
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
-    }),
-  },
-
-  methods: {
-    ...mapActions({
-      resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
     }),
   },
 }

@@ -22,7 +22,11 @@
       @edit-card="editCard"
     />
 
-    <BModal :active.sync="isNewCardModalActive" has-modal-card>
+    <BModal
+      :active.sync="isNewCardModalActive"
+      has-modal-card
+      @close="resetBulkAddErrorMessages"
+    >
       <AddSingleOrBulkModal />
     </BModal>
 
@@ -40,7 +44,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import CardSection from '~/components/CardSection'
 import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 import CardModalForm from '~/components/CardModalForm'
@@ -67,6 +71,10 @@ export default {
     ),
   },
   methods: {
+    ...mapActions({
+      resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
+    }),
+
     editCard(card) {
       this.cardToEdit = card
       this.isEditCardModalActive = true
