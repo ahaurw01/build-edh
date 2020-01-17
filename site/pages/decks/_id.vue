@@ -7,7 +7,7 @@
             <div class="column">
               <h2 class="title is-2">{{ name }}</h2>
             </div>
-            <div class="column is-1">
+            <div class="column is-narrow">
               <button class="button" @click="isEditNameModalActive = true">
                 <BIcon icon="pencil" />
               </button>
@@ -18,7 +18,7 @@
             <div class="column">
               <h4 class="subtitle is-4">{{ purpose }}</h4>
             </div>
-            <div class="column is-1">
+            <div class="column is-narrow">
               <button class="button" @click="isEditPurposeModalActive = true">
                 <BIcon icon="pencil" />
               </button>
@@ -35,7 +35,7 @@
                 {{ paragraph }}
               </p>
             </div>
-            <div class="column is-1">
+            <div class="column is-narrow">
               <button
                 class="button"
                 @click="isEditDescriptionModalActive = true"
@@ -77,9 +77,13 @@
             <BulkAddModalForm />
           </BModal>
 
-          <button class="sidebar-opener" @click="isMobileSidebarOpen = true">
-            <BIcon icon="book-open" size="is-medium" />
-          </button>
+          <BButton
+            size="is-large"
+            icon-left="book-open"
+            type="is-info"
+            class="sidebar-opener"
+            @click="isMobileSidebarOpen = true"
+          />
         </div>
         <DeckSidebar
           :is-open="isMobileSidebarOpen"
@@ -147,14 +151,14 @@ export default {
 .deck-section {
   display: flex;
   flex: 1;
-  max-height: calc(100vh - 52px);
   padding-top: 0;
   padding-bottom: 0;
 }
 
 .deck-view {
   flex: 1;
-  overflow: scroll;
+  max-height: calc(100vh - 40px);
+  overflow: auto;
 }
 
 .description-paragraph {
@@ -165,11 +169,6 @@ export default {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  display: inline-block;
-  padding: 1rem;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.25);
-  box-shadow: 0.05rem 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
 }
 
 @media (min-width: 769px) {

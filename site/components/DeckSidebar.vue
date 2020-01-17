@@ -1,6 +1,6 @@
 <template>
   <div class="deck-sidebar column is-narrow" :class="{ 'is-open': isOpen }">
-    <div class="box">
+    <div class="box deck-sidebar-content">
       <h2 class="title is-2 flex-title ">
         <span>Insights</span>
         <button class="close-button" @click="$emit('close')">
@@ -53,15 +53,17 @@ export default {
 <style scoped>
 .deck-sidebar {
   position: fixed;
-  right: 1rem;
-  top: 1rem;
-  bottom: 1rem;
+  top: 0;
+  right: 0;
+  left: 0;
   transform: translateX(calc(100% + 1rem));
   transition: all 500ms;
   z-index: 30;
   width: auto;
   min-width: 50%;
+  height: 100vh;
   padding: 1rem;
+  overflow: auto;
 }
 
 .is-open {
@@ -82,6 +84,12 @@ export default {
   margin: 0;
 }
 
+@media (max-width: 768px) {
+  .deck-sidebar-content {
+    box-shadow: 0 0 8px 8px rgba(0, 0, 0, 0.25);
+  }
+}
+
 @media (min-width: 769px) {
   .close-button {
     display: none;
@@ -93,6 +101,8 @@ export default {
     width: auto;
     min-width: auto;
     margin-bottom: 1rem;
+    max-height: calc(100vh - 40px);
+    overflow: auto;
   }
 }
 </style>
