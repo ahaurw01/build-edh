@@ -2,31 +2,36 @@
   <div :class="{ box: editing }">
     <div v-if="editing" class="level">
       <div class="level-left select-container">
-        <div class="level is-mobile">
+        <div class="level ">
           <div class="level-item">
-            <BButton
-              type="is-danger"
-              icon-right="delete"
-              :disabled="!canDelete"
-              @click="$emit('delete')"
-            />
+            <div class="level is-mobile">
+              <div class="level-item">
+                <BButton
+                  type="is-danger"
+                  icon-right="delete"
+                  :disabled="!canDelete"
+                  @click="$emit('delete')"
+                />
+              </div>
+              <div class="level-item">
+                <BSelect
+                  v-if="editing"
+                  placeholder="Select a field"
+                  :value="field"
+                  @input="onSelectField"
+                >
+                  <option
+                    v-for="[key, displayName] in topLevelFields"
+                    :key="key"
+                    :value="key"
+                  >
+                    {{ displayName }}
+                  </option>
+                </BSelect>
+              </div>
+            </div>
           </div>
-          <div class="level-item">
-            <BSelect
-              v-if="editing"
-              placeholder="Select a field"
-              :value="field"
-              @input="onSelectField"
-            >
-              <option
-                v-for="[key, displayName] in topLevelFields"
-                :key="key"
-                :value="key"
-              >
-                {{ displayName }}
-              </option>
-            </BSelect>
-          </div>
+
           <div class="level-item">
             <BSelect :value="is" :disabled="!field" @input="onIsChange">
               <option :value="true">{{ operators[0] }}</option>

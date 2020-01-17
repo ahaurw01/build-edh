@@ -30,9 +30,11 @@
             @click="deleteCondition(index)"
           />
         </div>
-      </div>
-      <div v-if="canAddAnotherCondition" class="level">
-        <div class="level-item">
+
+        <div
+          v-if="canAddAnotherCondition && index === conditions.length - 1"
+          class="level-item"
+        >
           <button class="button" @click="addAnotherCondition">
             Or...
           </button>
