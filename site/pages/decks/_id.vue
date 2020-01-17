@@ -1,6 +1,6 @@
 <template>
   <section class="deck-section section">
-    <div class="container">
+    <div class="container is-fullhd">
       <div class="columns">
         <div class="deck-view column">
           <div class="columns is-vcentered">
