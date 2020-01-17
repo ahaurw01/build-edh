@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <h4 class="title is-4">
-      {{ title }}
+      {{ title }} ({{ cards.length }})
       <BIcon v-if="isAuto" icon="flash" />
       <BIcon v-if="isCompu" icon="auto-fix" />
     </h4>
