@@ -20,6 +20,11 @@
 
       <hr />
 
+      <h3 class="title is-3">Stats</h3>
+      <DeckStats />
+
+      <hr />
+
       <h3 class="title is-3">Computed Purposes</h3>
       <CompuPurposes
         :compu-purposes="compuPurposes"
@@ -31,10 +36,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import DeckStats from './DeckStats'
 import CompuPurposes from './CompuPurposes'
 
 export default {
-  components: { CompuPurposes },
+  components: { DeckStats, CompuPurposes },
   props: {
     isOpen: { type: Boolean, required: true },
   },

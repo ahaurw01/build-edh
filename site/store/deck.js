@@ -543,6 +543,9 @@ export const getters = {
       ),
     ]
   },
+
+  numCards: (state, { commanders = [], the99 = [] }) =>
+    commanders.length + the99.length,
 }
 
 /**
