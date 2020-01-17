@@ -48,14 +48,6 @@
           <CommanderSection />
           <NinetyNineSection />
 
-          <div class="columns is-vcentered">
-            <div class="column">
-              <button class="button" @click="isBulkAddModalActive = true">
-                Bulk input
-              </button>
-            </div>
-          </div>
-
           <BModal :active.sync="isEditNameModalActive" has-modal-card>
             <DeckPropertyModalForm property="name" />
           </BModal>
