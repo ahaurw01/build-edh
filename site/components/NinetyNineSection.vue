@@ -3,13 +3,6 @@
     <h3 class="title is-3">
       The Deck
     </h3>
-    <button
-      v-if="canAddCard"
-      class="button is-primary is-large"
-      @click="isNewCardModalActive = true"
-    >
-      Add Card
-    </button>
 
     <CardSection
       v-for="grouping in cardGroupings"
@@ -21,12 +14,15 @@
       @edit-card="editCard"
     />
 
-    <BModal :active.sync="isNewCardModalActive" has-modal-card>
-      <CardModalForm />
-    </BModal>
-
     <BModal :active.sync="isEditCardModalActive" has-modal-card>
-      <CardModalForm :card="cardToEdit" edit />
+      <div class="modal-card" style="overflow: visible">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            Edit Card
+          </p>
+        </header>
+        <CardModalForm :card="cardToEdit" edit />
+      </div>
     </BModal>
   </section>
 </template>
@@ -42,7 +38,6 @@ export default {
   },
   data() {
     return {
-      isNewCardModalActive: false,
       isEditCardModalActive: false,
       cardToEdit: null,
     }

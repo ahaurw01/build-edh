@@ -48,14 +48,6 @@
           <CommanderSection />
           <NinetyNineSection />
 
-          <div class="columns is-vcentered">
-            <div class="column">
-              <button class="button" @click="isBulkAddModalActive = true">
-                Bulk input
-              </button>
-            </div>
-          </div>
-
           <BModal :active.sync="isEditNameModalActive" has-modal-card>
             <DeckPropertyModalForm property="name" />
           </BModal>
@@ -70,13 +62,20 @@
             <DeckPropertyModalForm property="description" type="textarea" />
           </BModal>
           <BModal
-            :active.sync="isBulkAddModalActive"
+            :active.sync="isNewCardModalActive"
             has-modal-card
             @close="resetBulkAddErrorMessages"
           >
-            <BulkAddModalForm />
+            <AddSingleOrBulkModal />
           </BModal>
 
+          <BButton
+            size="is-medium"
+            icon-left="plus"
+            type="is-info"
+            class="new-card-modal-opener"
+            @click="isNewCardModalActive = true"
+          />
           <BButton
             size="is-medium"
             icon-left="book-open"
@@ -99,15 +98,15 @@ import { mapGetters, mapActions } from 'vuex'
 import DeckPropertyModalForm from '~/components/DeckPropertyModalForm'
 import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
-import BulkAddModalForm from '~/components/BulkAddModalForm'
 import DeckSidebar from '~/components/DeckSidebar'
+import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 export default {
   components: {
     DeckPropertyModalForm,
     CommanderSection,
     NinetyNineSection,
-    BulkAddModalForm,
     DeckSidebar,
+    AddSingleOrBulkModal,
   },
 
   async fetch({ store, params, error, $axios }) {
@@ -125,8 +124,8 @@ export default {
     isEditNameModalActive: false,
     isEditPurposeModalActive: false,
     isEditDescriptionModalActive: false,
-    isBulkAddModalActive: false,
     isMobileSidebarOpen: false,
+    isNewCardModalActive: false,
   }),
 
   computed: {
@@ -169,6 +168,12 @@ export default {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
+}
+
+.new-card-modal-opener {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
 }
 
 @media (min-width: 769px) {
