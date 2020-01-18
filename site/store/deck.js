@@ -1,9 +1,11 @@
 import uniq from 'lodash/uniq'
 import flatten from 'lodash/flatten'
 import sortBy from 'lodash/sortBy'
+import first from 'lodash/first'
 import last from 'lodash/last'
 import get from 'lodash/get'
 import compact from 'lodash/compact'
+import chunk from 'lodash/chunk'
 
 export const state = () => ({
   deck: null,
@@ -542,6 +544,74 @@ export const getters = {
         (_, index) => index + 1
       ),
     ]
+  },
+
+  numCards: (state, { commanders = [], the99 = [] }) =>
+    commanders.length + the99.length,
+
+  cmcArrayMinusLands: (state, { commanders = [], the99 = [] }) =>
+    [...commanders, ...the99]
+      .filter(
+        ({
+          source: {
+            faces: [face0],
+          },
+        }) => face0.types.length > 1 || face0.types[0] !== 'Land'
+      )
+      .map(card => get(card, 'source.cmc')),
+
+  averageCmc: (state, { cmcArrayMinusLands }) => {
+    const avg = cmcArrayMinusLands.reduce(
+      (avg, cmc) => avg + cmc / cmcArrayMinusLands.length,
+      0
+    )
+
+    return Math.round(avg * 100) / 100
+  },
+
+  medianCmc: (state, { cmcArrayMinusLands }) => {
+    const sorted = sortBy(cmcArrayMinusLands)
+
+    const [chunk1, chunk2] = chunk(sorted, Math.round(sorted.length / 2))
+    if (!chunk1) return 0
+    if (chunk1.length !== chunk2.length) return last(chunk1)
+    return (last(chunk1) + first(chunk2)) / 2 || 0
+  },
+
+  castingCostPipCounts: (state, { commanders, the99 }) => {
+    const costs = [...commanders, ...the99].map(card =>
+      get(card, 'source.faces[0].manaCost', '')
+    )
+
+    let totalNumPips = 0
+    const hash = costs.reduce(
+      (acc, cost) => {
+        cost
+          .replace(/[^WUBRGC]/g, '')
+          .split('')
+          .forEach(pip => {
+            acc[pip]++
+            totalNumPips++
+          })
+
+        return acc
+      },
+      {
+        W: 0,
+        U: 0,
+        B: 0,
+        R: 0,
+        G: 0,
+        C: 0,
+      }
+    )
+
+    Object.entries(hash).forEach(([pip, count]) => {
+      if (!count) delete hash[pip]
+      else hash[pip] = { count: hash[pip], ratio: hash[pip] / totalNumPips }
+    })
+
+    return hash
   },
 }
 

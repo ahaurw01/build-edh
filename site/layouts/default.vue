@@ -32,11 +32,6 @@
       </div>
     </nav>
     <Nuxt />
-    <!-- <section class="section main-content">
-      <div class="container">
-        
-      </div>
-    </section> -->
   </div>
 </template>
 
@@ -45,11 +40,13 @@ export default {
   data() {
     return { burgerActive: false }
   },
+
   computed: {
     isLoggedIn() {
       return this.$auth.loggedIn
     },
   },
+
   methods: {
     logOut() {
       this.$auth.logout()
@@ -57,6 +54,18 @@ export default {
     hitBurger() {
       this.burgerActive = !this.burgerActive
     },
+  },
+
+  head() {
+    return {
+      link: [
+        {
+          href: '//cdn.jsdelivr.net/npm/mana-font@1.4.1/css/mana.min.css',
+          rel: 'stylesheet',
+          type: 'text/css',
+        },
+      ],
+    }
   },
 }
 </script>
