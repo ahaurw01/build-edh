@@ -574,7 +574,7 @@ describe('Deck Store', () => {
       })
     })
 
-    describe('averageCmc', () => {
+    describe('cmcArrayMinusLands', () => {
       test('ignores lands', () => {
         const commanders = [
           {
@@ -588,27 +588,63 @@ describe('Deck Store', () => {
           {
             source: { cmc: 0, faces: [{ types: ['Land'] }] },
           },
+          {
+            source: { cmc: 2, faces: [{ types: ['Artifact'] }] },
+          },
+          {
+            source: { cmc: 3, faces: [{ types: ['Enchantment'] }] },
+          },
+          {
+            source: { cmc: 4, faces: [{ types: ['Sorcery'] }] },
+          },
         ]
 
-        expect(getters.averageCmc({}, { commanders, the99 })).toBe(1)
+        expect(getters.cmcArrayMinusLands({}, { commanders, the99 })).toEqual([
+          1,
+          2,
+          3,
+          4,
+        ])
+      })
+    })
+
+    describe('averageCmc', () => {
+      test('averages the cmc array', () => {
+        const cmcArrayMinusLands = [1, 3, 3, 5]
+
+        expect(getters.averageCmc({}, { cmcArrayMinusLands })).toBe(3)
       })
 
       test('gives average to two decimals', () => {
-        const commanders = [
-          {
-            source: { cmc: 1, faces: [{ types: ['Creature'] }] },
-          },
-        ]
-        const the99 = [
-          {
-            source: { cmc: 2, faces: [{ types: ['Artifact'] }] },
-          },
-          {
-            source: { cmc: 2, faces: [{ types: ['Artifact'] }] },
-          },
-        ]
+        const cmcArrayMinusLands = [1, 2, 2]
 
-        expect(getters.averageCmc({}, { commanders, the99 })).toBe(1.67)
+        expect(getters.averageCmc({}, { cmcArrayMinusLands })).toBe(1.67)
+      })
+
+      test('is zero if no cards', () => {
+        const cmcArrayMinusLands = []
+
+        expect(getters.averageCmc({}, { cmcArrayMinusLands })).toBe(0)
+      })
+    })
+
+    describe('medianCmc', () => {
+      test('gives middle number if odd length', () => {
+        const cmcArrayMinusLands = [1, 2, 3, 17, 18]
+
+        expect(getters.medianCmc({}, { cmcArrayMinusLands })).toBe(3)
+      })
+
+      test('gives middle avg if even length', () => {
+        const cmcArrayMinusLands = [1, 2, 3, 4]
+
+        expect(getters.medianCmc({}, { cmcArrayMinusLands })).toBe(2.5)
+      })
+
+      test('is zero if no cards', () => {
+        const cmcArrayMinusLands = []
+
+        expect(getters.medianCmc({}, { cmcArrayMinusLands })).toBe(0)
       })
     })
   })

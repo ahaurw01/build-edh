@@ -1,9 +1,11 @@
 import uniq from 'lodash/uniq'
 import flatten from 'lodash/flatten'
 import sortBy from 'lodash/sortBy'
+import first from 'lodash/first'
 import last from 'lodash/last'
 import get from 'lodash/get'
 import compact from 'lodash/compact'
+import chunk from 'lodash/chunk'
 
 export const state = () => ({
   deck: null,
@@ -547,8 +549,8 @@ export const getters = {
   numCards: (state, { commanders = [], the99 = [] }) =>
     commanders.length + the99.length,
 
-  averageCmc: (state, { commanders = [], the99 = [] }) => {
-    const avg = [...commanders, ...the99]
+  cmcArrayMinusLands: (state, { commanders = [], the99 = [] }) =>
+    [...commanders, ...the99]
       .filter(
         ({
           source: {
@@ -556,12 +558,24 @@ export const getters = {
           },
         }) => face0.types.length > 1 || face0.types[0] !== 'Land'
       )
-      .reduce(
-        (avg, { source: { cmc } }, index, { length }) => avg + cmc / length,
-        0
-      )
+      .map(card => get(card, 'source.cmc')),
+
+  averageCmc: (state, { cmcArrayMinusLands }) => {
+    const avg = cmcArrayMinusLands.reduce(
+      (avg, cmc) => avg + cmc / cmcArrayMinusLands.length,
+      0
+    )
 
     return Math.round(avg * 100) / 100
+  },
+
+  medianCmc: (state, { cmcArrayMinusLands }) => {
+    const sorted = sortBy(cmcArrayMinusLands)
+
+    const [chunk1, chunk2] = chunk(sorted, Math.round(sorted.length / 2))
+    if (!chunk1) return 0
+    if (chunk1.length !== chunk2.length) return last(chunk1)
+    return (last(chunk1) + first(chunk2)) / 2 || 0
   },
 }
 

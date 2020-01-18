@@ -2,6 +2,7 @@
   <ul>
     <li><b>Number of cards:</b> {{ numCards }}</li>
     <li><b>Average CMC:</b> {{ averageCmc }}</li>
+    <li><b>Median CMC:</b> {{ medianCmc }}</li>
   </ul>
 </template>
 
@@ -13,6 +14,7 @@ export default {
     ...mapGetters({
       numCards: 'deck/numCards',
       averageCmc: 'deck/averageCmc',
+      medianCmc: 'deck/medianCmc',
     }),
   },
 
