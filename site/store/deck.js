@@ -546,6 +546,23 @@ export const getters = {
 
   numCards: (state, { commanders = [], the99 = [] }) =>
     commanders.length + the99.length,
+
+  averageCmc: (state, { commanders = [], the99 = [] }) => {
+    const avg = [...commanders, ...the99]
+      .filter(
+        ({
+          source: {
+            faces: [face0],
+          },
+        }) => face0.types.length > 1 || face0.types[0] !== 'Land'
+      )
+      .reduce(
+        (avg, { source: { cmc } }, index, { length }) => avg + cmc / length,
+        0
+      )
+
+    return Math.round(avg * 100) / 100
+  },
 }
 
 /**

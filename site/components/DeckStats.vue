@@ -1,6 +1,7 @@
 <template>
   <ul>
     <li><b>Number of cards:</b> {{ numCards }}</li>
+    <li><b>Average CMC:</b> {{ averageCmc }}</li>
   </ul>
 </template>
 
@@ -11,6 +12,7 @@ export default {
   computed: {
     ...mapGetters({
       numCards: 'deck/numCards',
+      averageCmc: 'deck/averageCmc',
     }),
   },
 

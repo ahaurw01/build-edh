@@ -564,5 +564,52 @@ describe('Deck Store', () => {
         expect(result.notones[1].source.cmc).toBe(3)
       })
     })
+
+    describe('numCards', () => {
+      test('sums num commanders and 99', () => {
+        const commanders = [{}, {}]
+        const the99 = [{}, {}, {}]
+
+        expect(getters.numCards({}, { commanders, the99 })).toBe(5)
+      })
+    })
+
+    describe('averageCmc', () => {
+      test('ignores lands', () => {
+        const commanders = [
+          {
+            source: { cmc: 1, faces: [{ types: ['Creature'] }] },
+          },
+        ]
+        const the99 = [
+          {
+            source: { cmc: 0, faces: [{ types: ['Land'] }] },
+          },
+          {
+            source: { cmc: 0, faces: [{ types: ['Land'] }] },
+          },
+        ]
+
+        expect(getters.averageCmc({}, { commanders, the99 })).toBe(1)
+      })
+
+      test('gives average to two decimals', () => {
+        const commanders = [
+          {
+            source: { cmc: 1, faces: [{ types: ['Creature'] }] },
+          },
+        ]
+        const the99 = [
+          {
+            source: { cmc: 2, faces: [{ types: ['Artifact'] }] },
+          },
+          {
+            source: { cmc: 2, faces: [{ types: ['Artifact'] }] },
+          },
+        ]
+
+        expect(getters.averageCmc({}, { commanders, the99 })).toBe(1.67)
+      })
+    })
   })
 })
