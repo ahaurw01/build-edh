@@ -577,6 +577,33 @@ export const getters = {
     if (chunk1.length !== chunk2.length) return last(chunk1)
     return (last(chunk1) + first(chunk2)) / 2 || 0
   },
+
+  castingCostPipCounts: (state, { commanders, the99 }) => {
+    const costs = [...commanders, ...the99].map(card =>
+      get(card, 'source.faces[0].manaCost', '')
+    )
+
+    let totalNumPips = 0
+    const hash = costs.reduce((acc, cost) => {
+      cost
+        .replace(/[^WUBRGC]/g, '')
+        .split('')
+        .forEach(pip => {
+          acc[pip] = acc[pip] ? acc[pip] + 1 : 1
+          totalNumPips++
+        })
+
+      return acc
+    }, {})
+
+    return Object.keys(hash).reduce(
+      (acc, pip) => ({
+        ...acc,
+        [pip]: { count: hash[pip], ratio: hash[pip] / totalNumPips },
+      }),
+      {}
+    )
+  },
 }
 
 /**

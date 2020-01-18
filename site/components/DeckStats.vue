@@ -3,6 +3,14 @@
     <li><b>Number of cards:</b> {{ numCards }}</li>
     <li><b>Average CMC:</b> {{ averageCmc }}</li>
     <li><b>Median CMC:</b> {{ medianCmc }}</li>
+    <li>
+      <b>Casting cost pips:</b>
+      <ul class="nested-list">
+        <li v-for="({ count, ratio }, key) in castingCostPipCounts" :key="key">
+          <b>{{ key }}:</b> {{ count }} ({{ (ratio * 100).toFixed(1) }}%)
+        </li>
+      </ul>
+    </li>
   </ul>
 </template>
 
@@ -15,6 +23,7 @@ export default {
       numCards: 'deck/numCards',
       averageCmc: 'deck/averageCmc',
       medianCmc: 'deck/medianCmc',
+      castingCostPipCounts: 'deck/castingCostPipCounts',
     }),
   },
 
@@ -74,5 +83,9 @@ export default {
     max-height: calc(100vh - 40px);
     overflow: auto;
   }
+}
+
+.nested-list {
+  margin-left: 1rem;
 }
 </style>

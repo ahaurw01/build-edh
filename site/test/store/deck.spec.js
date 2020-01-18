@@ -647,5 +647,121 @@ describe('Deck Store', () => {
         expect(getters.medianCmc({}, { cmcArrayMinusLands })).toBe(0)
       })
     })
+
+    describe('castingCostPipCounts', () => {
+      test('sums up all costing cast pips', () => {
+        const commanders = [
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{W}{U}{B}{R}{G}',
+                },
+              ],
+            },
+          },
+        ]
+        const the99 = [
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{1}{W}',
+                },
+              ],
+            },
+          },
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{2}{U}',
+                },
+              ],
+            },
+          },
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{2}{C}',
+                },
+              ],
+            },
+          },
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{X}{B}{R}{G}',
+                },
+              ],
+            },
+          },
+        ]
+
+        const result = getters.castingCostPipCounts({}, { commanders, the99 })
+
+        expect(result).toEqual({
+          W: { count: 2, ratio: 2 / 11 },
+          U: { count: 2, ratio: 2 / 11 },
+          B: { count: 2, ratio: 2 / 11 },
+          R: { count: 2, ratio: 2 / 11 },
+          G: { count: 2, ratio: 2 / 11 },
+          C: { count: 1, ratio: 1 / 11 },
+        })
+      })
+
+      test('prunes zeroes', () => {
+        const commanders = [
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{W}{U}',
+                },
+              ],
+            },
+          },
+        ]
+        const the99 = [
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{1}{W}',
+                },
+              ],
+            },
+          },
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{2}{U}',
+                },
+              ],
+            },
+          },
+          {
+            source: {
+              faces: [
+                {
+                  manaCost: '{2}{C}',
+                },
+              ],
+            },
+          },
+        ]
+
+        const result = getters.castingCostPipCounts({}, { commanders, the99 })
+
+        expect(result).toEqual({
+          W: { count: 2, ratio: 2 / 5 },
+          U: { count: 2, ratio: 2 / 5 },
+          C: { count: 1, ratio: 1 / 5 },
+        })
+      })
+    })
   })
 })
