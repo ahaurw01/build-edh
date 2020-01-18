@@ -5,9 +5,14 @@
     <li><b>Median CMC:</b> {{ medianCmc }}</li>
     <li>
       <b>Casting cost pips:</b>
-      <ul class="nested-list">
-        <li v-for="({ count, ratio }, key) in castingCostPipCounts" :key="key">
-          <b>{{ key }}:</b> {{ count }} ({{ (ratio * 100).toFixed(1) }}%)
+      <ul class="pip-list">
+        <li
+          v-for="({ count, ratio }, key) in castingCostPipCounts"
+          :key="key"
+          :style="{ order: -count }"
+        >
+          <i class="ms ms-cost" :class="`ms-${key.toLowerCase()}`" />:
+          {{ count }} ({{ (ratio * 100).toFixed(1) }}%)
         </li>
       </ul>
     </li>
@@ -85,7 +90,9 @@ export default {
   }
 }
 
-.nested-list {
+.pip-list {
   margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 </style>

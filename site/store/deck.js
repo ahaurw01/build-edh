@@ -584,25 +584,34 @@ export const getters = {
     )
 
     let totalNumPips = 0
-    const hash = costs.reduce((acc, cost) => {
-      cost
-        .replace(/[^WUBRGC]/g, '')
-        .split('')
-        .forEach(pip => {
-          acc[pip] = acc[pip] ? acc[pip] + 1 : 1
-          totalNumPips++
-        })
+    const hash = costs.reduce(
+      (acc, cost) => {
+        cost
+          .replace(/[^WUBRGC]/g, '')
+          .split('')
+          .forEach(pip => {
+            acc[pip]++
+            totalNumPips++
+          })
 
-      return acc
-    }, {})
-
-    return Object.keys(hash).reduce(
-      (acc, pip) => ({
-        ...acc,
-        [pip]: { count: hash[pip], ratio: hash[pip] / totalNumPips },
-      }),
-      {}
+        return acc
+      },
+      {
+        W: 0,
+        U: 0,
+        B: 0,
+        R: 0,
+        G: 0,
+        C: 0,
+      }
     )
+
+    Object.entries(hash).forEach(([pip, count]) => {
+      if (!count) delete hash[pip]
+      else hash[pip] = { count: hash[pip], ratio: hash[pip] / totalNumPips }
+    })
+
+    return hash
   },
 }
 
