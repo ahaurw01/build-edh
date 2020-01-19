@@ -17,8 +17,9 @@
               </div>
               <div class="media-content" style="white-space: normal;">
                 <h6 class="title is-6">
-                  {{ props.option.name }} -
-                  {{ props.option.faces[0].manaCost }}
+                  {{ props.option.name }}
+                  <span v-if="props.option.faces[0].manaCost">-</span>
+                  <ManaCost :mana-cost="props.option.faces[0].manaCost" />
                 </h6>
                 <p>
                   {{ props.option.faces[0].oracleText }}
@@ -69,9 +70,11 @@
 import debounce from 'lodash/debounce'
 import { mapGetters, mapActions } from 'vuex'
 import Card from '~/components/Card'
+import ManaCost from '~/components/ManaCost'
 export default {
   components: {
     Card,
+    ManaCost,
   },
   props: {
     card: { type: Object, default: null },
