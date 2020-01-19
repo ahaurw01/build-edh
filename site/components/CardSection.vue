@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <h4 class="title is-4">
-      {{ title }} ({{ cards.length }})
+      {{ title }} ({{ numCardsTotal }})
       <BIcon v-if="isAuto" icon="flash" />
       <BIcon v-if="isCompu" icon="auto-fix" />
     </h4>
@@ -92,6 +92,10 @@ export default {
   computed: {
     columns() {
       return chunk(this.cards, Math.ceil(this.cards.length / this.numColumns))
+    },
+
+    numCardsTotal() {
+      return this.cards.reduce((total, { count }) => total + count, 0)
     },
   },
 
