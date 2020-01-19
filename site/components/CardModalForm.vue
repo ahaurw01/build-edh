@@ -41,6 +41,10 @@
           @typing="setFilteredSuggestedPurposes"
         />
       </BField>
+
+      <BField v-if="showCount" label="Number">
+        <BNumberinput v-model="count" />
+      </BField>
     </section>
     <footer class="modal-card-foot">
       <div class="level is-mobile" style="width: 100%">
@@ -87,6 +91,10 @@ export default {
       purposes: [...(this.card ? this.card.purposes : [])],
       filteredSuggestedPurposes: this.suggestedPurposes,
       confirmDelete: false,
+      count:
+        this.card && this.card.source.canHaveMultiple
+          ? this.card.count || 1
+          : 1,
     }
   },
   computed: {
@@ -110,6 +118,10 @@ export default {
       }
       return findParent(this.$parent)
     },
+
+    showCount() {
+      return this.card && this.card.source.canHaveMultiple
+    },
   },
   mounted() {
     this.$refs.form.querySelector('input').focus()
@@ -126,11 +138,13 @@ export default {
           scryfallId: this.selectedCard.scryfallId,
           purposes: this.purposes,
           isFoil: false,
+          count: this.count,
         })
       } else {
         this.addCard({
           scryfallId: this.selectedCard.scryfallId,
           purposes: this.purposes,
+          count: this.count,
         })
       }
       this.parent.close()

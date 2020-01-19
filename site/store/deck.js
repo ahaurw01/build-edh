@@ -208,7 +208,10 @@ export const actions = {
     commit('addCard', card)
   },
 
-  async updateCard({ commit, state }, { uuid, purposes, isFoil, scryfallId }) {
+  async updateCard(
+    { commit, state },
+    { uuid, purposes, isFoil, scryfallId, count }
+  ) {
     const { data: card } = await this.$axios.put(
       `/api/decks/${state.deck._id}/the99/${uuid}`,
       {
@@ -216,6 +219,7 @@ export const actions = {
           scryfallId,
           isFoil,
           purposes,
+          count,
         },
       }
     )
