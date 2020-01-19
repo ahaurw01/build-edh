@@ -43,7 +43,7 @@
       </BField>
 
       <BField v-if="showCount" label="Number">
-        <BNumberinput v-model="count" />
+        <BNumberinput v-model="count" :min="1" :max="99" />
       </BField>
     </section>
     <footer class="modal-card-foot">
@@ -120,7 +120,7 @@ export default {
     },
 
     showCount() {
-      return this.card && this.card.source.canHaveMultiple
+      return this.selectedCard && this.selectedCard.canHaveMultiple
     },
   },
   mounted() {

@@ -194,13 +194,14 @@ export const actions = {
     commit('deleteCommander', uuid)
   },
 
-  async addCard({ commit, state }, { scryfallId, purposes }) {
+  async addCard({ commit, state }, { scryfallId, purposes, count }) {
     const { data: card } = await this.$axios.post(
       `/api/decks/${state.deck._id}/the99`,
       {
         card: {
           scryfallId,
           purposes,
+          count,
         },
       }
     )
