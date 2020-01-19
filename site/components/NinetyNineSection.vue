@@ -45,7 +45,7 @@ export default {
 
   computed: {
     ...mapGetters(
-      ['canAddCard', 'cardGroupings'].reduce((acc, key) => {
+      ['cardGroupings'].reduce((acc, key) => {
         acc[key] = `deck/${key}`
         return acc
       }, {})
