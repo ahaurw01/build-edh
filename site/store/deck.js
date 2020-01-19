@@ -293,12 +293,7 @@ export const getters = {
     return ['W', 'U', 'B', 'R', 'G'].filter(c => colors.includes(c))
   },
   the99: state => state.deck.the99,
-  canAddCard: (state, { commanders, the99 }) => {
-    return (
-      (commanders.length < 2 && the99.length < 99) ||
-      (commanders.length === 2 && the99.length < 98)
-    )
-  },
+
   bulkAddErrorMessages: state => state.bulkAddErrorMessages,
 
   // Assemble groupings of cards based on their assigned purposes or type.
