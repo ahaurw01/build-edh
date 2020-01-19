@@ -186,10 +186,6 @@ function validateThe99(ctx, next) {
 
   ctx.state.the99ErrorMessages = []
 
-  if (commanders.length + the99.length > 100) {
-    ctx.state.the99ErrorMessages.push('Cannot have more than 100 cards total.')
-  }
-
   const allSources = [...ctx.state.commanderSources, ...ctx.state.the99Sources]
   const badDuplicates = _([...commanders, ...the99])
     .map(card => ({
