@@ -70,26 +70,10 @@ export const mutations = {
     }
   },
 
-  addCard(state, the99) {
+  updateThe99(state, the99) {
     state.deck = {
       ...state.deck,
       the99,
-    }
-  },
-
-  updateCard(state, the99) {
-    state.deck = {
-      ...state.deck,
-      the99,
-    }
-  },
-
-  deleteCard(state, uuid) {
-    state.deck = {
-      ...state.deck,
-      the99: state.deck.the99.filter(
-        existingCard => existingCard.uuid !== uuid
-      ),
     }
   },
 
@@ -202,7 +186,7 @@ export const actions = {
       count,
     })
 
-    commit('addCard', the99)
+    commit('updateThe99', the99)
   },
 
   async updateCard(
@@ -220,12 +204,14 @@ export const actions = {
       count,
     })
 
-    commit('updateCard', the99)
+    commit('updateThe99', the99)
   },
 
   async deleteCard({ commit, state }, uuid) {
-    await this.$axios.delete(`/api/decks/${state.deck._id}/the99/${uuid}`)
-    commit('deleteCard', uuid)
+    const {
+      data: { the99 },
+    } = await this.$axios.delete(`/api/decks/${state.deck._id}/the99/${uuid}`)
+    commit('updateThe99', the99)
   },
 
   async bulkAdd({ commit, state }, updates) {
