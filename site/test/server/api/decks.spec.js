@@ -220,6 +220,182 @@ describe('deck endpoints', () => {
     })
   })
 
+  describe('update deck card', () => {
+    test('update one card', async () => {
+      jest.spyOn(Deck.prototype, 'save').mockImplementation(function() {
+        return Promise.resolve(this)
+      })
+
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
+        Promise.resolve(
+          new Deck({
+            the99: [{ scryfallId: '1', uuid: 'u1', isFoil: false }],
+          })
+        )
+      )
+
+      jest.spyOn(Card, 'find').mockImplementation(query => {
+        return Promise.resolve(
+          query.scryfallId.$in.map(
+            scryfallId =>
+              new Card({
+                scryfallId,
+                name: scryfallId,
+                canHaveMultiple: false,
+                isFoil: false,
+              })
+          )
+        )
+      })
+
+      const response = await supertest(server)
+        .put('/api/decks/abc123/the99/u1')
+        .set('Authorization', tokenHeader)
+        .send({ card: { scryfallId: '2', purposes: ['do a thing'] } })
+        .expect(200)
+
+      expect(response.body).toEqual({
+        the99: [
+          expect.objectContaining({
+            uuid: expect.any(String),
+            scryfallId: '2',
+            purposes: ['do a thing'],
+            source: expect.any(Object),
+            isFoil: false,
+          }),
+        ],
+      })
+    })
+
+    test('update to bogus card', async () => {
+      jest.spyOn(Deck.prototype, 'save').mockImplementation(function() {
+        return Promise.resolve(this)
+      })
+
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
+        Promise.resolve(
+          new Deck({
+            the99: [{ scryfallId: '1', uuid: 'u1', isFoil: false }],
+          })
+        )
+      )
+
+      jest.spyOn(Card, 'find').mockImplementation(query => {
+        return Promise.resolve(
+          query.scryfallId.$in
+            .map(scryfallId =>
+              scryfallId === '1'
+                ? new Card({
+                    scryfallId,
+                    name: scryfallId,
+                    canHaveMultiple: false,
+                    isFoil: false,
+                  })
+                : null
+            )
+            .filter(x => x)
+        )
+      })
+
+      await supertest(server)
+        .put('/api/decks/abc123/the99/u1')
+        .set('Authorization', tokenHeader)
+        .send({ card: { scryfallId: '2', purposes: ['do a thing'] } })
+        .expect(400)
+        .expect('Card not found')
+    })
+
+    test('update number of cards', async () => {
+      jest.spyOn(Deck.prototype, 'save').mockImplementation(function() {
+        return Promise.resolve(this)
+      })
+
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
+        Promise.resolve(
+          new Deck({
+            the99: [{ scryfallId: '1', uuid: 'u1', isFoil: false }],
+          })
+        )
+      )
+
+      jest.spyOn(Card, 'find').mockImplementation(query => {
+        return Promise.resolve(
+          query.scryfallId.$in.map(
+            scryfallId =>
+              new Card({
+                scryfallId,
+                name: scryfallId,
+                canHaveMultiple: true,
+                isFoil: false,
+              })
+          )
+        )
+      })
+
+      const response = await supertest(server)
+        .put('/api/decks/abc123/the99/u1')
+        .set('Authorization', tokenHeader)
+        .send({
+          card: { scryfallId: '1', purposes: ['do a thing'] },
+          count: 17,
+        })
+        .expect(200)
+
+      expect(response.body).toEqual({
+        the99: '.'
+          .repeat(17)
+          .split('')
+          .map(() =>
+            expect.objectContaining({
+              uuid: expect.any(String),
+              scryfallId: '1',
+              purposes: ['do a thing'],
+              source: expect.any(Object),
+              isFoil: false,
+            })
+          ),
+      })
+    })
+
+    test('update to illegal number of cards', async () => {
+      jest.spyOn(Deck.prototype, 'save').mockImplementation(function() {
+        return Promise.resolve(this)
+      })
+
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
+        Promise.resolve(
+          new Deck({
+            the99: [{ scryfallId: '1', uuid: 'u1', isFoil: false }],
+          })
+        )
+      )
+
+      jest.spyOn(Card, 'find').mockImplementation(query => {
+        return Promise.resolve(
+          query.scryfallId.$in.map(
+            scryfallId =>
+              new Card({
+                scryfallId,
+                name: scryfallId,
+                canHaveMultiple: false,
+                isFoil: false,
+              })
+          )
+        )
+      })
+
+      await supertest(server)
+        .put('/api/decks/abc123/the99/u1')
+        .set('Authorization', tokenHeader)
+        .send({
+          card: { scryfallId: '1', purposes: ['do a thing'] },
+          count: 17,
+        })
+        .expect(400)
+        .expect('Illegal duplicates: 1')
+    })
+  })
+
   describe('delete deck card', () => {
     beforeEach(() => {
       jest.spyOn(Deck.prototype, 'save').mockImplementation(function() {

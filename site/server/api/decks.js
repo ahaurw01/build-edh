@@ -49,6 +49,7 @@ module.exports = {
     populateCommanderSources,
     populateThe99Sources,
     validateThe99,
+    updateDeckCardValidationCheck,
     updateDeckCardSave,
   ],
   deleteDeckCardMiddlewares: [
@@ -391,13 +392,14 @@ async function updateDeckCardAssembly(ctx, next) {
   ctx.assert(!!existingCard, 400, 'UUID not found')
   ctx.assert(ctx.request.body.card, 400, 'No updates provided')
 
-  const { isFoil, purposes, scryfallId } = ctx.request.body.card
+  const { isFoil = false, purposes = [], scryfallId } = ctx.request.body.card
   const count = _.get(ctx.request, 'body.count', 1)
 
   const the99WithoutUpdatingCard = deck.the99.filter(card => {
     // Drop all cards that are identical in nature to the one being updated.
     const matchesUpdatingCard =
-      card.scryfallId === scryfallId && card.isFoil === isFoil
+      card.scryfallId === existingCard.scryfallId &&
+      card.isFoil === existingCard.isFoil
     return !matchesUpdatingCard
   })
 
@@ -413,6 +415,25 @@ async function updateDeckCardAssembly(ctx, next) {
   deck.the99 = [...the99WithoutUpdatingCard, ...cards]
 
   return next()
+}
+
+async function updateDeckCardValidationCheck(ctx, next) {
+  // If validation problem:
+  // - Do not update the deck.
+  // - Send 400.
+  // - Send error messages.
+  if (
+    ctx.state.addDeckCardErrorMessages.length ||
+    ctx.state.the99ErrorMessages.length
+  ) {
+    ctx.status = 400
+    ctx.body = [
+      ...ctx.state.addDeckCardErrorMessages,
+      ...ctx.state.the99ErrorMessages,
+    ].join(', ')
+  } else {
+    return next()
+  }
 }
 
 async function updateDeckCardSave(ctx, next) {
