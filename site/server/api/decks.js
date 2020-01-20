@@ -41,6 +41,7 @@ module.exports = {
     populateCommanderSources,
     populateThe99Sources,
     validateThe99,
+    addDeckCardValidationCheck,
     addDeckCardSave,
   ],
   updateDeckCardMiddlewares: [
@@ -332,6 +333,25 @@ async function addDeckCardAssembly(ctx, next) {
   deck.the99 = [...deck.the99, ...cards]
 
   return next()
+}
+
+async function addDeckCardValidationCheck(ctx, next) {
+  // If validation problem:
+  // - Do not update the deck.
+  // - Send 400.
+  // - Send error messages.
+  if (
+    ctx.state.addDeckCardErrorMessages.length ||
+    ctx.state.the99ErrorMessages.length
+  ) {
+    ctx.status = 400
+    ctx.body = [
+      ...ctx.state.addDeckCardErrorMessages,
+      ...ctx.state.the99ErrorMessages,
+    ].join(', ')
+  } else {
+    return next()
+  }
 }
 
 async function addDeckCardSave(ctx, next) {
