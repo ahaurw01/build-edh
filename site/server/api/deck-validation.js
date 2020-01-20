@@ -185,17 +185,34 @@ function validateThe99(ctx, next) {
   } = ctx.state
 
   ctx.state.the99ErrorMessages = []
+  ctx.state.addDeckCardErrorMessages = []
 
   const allSources = [...ctx.state.commanderSources, ...ctx.state.the99Sources]
-  const badDuplicates = _([...commanders, ...the99])
-    .map(card => ({
-      ...card,
-      source: _.find(allSources, { scryfallId: card.scryfallId }),
-    }))
+  const allCardsWithSources = [...commanders, ...the99].map(card => ({
+    ...card,
+    source: _.find(allSources, { scryfallId: card.scryfallId }),
+  }))
+
+  allCardsWithSources.forEach(card => {
+    if (!card.source) {
+      ctx.state.addDeckCardErrorMessages.push('Card not found')
+    }
+  })
+  const commanderNames = ctx.state.commanderSources.map(s => s.name)
+  const the99Names = ctx.state.the99Sources.map(s => s.name)
+
+  if (_.intersection(commanderNames, the99Names).length) {
+    ctx.state.addDeckCardErrorMessages.push('Cannot add commander to the 99')
+  }
+
+  if (ctx.state.addDeckCardErrorMessages.length) return next()
+
+  const badDuplicates = _(allCardsWithSources)
     .filter(c => !c.source.canHaveMultiple)
     .groupBy('source.name')
     .filter(cards => cards.length > 1)
     .value()
+
   if (badDuplicates.length > 0) {
     ctx.state.the99ErrorMessages.push(
       `Illegal duplicates: ${badDuplicates

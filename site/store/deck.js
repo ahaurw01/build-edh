@@ -70,29 +70,10 @@ export const mutations = {
     }
   },
 
-  addCard(state, card) {
+  updateThe99(state, the99) {
     state.deck = {
       ...state.deck,
-      the99: [...state.deck.the99, card],
-    }
-  },
-
-  updateCard(state, card) {
-    state.deck = {
-      ...state.deck,
-      the99: state.deck.the99.map(existingCard => {
-        if (existingCard.uuid === card.uuid) return card
-        return existingCard
-      }),
-    }
-  },
-
-  deleteCard(state, uuid) {
-    state.deck = {
-      ...state.deck,
-      the99: state.deck.the99.filter(
-        existingCard => existingCard.uuid !== uuid
-      ),
+      the99,
     }
   },
 
@@ -194,38 +175,43 @@ export const actions = {
     commit('deleteCommander', uuid)
   },
 
-  async addCard({ commit, state }, { scryfallId, purposes }) {
-    const { data: card } = await this.$axios.post(
-      `/api/decks/${state.deck._id}/the99`,
-      {
-        card: {
-          scryfallId,
-          purposes,
-        },
-      }
-    )
+  async addCard({ commit, state }, { scryfallId, purposes, count }) {
+    const {
+      data: { the99 },
+    } = await this.$axios.post(`/api/decks/${state.deck._id}/the99`, {
+      card: {
+        scryfallId,
+        purposes,
+      },
+      count,
+    })
 
-    commit('addCard', card)
+    commit('updateThe99', the99)
   },
 
-  async updateCard({ commit, state }, { uuid, purposes, isFoil, scryfallId }) {
-    const { data: card } = await this.$axios.put(
-      `/api/decks/${state.deck._id}/the99/${uuid}`,
-      {
-        card: {
-          scryfallId,
-          isFoil,
-          purposes,
-        },
-      }
-    )
+  async updateCard(
+    { commit, state },
+    { uuid, purposes, isFoil, scryfallId, count }
+  ) {
+    const {
+      data: { the99 },
+    } = await this.$axios.put(`/api/decks/${state.deck._id}/the99/${uuid}`, {
+      card: {
+        scryfallId,
+        isFoil,
+        purposes,
+      },
+      count,
+    })
 
-    commit('updateCard', card)
+    commit('updateThe99', the99)
   },
 
   async deleteCard({ commit, state }, uuid) {
-    await this.$axios.delete(`/api/decks/${state.deck._id}/the99/${uuid}`)
-    commit('deleteCard', uuid)
+    const {
+      data: { the99 },
+    } = await this.$axios.delete(`/api/decks/${state.deck._id}/the99/${uuid}`)
+    commit('updateThe99', the99)
   },
 
   async bulkAdd({ commit, state }, updates) {

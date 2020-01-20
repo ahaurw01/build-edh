@@ -36,9 +36,29 @@ module.exports = {
   addDeckCommander,
   updateDeckCommander,
   deleteDeckCommander,
-  addDeckCard,
-  updateDeckCard,
-  deleteDeckCard,
+  addDeckCardMiddlewares: [
+    addDeckCardAssembly,
+    populateCommanderSources,
+    populateThe99Sources,
+    validateThe99,
+    addDeckCardValidationCheck,
+    addDeckCardSave,
+  ],
+  updateDeckCardMiddlewares: [
+    updateDeckCardAssembly,
+    populateCommanderSources,
+    populateThe99Sources,
+    validateThe99,
+    updateDeckCardValidationCheck,
+    updateDeckCardSave,
+  ],
+  deleteDeckCardMiddlewares: [
+    deleteDeckCardAssembly,
+    populateCommanderSources,
+    populateThe99Sources,
+    validateThe99,
+    deleteDeckCardSave,
+  ],
 }
 
 async function ensureDeckOwner(ctx, next) {
@@ -290,29 +310,66 @@ POST
     scryfallId: <id>,
     purposes: ['Chair art', 'Card draw'],
     isFoil: false
-  }
+  },
+  count: 1
 }
 */
-async function addDeckCard(ctx) {
+async function addDeckCardAssembly(ctx, next) {
   const scryfallId = _.get(ctx.request, 'body.card.scryfallId')
   ctx.assert(!!scryfallId, 400, 'Missing scryfallId')
   const purposes = _.get(ctx.request, 'body.card.purposes', [])
   const isFoil = _.get(ctx.request, 'body.card.isFoil', false)
+  const count = _.get(ctx.request, 'body.count', 1)
 
   const { deck } = ctx.state
-  const card = {
-    scryfallId,
-    uuid: uuid(),
-    purposes,
-    isFoil,
+  const cards = '_'
+    .repeat(count)
+    .split('')
+    .map(() => ({
+      scryfallId,
+      uuid: uuid(),
+      purposes,
+      isFoil,
+    }))
+  deck.the99 = [...deck.the99, ...cards]
+
+  return next()
+}
+
+async function addDeckCardValidationCheck(ctx, next) {
+  // If validation problem:
+  // - Do not update the deck.
+  // - Send 400.
+  // - Send error messages.
+  if (
+    ctx.state.addDeckCardErrorMessages.length ||
+    ctx.state.the99ErrorMessages.length
+  ) {
+    ctx.status = 400
+    ctx.body = [
+      ...ctx.state.addDeckCardErrorMessages,
+      ...ctx.state.the99ErrorMessages,
+    ].join(', ')
+  } else {
+    return next()
   }
-  deck.the99.push(card)
-  await oldValidateThe99(ctx)
+}
+
+async function addDeckCardSave(ctx, next) {
+  const { deck } = ctx.state
+
   await deck.save()
+
   ctx.body = {
-    ...card,
-    source: _.find(ctx.state.sources, { scryfallId: card.scryfallId }),
+    the99: deck.the99.map(card => ({
+      ...card.toJSON(),
+      source: _.find(ctx.state.the99Sources, {
+        scryfallId: card.scryfallId,
+      }),
+    })),
   }
+
+  return next()
 }
 
 /*
@@ -322,100 +379,111 @@ PUT
     purposes: ['Card draw', 'Sac outlet'],
     isFoil: true,
     scryfallId: <id>
-  }
+  },
+  count: 1
 }
 
 */
-async function updateDeckCard(ctx) {
-  const { uuid } = ctx.params
+async function updateDeckCardAssembly(ctx, next) {
+  const { uuid: cardUuid } = ctx.params
   const { deck } = ctx.state
 
-  const card = _.find(deck.the99, { uuid })
-  ctx.assert(!!card, 400, 'UUID not found')
+  const existingCard = _.find(deck.the99, { uuid: cardUuid })
+  ctx.assert(!!existingCard, 400, 'UUID not found')
   ctx.assert(ctx.request.body.card, 400, 'No updates provided')
 
-  const { isFoil, purposes, scryfallId } = ctx.request.body.card
+  const { isFoil = false, purposes = [], scryfallId } = ctx.request.body.card
+  const count = _.get(ctx.request, 'body.count', 1)
 
-  if (isFoil != null) card.isFoil = isFoil
-  if (purposes != null) card.purposes = purposes
-  if (scryfallId != null) card.scryfallId = scryfallId
+  const the99WithoutUpdatingCard = deck.the99.filter(card => {
+    // Drop all cards that are identical in nature to the one being updated.
+    const matchesUpdatingCard =
+      card.scryfallId === existingCard.scryfallId &&
+      card.isFoil === existingCard.isFoil
+    return !matchesUpdatingCard
+  })
 
-  await oldValidateThe99(ctx)
-  await deck.save()
-  ctx.body = {
-    ...card.toJSON(),
-    source: _.find(ctx.state.sources, { scryfallId: card.scryfallId }),
+  const cards = '_'
+    .repeat(count)
+    .split('')
+    .map(() => ({
+      scryfallId,
+      uuid: uuid(),
+      purposes,
+      isFoil,
+    }))
+  deck.the99 = [...the99WithoutUpdatingCard, ...cards]
+
+  return next()
+}
+
+async function updateDeckCardValidationCheck(ctx, next) {
+  // If validation problem:
+  // - Do not update the deck.
+  // - Send 400.
+  // - Send error messages.
+  if (
+    ctx.state.addDeckCardErrorMessages.length ||
+    ctx.state.the99ErrorMessages.length
+  ) {
+    ctx.status = 400
+    ctx.body = [
+      ...ctx.state.addDeckCardErrorMessages,
+      ...ctx.state.the99ErrorMessages,
+    ].join(', ')
+  } else {
+    return next()
   }
+}
+
+async function updateDeckCardSave(ctx, next) {
+  const { deck } = ctx.state
+
+  await deck.save()
+
+  ctx.body = {
+    the99: deck.the99.map(card => ({
+      ...card.toJSON(),
+      source: _.find(ctx.state.the99Sources, {
+        scryfallId: card.scryfallId,
+      }),
+    })),
+  }
+
+  return next()
 }
 
 /*
 DELETE /decks/:id/the99/:uuid
 */
-async function deleteDeckCard(ctx) {
+async function deleteDeckCardAssembly(ctx, next) {
   const { uuid } = ctx.params
   const { deck } = ctx.state
-  ctx.assert(_.find(deck.the99, { uuid }), 400, 'UUID not found')
+  const deletingCard = _.find(deck.the99, { uuid })
+  ctx.assert(deletingCard, 400, 'UUID not found')
 
-  deck.the99 = _.reject(deck.the99, { uuid })
-  await oldValidateThe99(ctx)
-  await deck.save()
-  ctx.status = 204
+  deck.the99 = deck.the99.filter(card => {
+    // Drop all cards that are identical in nature to the one being deleted.
+    const matchesUpdatingCard =
+      card.scryfallId === deletingCard.scryfallId &&
+      card.isFoil === deletingCard.isFoil
+    return !matchesUpdatingCard
+  })
+  return next()
 }
 
-async function oldValidateThe99(ctx) {
-  const {
-    deck: { commanders, the99 },
-  } = ctx.state
-  ctx.assert(
-    (commanders.length < 2 && the99.length <= 99) ||
-      (commanders.length === 2 && the99.length <= 98),
-    400,
-    commanders.length < 2
-      ? 'Cannot have more than 99 cards'
-      : 'Cannot have more than 98 cards with two commanders'
-  )
+async function deleteDeckCardSave(ctx, next) {
+  const { deck } = ctx.state
+  await deck.save()
 
-  const sources = await Card.find({
-    scryfallId: { $in: _.map(commanders.concat(the99), 'scryfallId') },
-  })
-  ctx.state.sources = ctx.state.sources || []
-  ctx.state.sources = ctx.state.sources.concat(sources)
+  ctx.body = {
+    the99: deck.the99.map(card => ({
+      ...card.toJSON(),
+      source: _.find(ctx.state.the99Sources, {
+        scryfallId: card.scryfallId,
+      }),
+    })),
+  }
 
-  const uniqueScryfallIds = _.uniq(
-    _.map([...commanders, ...the99], 'scryfallId')
-  )
-  const uniqueScryfallIdsFound = _.uniq(_.map(sources, 'scryfallId'))
-  ctx.assert(
-    uniqueScryfallIds.length === uniqueScryfallIdsFound.length,
-    400,
-    'Card not found'
-  )
-
-  const badDuplicates = _(the99)
-    .map(card => ({
-      ...card,
-      source: _.find(sources, { scryfallId: card.scryfallId }),
-    }))
-    .filter(c => !c.source.canHaveMultiple)
-    .groupBy('source.name')
-    .filter(cards => cards.length > 1)
-    .value()
-
-  ctx.assert(
-    badDuplicates.length === 0,
-    400,
-    'Cannot add multiples of this card'
-  )
-
-  const commanderNames = commanders
-    .map(c => _.find(sources, { scryfallId: c.scryfallId }))
-    .map(s => s.name)
-  const the99Names = the99
-    .map(c => _.find(sources, { scryfallId: c.scryfallId }))
-    .map(s => s.name)
-  ctx.assert(
-    _.intersection(commanderNames, the99Names).length === 0,
-    400,
-    'Cannot add commander to the 99'
-  )
+  return next()
 }
