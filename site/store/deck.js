@@ -70,20 +70,17 @@ export const mutations = {
     }
   },
 
-  addCard(state, card) {
+  addCard(state, the99) {
     state.deck = {
       ...state.deck,
-      the99: [...state.deck.the99, card],
+      the99,
     }
   },
 
-  updateCard(state, card) {
+  updateCard(state, the99) {
     state.deck = {
       ...state.deck,
-      the99: state.deck.the99.map(existingCard => {
-        if (existingCard.uuid === card.uuid) return card
-        return existingCard
-      }),
+      the99,
     }
   },
 
@@ -195,37 +192,35 @@ export const actions = {
   },
 
   async addCard({ commit, state }, { scryfallId, purposes, count }) {
-    const { data: card } = await this.$axios.post(
-      `/api/decks/${state.deck._id}/the99`,
-      {
-        card: {
-          scryfallId,
-          purposes,
-          count,
-        },
-      }
-    )
+    const {
+      data: { the99 },
+    } = await this.$axios.post(`/api/decks/${state.deck._id}/the99`, {
+      card: {
+        scryfallId,
+        purposes,
+      },
+      count,
+    })
 
-    commit('addCard', card)
+    commit('addCard', the99)
   },
 
   async updateCard(
     { commit, state },
     { uuid, purposes, isFoil, scryfallId, count }
   ) {
-    const { data: card } = await this.$axios.put(
-      `/api/decks/${state.deck._id}/the99/${uuid}`,
-      {
-        card: {
-          scryfallId,
-          isFoil,
-          purposes,
-          count,
-        },
-      }
-    )
+    const {
+      data: { the99 },
+    } = await this.$axios.put(`/api/decks/${state.deck._id}/the99/${uuid}`, {
+      card: {
+        scryfallId,
+        isFoil,
+        purposes,
+      },
+      count,
+    })
 
-    commit('updateCard', card)
+    commit('updateCard', the99)
   },
 
   async deleteCard({ commit, state }, uuid) {

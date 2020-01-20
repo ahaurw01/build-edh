@@ -36,8 +36,20 @@ module.exports = {
   addDeckCommander,
   updateDeckCommander,
   deleteDeckCommander,
-  addDeckCard,
-  updateDeckCard,
+  addDeckCardMiddlewares: [
+    addDeckCardAssembly,
+    populateCommanderSources,
+    populateThe99Sources,
+    validateThe99,
+    addDeckCardSave,
+  ],
+  updateDeckCardMiddlewares: [
+    updateDeckCardAssembly,
+    populateCommanderSources,
+    populateThe99Sources,
+    validateThe99,
+    updateDeckCardSave,
+  ],
   deleteDeckCard,
 }
 
@@ -290,29 +302,47 @@ POST
     scryfallId: <id>,
     purposes: ['Chair art', 'Card draw'],
     isFoil: false
-  }
+  },
+  count: 1
 }
 */
-async function addDeckCard(ctx) {
+async function addDeckCardAssembly(ctx, next) {
   const scryfallId = _.get(ctx.request, 'body.card.scryfallId')
   ctx.assert(!!scryfallId, 400, 'Missing scryfallId')
   const purposes = _.get(ctx.request, 'body.card.purposes', [])
   const isFoil = _.get(ctx.request, 'body.card.isFoil', false)
+  const count = _.get(ctx.request, 'body.count', 1)
 
   const { deck } = ctx.state
-  const card = {
-    scryfallId,
-    uuid: uuid(),
-    purposes,
-    isFoil,
-  }
-  deck.the99.push(card)
-  await oldValidateThe99(ctx)
+  const cards = '_'
+    .repeat(count)
+    .split('')
+    .map(() => ({
+      scryfallId,
+      uuid: uuid(),
+      purposes,
+      isFoil,
+    }))
+  deck.the99 = [...deck.the99, ...cards]
+
+  return next()
+}
+
+async function addDeckCardSave(ctx, next) {
+  const { deck } = ctx.state
+
   await deck.save()
+
   ctx.body = {
-    ...card,
-    source: _.find(ctx.state.sources, { scryfallId: card.scryfallId }),
+    the99: deck.the99.map(card => ({
+      ...card.toJSON(),
+      source: _.find(ctx.state.the99Sources, {
+        scryfallId: card.scryfallId,
+      }),
+    })),
   }
+
+  return next()
 }
 
 /*
@@ -322,30 +352,62 @@ PUT
     purposes: ['Card draw', 'Sac outlet'],
     isFoil: true,
     scryfallId: <id>
-  }
+  },
+  count: 1
 }
 
 */
-async function updateDeckCard(ctx) {
-  const { uuid } = ctx.params
+async function updateDeckCardAssembly(ctx, next) {
+  const { uuid: cardUuid } = ctx.params
   const { deck } = ctx.state
 
-  const card = _.find(deck.the99, { uuid })
-  ctx.assert(!!card, 400, 'UUID not found')
+  const existingCard = _.find(deck.the99, { uuid: cardUuid })
+  ctx.assert(!!existingCard, 400, 'UUID not found')
   ctx.assert(ctx.request.body.card, 400, 'No updates provided')
 
   const { isFoil, purposes, scryfallId } = ctx.request.body.card
+  const count = _.get(ctx.request, 'body.count', 1)
 
-  if (isFoil != null) card.isFoil = isFoil
-  if (purposes != null) card.purposes = purposes
-  if (scryfallId != null) card.scryfallId = scryfallId
+  const the99WithoutUpdatingCard = deck.the99.filter(card => {
+    // Drop all cards that are identical in nature to the one being updated.
+    const matchesUpdatingCard =
+      card.scryfallId === scryfallId && card.isFoil === isFoil
+    return !matchesUpdatingCard
+  })
 
-  await oldValidateThe99(ctx)
+  // if (isFoil != null) card.isFoil = isFoil
+  // if (purposes != null) card.purposes = purposes
+  // if (scryfallId != null) card.scryfallId = scryfallId
+
+  const cards = '_'
+    .repeat(count)
+    .split('')
+    .map(() => ({
+      scryfallId,
+      uuid: uuid(),
+      purposes,
+      isFoil,
+    }))
+  deck.the99 = [...the99WithoutUpdatingCard, ...cards]
+
+  return next()
+}
+
+async function updateDeckCardSave(ctx, next) {
+  const { deck } = ctx.state
+
   await deck.save()
+
   ctx.body = {
-    ...card.toJSON(),
-    source: _.find(ctx.state.sources, { scryfallId: card.scryfallId }),
+    the99: deck.the99.map(card => ({
+      ...card.toJSON(),
+      source: _.find(ctx.state.the99Sources, {
+        scryfallId: card.scryfallId,
+      }),
+    })),
   }
+
+  return next()
 }
 
 /*
@@ -366,14 +428,6 @@ async function oldValidateThe99(ctx) {
   const {
     deck: { commanders, the99 },
   } = ctx.state
-  ctx.assert(
-    (commanders.length < 2 && the99.length <= 99) ||
-      (commanders.length === 2 && the99.length <= 98),
-    400,
-    commanders.length < 2
-      ? 'Cannot have more than 99 cards'
-      : 'Cannot have more than 98 cards with two commanders'
-  )
 
   const sources = await Card.find({
     scryfallId: { $in: _.map(commanders.concat(the99), 'scryfallId') },

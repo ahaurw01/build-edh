@@ -12,8 +12,8 @@ const {
   addDeckCommander,
   updateDeckCommander,
   deleteDeckCommander,
-  addDeckCard,
-  updateDeckCard,
+  addDeckCardMiddlewares,
+  updateDeckCardMiddlewares,
   deleteDeckCard,
 } = require('./decks')
 const { getUser } = require('./users')
@@ -45,8 +45,8 @@ apiRouter.put('/decks/:id', updateDeck)
 apiRouter.post('/decks/:id/commanders', addDeckCommander)
 apiRouter.put('/decks/:id/commanders/:uuid', updateDeckCommander)
 apiRouter.delete('/decks/:id/commanders/:uuid', deleteDeckCommander)
-apiRouter.post('/decks/:id/the99', addDeckCard)
-apiRouter.put('/decks/:id/the99/:uuid', updateDeckCard)
+apiRouter.post('/decks/:id/the99', ...addDeckCardMiddlewares)
+apiRouter.put('/decks/:id/the99/:uuid', ...updateDeckCardMiddlewares)
 apiRouter.delete('/decks/:id/the99/:uuid', deleteDeckCard)
 
 apiRouter.get('/users/:id', getUser)
