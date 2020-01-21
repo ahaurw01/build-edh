@@ -1,33 +1,5 @@
 <template>
   <section>
-    <h3 class="title is-3">
-      {{ title }}
-    </h3>
-    <button
-      v-for="card in commanders"
-      :key="card.source.name"
-      class="card-container-inner"
-      @click="
-        isCardShowcaseOpen = true
-        cardToShowcase = card
-      "
-    >
-      <Card
-        :card="card.source"
-        :count="card.count"
-        :is-foil="card.isFoil"
-        size="medium"
-      />
-    </button>
-
-    <button
-      v-if="canAddCommander"
-      class="button is-primary"
-      @click="isNewCommanderModalActive = true"
-    >
-      Add Commander
-    </button>
-
     <BModal :active.sync="isNewCommanderModalActive" has-modal-card>
       <div class="modal-card tab-card" style="overflow: visible">
         <header class="modal-card-head">
@@ -57,6 +29,51 @@
       @edit-card="editCommander(cardToShowcase)"
       @close="isCardShowcaseOpen = false"
     />
+
+    <h3 class="title is-3">
+      {{ title }}
+    </h3>
+    <div class="columns commander-columns">
+      <div
+        v-for="card in commanders"
+        :key="card.source.name"
+        class="column commander-column"
+      >
+        <button
+          class="card-container-inner"
+          @click="
+            isCardShowcaseOpen = true
+            cardToShowcase = card
+          "
+        >
+          <Card
+            :card="card.source"
+            :count="card.count"
+            :is-foil="card.isFoil"
+            size="medium"
+          />
+        </button>
+
+        <BTaglist v-if="card.purposes.length">
+          <BTag
+            v-for="purpose in card.purposes"
+            :key="purpose"
+            type="is-primary"
+            size="is-medium"
+          >
+            {{ purpose }}
+          </BTag>
+        </BTaglist>
+      </div>
+    </div>
+
+    <button
+      v-if="canAddCommander"
+      class="button is-primary"
+      @click="isNewCommanderModalActive = true"
+    >
+      Add Commander
+    </button>
   </section>
 </template>
 
@@ -101,7 +118,35 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.commander-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tags {
+  display: block;
+  text-align: center;
+}
+
+.commander-columns {
+  margin-bottom: 1rem;
+}
+
+.card-container-inner {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 250ms;
+  transform-origin: bottom left;
+}
+
+.card-container-inner:hover {
+  transform: rotate(-2deg) translateX(-0.1rem);
+}
+</style>
 <style>
 .card-showcase-modal .modal-content {
   max-height: unset;
