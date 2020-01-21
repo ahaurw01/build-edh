@@ -35,6 +35,7 @@
           field="setName"
           selection
           open-on-focus
+          @keyup.native="setPrintingFilter"
           @select="selectCard"
         >
           <template slot-scope="props">
@@ -113,6 +114,7 @@ export default {
         this.card && this.card.source.canHaveMultiple
           ? this.card.count || 1
           : 1,
+      printingFilter: '',
     }
   },
   computed: {
@@ -125,7 +127,12 @@ export default {
 
     printingsForCard() {
       const { name } = this.selectedCard || {}
-      return this.printings[name] || []
+      const printings = this.printings[name] || []
+
+      if (!this.printingFilter) return printings
+
+      const regexp = new RegExp(this.printingFilter, 'i')
+      return printings.filter(({ setName }) => regexp.test(setName))
     },
 
     actionName() {
@@ -208,6 +215,10 @@ export default {
       } else {
         this.confirmDelete = true
       }
+    },
+
+    setPrintingFilter(e) {
+      this.printingFilter = e.target.value
     },
 
     ...mapActions({
