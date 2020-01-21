@@ -539,7 +539,7 @@ export const getters = {
           },
         }) => face0.types.length > 1 || face0.types[0] !== 'Land'
       )
-      .map(card => get(card, 'source.cmc')),
+      .map(card => get(card, 'source.cmc') || []),
 
   averageCmc: (state, { cmcArrayMinusLands }) => {
     const avg = cmcArrayMinusLands.reduce(
@@ -553,7 +553,10 @@ export const getters = {
   medianCmc: (state, { cmcArrayMinusLands }) => {
     const sorted = sortBy(cmcArrayMinusLands)
 
-    const [chunk1, chunk2] = chunk(sorted, Math.round(sorted.length / 2))
+    const [chunk1 = [], chunk2 = []] = chunk(
+      sorted,
+      Math.round(sorted.length / 2)
+    )
     if (!chunk1) return 0
     if (chunk1.length !== chunk2.length) return last(chunk1)
     return (last(chunk1) + first(chunk2)) / 2 || 0
