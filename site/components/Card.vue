@@ -32,18 +32,20 @@ export default {
     showEditButton: { type: Boolean, default: false },
     specialShadow: { type: Boolean, default: false },
     isFoil: { type: Boolean, default: false },
+    reverse: { type: Boolean, default: false },
   },
   computed: {
     imgSrc() {
+      const faceIndex = this.reverse ? 1 : 0
       return this.size === 'x-small'
         ? get(
             this,
-            'card.faces[0].imageUris.small',
+            `card.faces[${faceIndex}].imageUris.small`,
             get(this, 'card.imageUris.small')
           )
         : get(
             this,
-            'card.faces[0].imageUris.large',
+            `card.faces[${faceIndex}].imageUris.large`,
             get(this, 'card.imageUris.large')
           )
     },

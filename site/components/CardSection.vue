@@ -36,21 +36,12 @@
       </div>
     </div>
 
-    <BModal :active.sync="isCardShowcaseOpen">
+    <BModal
+      :active.sync="isCardShowcaseOpen"
+      custom-class="card-showcase-modal"
+    >
       <div class="modal-centerer">
         <div class="modal-column">
-          <Card
-            v-if="cardToShowcase"
-            :card="cardToShowcase.source"
-            :count="cardToShowcase.count"
-            :show-edit-button="!cardToShowcase.isCommander"
-            :special-shadow="cardToShowcase.isCommander"
-            size="large"
-            @edit-card="
-              isCardShowcaseOpen = false
-              $emit('edit-card', cardToShowcase)
-            "
-          />
           <BTaglist v-if="cardToShowcase && cardToShowcase.purposes.length > 0">
             <BTag
               v-for="purpose in cardToShowcase.purposes"
@@ -61,6 +52,37 @@
               {{ purpose }}
             </BTag>
           </BTaglist>
+
+          <div class="columns">
+            <div v-if="cardToShowcase" class="column">
+              <Card
+                :card="cardToShowcase.source"
+                :count="cardToShowcase.count"
+                :show-edit-button="!cardToShowcase.isCommander"
+                :special-shadow="cardToShowcase.isCommander"
+                size="large"
+                @edit-card="
+                  isCardShowcaseOpen = false
+                  $emit('edit-card', cardToShowcase)
+                "
+              />
+            </div>
+            <div
+              v-if="
+                cardToShowcase &&
+                  cardToShowcase.source.faces[1] &&
+                  cardToShowcase.source.faces[1].imageUris
+              "
+              class="column"
+            >
+              <Card
+                :card="cardToShowcase.source"
+                :special-shadow="cardToShowcase.isCommander"
+                size="large"
+                reverse
+              />
+            </div>
+          </div>
         </div>
       </div>
     </BModal>
@@ -181,5 +203,11 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 1rem;
+}
+</style>
+
+<style>
+.card-showcase-modal .modal-content {
+  max-height: unset;
 }
 </style>
