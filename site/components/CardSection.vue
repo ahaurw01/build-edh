@@ -36,65 +36,25 @@
       </div>
     </div>
 
-    <BModal
-      :active.sync="isCardShowcaseOpen"
-      custom-class="card-showcase-modal"
-    >
-      <div class="modal-centerer">
-        <div class="modal-column">
-          <BTaglist v-if="cardToShowcase && cardToShowcase.purposes.length > 0">
-            <BTag
-              v-for="purpose in cardToShowcase.purposes"
-              :key="purpose"
-              type="is-primary"
-              size="is-medium"
-            >
-              {{ purpose }}
-            </BTag>
-          </BTaglist>
-
-          <div class="columns">
-            <div v-if="cardToShowcase" class="column">
-              <Card
-                :card="cardToShowcase.source"
-                :count="cardToShowcase.count"
-                :show-edit-button="!cardToShowcase.isCommander"
-                :special-shadow="cardToShowcase.isCommander"
-                size="large"
-                @edit-card="
-                  isCardShowcaseOpen = false
-                  $emit('edit-card', cardToShowcase)
-                "
-              />
-            </div>
-            <div
-              v-if="
-                cardToShowcase &&
-                  cardToShowcase.source.faces[1] &&
-                  cardToShowcase.source.faces[1].imageUris
-              "
-              class="column"
-            >
-              <Card
-                :card="cardToShowcase.source"
-                :special-shadow="cardToShowcase.isCommander"
-                size="large"
-                reverse
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </BModal>
+    <CardShowcaseModal
+      :card="cardToShowcase"
+      :is-open="isCardShowcaseOpen"
+      :show-edit-button="cardToShowcase && !cardToShowcase.isCommander"
+      :special-shadow="cardToShowcase && cardToShowcase.isCommander"
+      @edit-card="$emit('edit-card', cardToShowcase)"
+      @close="isCardShowcaseOpen = false"
+    />
   </div>
 </template>
 
 <script>
 import chunk from 'lodash/chunk'
 import Card from '~/components/Card'
+import CardShowcaseModal from '~/components/CardShowcaseModal'
 export default {
   components: {
     Card,
+    CardShowcaseModal,
   },
 
   props: {
