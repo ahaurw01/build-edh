@@ -9,6 +9,7 @@
     >
       <BIcon icon="pencil" />
     </button>
+    <div v-if="card.isFoil" class="foil-overlay" />
   </div>
 </template>
 
@@ -87,5 +88,23 @@ img.special-shadow {
   left: 1rem;
   bottom: 1rem;
   opacity: 0.75;
+}
+
+.foil-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 4.75% / 3.5%;
+  background: linear-gradient(
+    135deg,
+    rgba(253, 187, 45, 0.3) 0%,
+    rgba(254, 106, 105, 0.3) 25%,
+    rgba(254, 124, 246, 0.3) 50%,
+    rgba(207, 255, 177, 0.3) 75%,
+    rgba(255, 226, 164, 0.3) 100%
+  );
+  pointer-events: none;
 }
 </style>
