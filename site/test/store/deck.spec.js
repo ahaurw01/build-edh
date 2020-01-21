@@ -3,7 +3,7 @@ import { getters } from '~/store/deck'
 describe('Deck Store', () => {
   describe('getters', () => {
     describe('suggestedPurposes', () => {
-      test('combines commander purposes with starting set of purposes', () => {
+      test('combines commander and 99 purposes with starting set of purposes', () => {
         const commanders = [
           {
             purposes: ['Ramp', 'Card draw'],
@@ -12,18 +12,26 @@ describe('Deck Store', () => {
             purposes: ['Sac outlet', 'Board wipe'],
           },
         ]
+        const the99 = [
+          {
+            purposes: ['Do a thing'],
+          },
+          {
+            purposes: ['Sac outlet', 'Win the game'],
+          },
+        ]
         const state = {}
 
-        const result = getters.suggestedPurposes(state, { commanders })
+        const result = getters.suggestedPurposes(state, { commanders, the99 })
 
         expect(result).toEqual([
           'Ramp',
           'Card draw',
           'Sac outlet',
           'Board wipe',
-          'Mana rock',
-          'Targeted removal',
-          'Utility',
+          'Do a thing',
+          'Win the game',
+          'Single removal',
         ])
       })
     })
