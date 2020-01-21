@@ -36,43 +36,25 @@
       </div>
     </div>
 
-    <BModal :active.sync="isCardShowcaseOpen">
-      <div class="modal-centerer">
-        <div class="modal-column">
-          <Card
-            v-if="cardToShowcase"
-            :card="cardToShowcase.source"
-            :count="cardToShowcase.count"
-            :show-edit-button="!cardToShowcase.isCommander"
-            :special-shadow="cardToShowcase.isCommander"
-            size="large"
-            @edit-card="
-              isCardShowcaseOpen = false
-              $emit('edit-card', cardToShowcase)
-            "
-          />
-          <BTaglist v-if="cardToShowcase && cardToShowcase.purposes.length > 0">
-            <BTag
-              v-for="purpose in cardToShowcase.purposes"
-              :key="purpose"
-              type="is-primary"
-              size="is-medium"
-            >
-              {{ purpose }}
-            </BTag>
-          </BTaglist>
-        </div>
-      </div>
-    </BModal>
+    <CardShowcaseModal
+      :card="cardToShowcase"
+      :is-open="isCardShowcaseOpen"
+      :show-edit-button="cardToShowcase && !cardToShowcase.isCommander"
+      :special-shadow="cardToShowcase && cardToShowcase.isCommander"
+      @edit-card="$emit('edit-card', cardToShowcase)"
+      @close="isCardShowcaseOpen = false"
+    />
   </div>
 </template>
 
 <script>
 import chunk from 'lodash/chunk'
 import Card from '~/components/Card'
+import CardShowcaseModal from '~/components/CardShowcaseModal'
 export default {
   components: {
     Card,
+    CardShowcaseModal,
   },
 
   props: {
@@ -181,5 +163,11 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 1rem;
+}
+</style>
+
+<style>
+.card-showcase-modal .modal-content {
+  max-height: unset;
 }
 </style>

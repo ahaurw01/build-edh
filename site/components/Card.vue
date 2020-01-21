@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import get from 'lodash/get'
+
 export default {
   props: {
     card: { type: Object, required: true },
@@ -30,12 +32,17 @@ export default {
     showEditButton: { type: Boolean, default: false },
     specialShadow: { type: Boolean, default: false },
     isFoil: { type: Boolean, default: false },
+    reverse: { type: Boolean, default: false },
   },
   computed: {
     imgSrc() {
-      return this.size === 'x-small'
-        ? this.card.imageUris.small
-        : this.card.imageUris.large
+      const faceIndex = this.reverse ? 1 : 0
+      const size = this.size === 'x-small' ? 'small' : 'large'
+      return get(
+        this,
+        `card.faces[${faceIndex}].imageUris.${size}`,
+        get(this, `card.imageUris.${size}`)
+      )
     },
 
     isOnlyEverFoil() {
