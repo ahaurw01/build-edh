@@ -7,6 +7,7 @@
       v-for="commander in commanders"
       :key="commander.source.name"
       :card="commander.source"
+      :is-foil="commander.isFoil"
       size="large"
       show-edit-button
       @edit-card="editCommander(commander)"
@@ -20,11 +21,25 @@
     </button>
 
     <BModal :active.sync="isNewCommanderModalActive" has-modal-card>
-      <CommanderModalForm />
+      <div class="modal-card tab-card" style="overflow: visible">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            Add Commander
+          </p>
+        </header>
+        <CardModalForm for-commander />
+      </div>
     </BModal>
 
     <BModal :active.sync="isEditCommanderModalActive" has-modal-card>
-      <CommanderModalForm :commander="commanderToEdit" edit />
+      <div class="modal-card tab-card" style="overflow: visible">
+        <header class="modal-card-head">
+          <p class="modal-card-title">
+            Update Commander
+          </p>
+        </header>
+        <CardModalForm for-commander :card="commanderToEdit" edit />
+      </div>
     </BModal>
   </section>
 </template>
@@ -32,11 +47,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import Card from '~/components/Card'
-import CommanderModalForm from '~/components/CommanderModalForm'
+import CardModalForm from '~/components/CardModalForm'
 export default {
   components: {
     Card,
-    CommanderModalForm,
+    CardModalForm,
   },
   data() {
     return {

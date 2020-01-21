@@ -208,7 +208,8 @@ export default {
       this.getCardSuggestions({
         nameLike: this.nameLike,
         isLegal: true,
-        ci: this.colorIdentity,
+        canBeCommander: this.forCommander,
+        ci: this.forCommander ? undefined : this.colorIdentity,
       })
     }, 200),
 
@@ -249,7 +250,7 @@ export default {
       deleteCard: 'deck/deleteCard',
       addCommander: 'deck/addCommander',
       updateCommander: 'deck/updateCommander',
-      deleteComander: 'deck/deleteCommander',
+      deleteCommander: 'deck/deleteCommander',
       getPrintings: 'deck/getPrintings',
     }),
   },
