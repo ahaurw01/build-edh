@@ -1,7 +1,7 @@
 <template>
   <form ref="form" @submit.prevent="onSave">
     <section class="modal-card-body" style="overflow: visible">
-      <BField label="Card">
+      <BField :label="forCommander ? 'Commander' : 'Card'">
         <BAutocomplete
           v-model="nameLike"
           field="name"
@@ -63,7 +63,18 @@
         />
       </BField>
 
-      <BField v-if="showCount" label="Number">
+      <BField label="How Shiny">
+        <BSwitch
+          :disabled="!hasFoilChoice"
+          :value="isFoil"
+          type="is-warning"
+          @input="isFoil = $event"
+        >
+          {{ isFoil ? 'Foil' : 'Non-foil' }}
+        </BSwitch>
+      </BField>
+
+      <BField v-if="showCount && !forCommander" label="Number">
         <BNumberinput v-model="count" :min="1" :max="99" />
       </BField>
     </section>
@@ -100,6 +111,7 @@ export default {
     ManaCost,
   },
   props: {
+    forCommander: { type: Boolean, default: false },
     card: { type: Object, default: null },
     edit: { type: Boolean, default: false },
   },
@@ -115,6 +127,7 @@ export default {
           ? this.card.count || 1
           : 1,
       printingFilter: '',
+      isFoil: this.card ? this.card.isFoil : false,
     }
   },
   computed: {
@@ -154,7 +167,14 @@ export default {
     showCount() {
       return this.selectedCard && this.selectedCard.canHaveMultiple
     },
+
+    hasFoilChoice() {
+      if (!this.selectedCard) return false
+
+      return this.selectedCard.existsInFoil && this.selectedCard.existsInNonFoil
+    },
   },
+
   mounted() {
     this.$refs.form.querySelector('input').focus()
     if (this.selectedCard) this.getPrintings(this.selectedCard)
@@ -162,25 +182,25 @@ export default {
   methods: {
     selectCard(card) {
       this.selectedCard = card
+      this.isFoil =
+        this.selectedCard.existsInFoil && !this.selectedCard.existsInNonFoil
+
       this.getPrintings(card)
     },
 
     onSave() {
-      if (this.edit) {
-        this.updateCard({
-          uuid: this.card.uuid,
-          scryfallId: this.selectedCard.scryfallId,
-          purposes: this.purposes,
-          isFoil: false,
-          count: this.count,
-        })
-      } else {
-        this.addCard({
-          scryfallId: this.selectedCard.scryfallId,
-          purposes: this.purposes,
-          count: this.count,
-        })
-      }
+      if (!this.selectedCard) return
+      const method =
+        (this.edit ? 'update' : 'add') +
+        (this.forCommander ? 'Commander' : 'Card')
+
+      this[method]({
+        uuid: this.edit ? this.card.uuid : undefined,
+        scryfallId: this.selectedCard.scryfallId,
+        purposes: this.purposes,
+        isFoil: this.isFoil,
+        count: this.count,
+      })
       this.parent.close()
     },
 
@@ -188,7 +208,8 @@ export default {
       this.getCardSuggestions({
         nameLike: this.nameLike,
         isLegal: true,
-        ci: this.colorIdentity,
+        canBeCommander: this.forCommander,
+        ci: this.forCommander ? undefined : this.colorIdentity,
       })
     }, 200),
 
@@ -209,8 +230,9 @@ export default {
     },
 
     onDelete() {
+      const method = `delete${this.forCommander ? 'Commander' : 'Card'}`
       if (this.confirmDelete) {
-        this.deleteCard(this.card.uuid)
+        this[method](this.card.uuid)
         this.parent.close()
       } else {
         this.confirmDelete = true
@@ -226,6 +248,9 @@ export default {
       addCard: 'deck/addCard',
       updateCard: 'deck/updateCard',
       deleteCard: 'deck/deleteCard',
+      addCommander: 'deck/addCommander',
+      updateCommander: 'deck/updateCommander',
+      deleteCommander: 'deck/deleteCommander',
       getPrintings: 'deck/getPrintings',
     }),
   },
