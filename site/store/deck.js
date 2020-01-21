@@ -11,6 +11,7 @@ export const state = () => ({
   deck: null,
   owner: null,
   cardSuggestions: [],
+  printings: {},
   bulkAddErrorMessages: [],
   usePurposeGroups: true,
 })
@@ -42,6 +43,10 @@ export const mutations = {
 
   cardSuggestions(state, cardSuggestions) {
     state.cardSuggestions = cardSuggestions
+  },
+
+  printings(state, printings) {
+    state.printings = printings
   },
 
   addCommander(state, commander) {
@@ -136,6 +141,15 @@ export const actions = {
       data: { cards },
     } = await this.$axios.get(`/api/cards`, { params: query })
     commit('cardSuggestions', cards)
+  },
+
+  async getPrintings({ commit }, card) {
+    const {
+      data: { printings },
+    } = await this.$axios.get(`/api/cards/printings`, {
+      params: { name: card.name },
+    })
+    commit('printings', { [card.name]: printings })
   },
 
   async addCommander({ commit, state }, { scryfallId, purposes }) {
@@ -263,6 +277,7 @@ export const getters = {
     (state.deck.commanders.length === 1 &&
       state.deck.commanders[0].source.isPartner),
   cardSuggestions: state => state.cardSuggestions,
+  printings: state => state.printings,
   usePurposeGroups: state => state.usePurposeGroups,
   suggestedPurposes: (state, { commanders }) =>
     uniq([
@@ -539,7 +554,7 @@ export const getters = {
           },
         }) => face0.types.length > 1 || face0.types[0] !== 'Land'
       )
-      .map(card => get(card, 'source.cmc')),
+      .map(card => get(card, 'source.cmc') || []),
 
   averageCmc: (state, { cmcArrayMinusLands }) => {
     const avg = cmcArrayMinusLands.reduce(
@@ -553,7 +568,10 @@ export const getters = {
   medianCmc: (state, { cmcArrayMinusLands }) => {
     const sorted = sortBy(cmcArrayMinusLands)
 
-    const [chunk1, chunk2] = chunk(sorted, Math.round(sorted.length / 2))
+    const [chunk1 = [], chunk2 = []] = chunk(
+      sorted,
+      Math.round(sorted.length / 2)
+    )
     if (!chunk1) return 0
     if (chunk1.length !== chunk2.length) return last(chunk1)
     return (last(chunk1) + first(chunk2)) / 2 || 0

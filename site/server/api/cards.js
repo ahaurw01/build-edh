@@ -2,6 +2,7 @@ const { Card, allCardFieldsGroup } = require('./models')
 
 module.exports = {
   getCards,
+  getPrintings,
 }
 
 async function getCards(ctx) {
@@ -41,4 +42,12 @@ async function getCards(ctx) {
     .exec()
 
   ctx.body = { cards }
+}
+
+async function getPrintings(ctx) {
+  const { name } = ctx.query
+
+  ctx.assert(name, 400, 'No name provided')
+
+  ctx.body = { printings: await Card.find({ name }) }
 }

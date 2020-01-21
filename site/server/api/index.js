@@ -17,7 +17,7 @@ const {
   deleteDeckCardMiddlewares,
 } = require('./decks')
 const { getUser } = require('./users')
-const { getCards } = require('./cards')
+const { getCards, getPrintings } = require('./cards')
 
 const apiRouter = new Router({
   prefix: '/api',
@@ -29,6 +29,7 @@ apiRouter.post('/login', login)
 apiRouter.post('/register', register)
 
 apiRouter.get('/cards', getCards)
+apiRouter.get('/cards/printings', getPrintings)
 
 // Authed routes below here:
 apiRouter.use(koaJwt({ secret: 'secret' }))

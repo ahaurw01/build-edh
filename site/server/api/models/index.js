@@ -140,6 +140,13 @@ cardSchema.statics.partnerWith = function(doc) {
 }
 cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
   const Card = this
+
+  if (!rawCard.games.includes('paper')) {
+    return Card.deleteOne({
+      scryfallId: rawCard.id,
+    })
+  }
+
   const doc = {
     scryfallId: rawCard.id,
     oracleId: rawCard.oracle_id,
