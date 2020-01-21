@@ -9,7 +9,7 @@
     >
       <BIcon icon="pencil" />
     </button>
-    <div v-if="card.isFoil" class="foil-overlay" />
+    <div v-if="isFoil || isOnlyEverFoil" class="foil-overlay" />
   </div>
 </template>
 
@@ -29,12 +29,17 @@ export default {
     count: { type: Number, default: 1 },
     showEditButton: { type: Boolean, default: false },
     specialShadow: { type: Boolean, default: false },
+    isFoil: { type: Boolean, default: false },
   },
   computed: {
     imgSrc() {
       return this.size === 'x-small'
         ? this.card.imageUris.small
         : this.card.imageUris.large
+    },
+
+    isOnlyEverFoil() {
+      return !this.card.existsInNonFoil
     },
   },
 }

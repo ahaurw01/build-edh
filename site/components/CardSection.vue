@@ -27,6 +27,7 @@
             <Card
               :card="card.source"
               :count="card.count"
+              :is-foil="card.isFoil"
               :special-shadow="card.isCommander"
               size="medium"
             />

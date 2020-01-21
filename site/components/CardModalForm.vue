@@ -63,6 +63,17 @@
         />
       </BField>
 
+      <BField label="How Shiny">
+        <BSwitch
+          :disabled="!hasFoilChoice"
+          :value="isFoil"
+          type="is-warning"
+          @input="isFoil = $event"
+        >
+          {{ isFoil ? 'Foil' : 'Non-foil' }}
+        </BSwitch>
+      </BField>
+
       <BField v-if="showCount" label="Number">
         <BNumberinput v-model="count" :min="1" :max="99" />
       </BField>
@@ -115,6 +126,7 @@ export default {
           ? this.card.count || 1
           : 1,
       printingFilter: '',
+      isFoil: this.card ? this.card.isFoil : false,
     }
   },
   computed: {
@@ -154,7 +166,14 @@ export default {
     showCount() {
       return this.selectedCard && this.selectedCard.canHaveMultiple
     },
+
+    hasFoilChoice() {
+      if (!this.selectedCard) return false
+
+      return this.selectedCard.existsInFoil && this.selectedCard.existsInNonFoil
+    },
   },
+
   mounted() {
     this.$refs.form.querySelector('input').focus()
     if (this.selectedCard) this.getPrintings(this.selectedCard)
@@ -162,6 +181,9 @@ export default {
   methods: {
     selectCard(card) {
       this.selectedCard = card
+      this.isFoil =
+        this.selectedCard.existsInFoil && !this.selectedCard.existsInNonFoil
+
       this.getPrintings(card)
     },
 
@@ -171,13 +193,14 @@ export default {
           uuid: this.card.uuid,
           scryfallId: this.selectedCard.scryfallId,
           purposes: this.purposes,
-          isFoil: false,
+          isFoil: this.isFoil,
           count: this.count,
         })
       } else {
         this.addCard({
           scryfallId: this.selectedCard.scryfallId,
           purposes: this.purposes,
+          isFoil: this.isFoil,
           count: this.count,
         })
       }
