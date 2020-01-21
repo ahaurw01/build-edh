@@ -21,9 +21,29 @@
                   <span v-if="props.option.faces[0].manaCost">-</span>
                   <ManaCost :mana-cost="props.option.faces[0].manaCost" />
                 </h6>
-                <p>
-                  {{ props.option.faces[0].oracleText }}
-                </p>
+                <p>{{ props.option.faces[0].oracleText }}</p>
+              </div>
+            </div>
+          </template>
+        </BAutocomplete>
+      </BField>
+
+      <BField v-if="printingsForCard.length > 0" label="Printing">
+        <BAutocomplete
+          :data="printingsForCard"
+          :value="selectedCard.setName"
+          field="setName"
+          selection
+          open-on-focus
+          @select="selectCard"
+        >
+          <template slot-scope="props">
+            <div class="media">
+              <div class="media-left">
+                <Card size="x-small" :card="props.option" />
+              </div>
+              <div class="media-content" style="white-space: normal;">
+                <p class="is-size-6">{{ props.option.setName }}</p>
               </div>
             </div>
           </template>
@@ -53,9 +73,7 @@
             <button class="button" type="button" @click="parent.close()">
               Cancel
             </button>
-            <button class="button is-primary">
-              {{ actionName }}
-            </button>
+            <button class="button is-primary">{{ actionName }}</button>
           </div>
         </div>
         <div v-if="edit" class="level-right">
@@ -102,7 +120,14 @@ export default {
       cardSuggestions: 'deck/cardSuggestions',
       suggestedPurposes: 'deck/suggestedPurposes',
       colorIdentity: 'deck/colorIdentity',
+      printings: 'deck/printings',
     }),
+
+    printingsForCard() {
+      const { name } = this.selectedCard || {}
+      return this.printings[name] || []
+    },
+
     actionName() {
       return this.edit ? 'Update' : 'Add'
     },
@@ -125,10 +150,12 @@ export default {
   },
   mounted() {
     this.$refs.form.querySelector('input').focus()
+    if (this.selectedCard) this.getPrintings(this.selectedCard)
   },
   methods: {
     selectCard(card) {
       this.selectedCard = card
+      this.getPrintings(card)
     },
 
     onSave() {
@@ -188,6 +215,7 @@ export default {
       addCard: 'deck/addCard',
       updateCard: 'deck/updateCard',
       deleteCard: 'deck/deleteCard',
+      getPrintings: 'deck/getPrintings',
     }),
   },
 }
