@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import get from 'lodash/get'
+
 export default {
   props: {
     card: { type: Object, required: true },
@@ -34,8 +36,16 @@ export default {
   computed: {
     imgSrc() {
       return this.size === 'x-small'
-        ? this.card.imageUris.small
-        : this.card.imageUris.large
+        ? get(
+            this,
+            'card.faces[0].imageUris.small',
+            get(this, 'card.imageUris.small')
+          )
+        : get(
+            this,
+            'card.faces[0].imageUris.large',
+            get(this, 'card.imageUris.large')
+          )
     },
 
     isOnlyEverFoil() {
