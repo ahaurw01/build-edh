@@ -58,7 +58,7 @@
           <BTag
             v-for="purpose in card.purposes"
             :key="purpose"
-            type="is-primary"
+            type="is-white"
             size="is-medium"
           >
             {{ purpose }}
@@ -128,6 +128,10 @@ export default {
 .tags {
   display: block;
   text-align: center;
+}
+
+.tag {
+  background-color: hsl(0, 0%, 96%) !important;
 }
 
 .commander-columns {
