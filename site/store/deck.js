@@ -279,15 +279,13 @@ export const getters = {
   cardSuggestions: state => state.cardSuggestions,
   printings: state => state.printings,
   usePurposeGroups: state => state.usePurposeGroups,
-  suggestedPurposes: (state, { commanders }) =>
+  suggestedPurposes: (state, { commanders, the99 }) =>
     uniq([
-      ...flatten(commanders.map(c => c.purposes)),
+      ...flatten([...commanders, ...the99].map(c => c.purposes)),
       'Card draw',
       'Ramp',
-      'Mana rock',
-      'Targeted removal',
+      'Single removal',
       'Board wipe',
-      'Utility',
     ]),
   colorIdentity: (state, { commanders }) => {
     const colors = flatten(commanders.map(c => c.source.ci))
