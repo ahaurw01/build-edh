@@ -37,17 +37,12 @@ export default {
   computed: {
     imgSrc() {
       const faceIndex = this.reverse ? 1 : 0
-      return this.size === 'x-small'
-        ? get(
-            this,
-            `card.faces[${faceIndex}].imageUris.small`,
-            get(this, 'card.imageUris.small')
-          )
-        : get(
-            this,
-            `card.faces[${faceIndex}].imageUris.large`,
-            get(this, 'card.imageUris.large')
-          )
+      const size = this.size === 'x-small' ? 'small' : 'large'
+      return get(
+        this,
+        `card.faces[${faceIndex}].imageUris.${size}`,
+        get(this, `card.imageUris.${size}`)
+      )
     },
 
     isOnlyEverFoil() {
