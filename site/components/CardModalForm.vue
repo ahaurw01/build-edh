@@ -1,7 +1,7 @@
 <template>
   <form ref="form" @submit.prevent="onSave">
     <section class="modal-card-body" style="overflow: visible">
-      <BField label="Card">
+      <BField :label="forCommander ? 'Commander' : 'Card'">
         <BAutocomplete
           v-model="nameLike"
           field="name"
@@ -74,7 +74,7 @@
         </BSwitch>
       </BField>
 
-      <BField v-if="showCount" label="Number">
+      <BField v-if="showCount && !forCommander" label="Number">
         <BNumberinput v-model="count" :min="1" :max="99" />
       </BField>
     </section>
@@ -111,6 +111,7 @@ export default {
     ManaCost,
   },
   props: {
+    forCommander: { type: Boolean, default: false },
     card: { type: Object, default: null },
     edit: { type: Boolean, default: false },
   },
@@ -189,22 +190,17 @@ export default {
 
     onSave() {
       if (!this.selectedCard) return
-      if (this.edit) {
-        this.updateCard({
-          uuid: this.card.uuid,
-          scryfallId: this.selectedCard.scryfallId,
-          purposes: this.purposes,
-          isFoil: this.isFoil,
-          count: this.count,
-        })
-      } else {
-        this.addCard({
-          scryfallId: this.selectedCard.scryfallId,
-          purposes: this.purposes,
-          isFoil: this.isFoil,
-          count: this.count,
-        })
-      }
+      const method =
+        (this.edit ? 'update' : 'add') +
+        (this.forCommander ? 'Commander' : 'Card')
+
+      this[method]({
+        uuid: this.edit ? this.card.uuid : undefined,
+        scryfallId: this.selectedCard.scryfallId,
+        purposes: this.purposes,
+        isFoil: this.isFoil,
+        count: this.count,
+      })
       this.parent.close()
     },
 
@@ -233,8 +229,9 @@ export default {
     },
 
     onDelete() {
+      const method = `delete${this.forCommander ? 'Commander' : 'Card'}`
       if (this.confirmDelete) {
-        this.deleteCard(this.card.uuid)
+        this[method](this.card.uuid)
         this.parent.close()
       } else {
         this.confirmDelete = true
@@ -250,6 +247,9 @@ export default {
       addCard: 'deck/addCard',
       updateCard: 'deck/updateCard',
       deleteCard: 'deck/deleteCard',
+      addCommander: 'deck/addCommander',
+      updateCommander: 'deck/updateCommander',
+      deleteComander: 'deck/deleteCommander',
       getPrintings: 'deck/getPrintings',
     }),
   },
