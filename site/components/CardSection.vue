@@ -40,7 +40,7 @@
     <CardShowcaseModal
       :card="cardToShowcase"
       :is-open="isCardShowcaseOpen"
-      :show-edit-button="cardToShowcase && !cardToShowcase.isCommander"
+      show-edit-button
       :special-shadow="
         !noSpecialShadow && cardToShowcase && cardToShowcase.isCommander
       "

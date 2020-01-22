@@ -68,7 +68,7 @@ export default {
 }
 
 img.special-shadow {
-  box-shadow: 0 0 6px 6px hsl(48, 100%, 67%);
+  box-shadow: 0 0 4px 3px hsl(48, 100%, 67%);
 }
 
 .large {
