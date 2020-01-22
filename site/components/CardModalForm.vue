@@ -208,7 +208,7 @@ export default {
       this.getCardSuggestions({
         nameLike: this.nameLike,
         isLegal: true,
-        canBeCommander: this.forCommander,
+        canBeCommander: this.forCommander ? true : undefined,
         ci: this.forCommander ? undefined : this.colorIdentity,
       })
     }, 200),
