@@ -471,6 +471,17 @@ export const getters = {
     }, {})
   },
 
+  cardUuidToCompuPurposeTitles: (state, { compuPurposeHash }) => {
+    const map = {}
+    Object.entries(compuPurposeHash).forEach(([title, cards]) => {
+      cards.forEach(card => {
+        if (!map[card.uuid]) map[card.uuid] = []
+        map[card.uuid].push(title)
+      })
+    })
+    return map
+  },
+
   subtypes: (state, { commanders, the99 }) => {
     const getSubtypes = c => get(c, 'source.faces[0].subTypes')
     return sortBy(

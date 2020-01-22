@@ -1,9 +1,5 @@
 <template>
   <section>
-    <h3 class="title is-3">
-      The Deck
-    </h3>
-
     <CardSection
       v-for="grouping in cardGroupings"
       :key="grouping.purpose"
@@ -11,6 +7,8 @@
       :is-auto="grouping.isAutomaticGroup"
       :is-compu="grouping.isCompuPurposeGroup"
       :cards="grouping.cards"
+      show-icon
+      show-total
       @edit-card="editCard"
     />
 
@@ -59,5 +57,3 @@ export default {
   },
 }
 </script>
-
-<style scoped></style>

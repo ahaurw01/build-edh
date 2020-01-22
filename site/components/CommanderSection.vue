@@ -30,42 +30,12 @@
       @close="isCardShowcaseOpen = false"
     />
 
-    <h3 class="title is-3">
-      {{ title }}
-    </h3>
-    <div class="columns commander-columns">
-      <div
-        v-for="card in commanders"
-        :key="card.source.name"
-        class="column commander-column"
-      >
-        <button
-          class="card-container-inner"
-          @click="
-            isCardShowcaseOpen = true
-            cardToShowcase = card
-          "
-        >
-          <Card
-            :card="card.source"
-            :count="card.count"
-            :is-foil="card.isFoil"
-            size="medium"
-          />
-        </button>
-
-        <BTaglist v-if="card.purposes.length">
-          <BTag
-            v-for="purpose in card.purposes"
-            :key="purpose"
-            type="is-white"
-            size="is-medium"
-          >
-            {{ purpose }}
-          </BTag>
-        </BTaglist>
-      </div>
-    </div>
+    <CardSection
+      :title="title"
+      :cards="commanders"
+      no-special-shadow
+      @edit-card="editCommander"
+    />
 
     <button
       v-if="canAddCommander"
@@ -79,12 +49,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Card from '~/components/Card'
+import CardSection from '~/components/CardSection'
 import CardModalForm from '~/components/CardModalForm'
 import CardShowcaseModal from '~/components/CardShowcaseModal'
 export default {
   components: {
-    Card,
+    CardSection,
     CardModalForm,
     CardShowcaseModal,
   },
@@ -117,42 +87,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.commander-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.tags {
-  display: block;
-  text-align: center;
-}
-
-.tag {
-  background-color: hsl(0, 0%, 96%) !important;
-}
-
-.commander-columns {
-  margin-bottom: 1rem;
-}
-
-.card-container-inner {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 250ms;
-  transform-origin: bottom left;
-}
-
-.card-container-inner:hover {
-  transform: rotate(-2deg) translateX(-0.1rem);
-}
-</style>
-<style>
-.card-showcase-modal .modal-content {
-  max-height: unset;
-}
-</style>
