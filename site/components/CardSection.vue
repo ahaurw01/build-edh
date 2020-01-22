@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <h4 class="title is-4">
-      {{ title }} ({{ numCardsTotal }})
+      {{ title }} <span v-if="showTotal">({{ numCardsTotal }})</span>
       <BIcon v-if="isAuto" icon="flash" />
       <BIcon v-if="isCompu" icon="auto-fix" />
     </h4>
@@ -28,7 +28,7 @@
               :card="card.source"
               :count="card.count"
               :is-foil="card.isFoil"
-              :special-shadow="card.isCommander"
+              :special-shadow="!noSpecialShadow && card.isCommander"
               size="medium"
             />
           </button>
@@ -40,7 +40,9 @@
       :card="cardToShowcase"
       :is-open="isCardShowcaseOpen"
       :show-edit-button="cardToShowcase && !cardToShowcase.isCommander"
-      :special-shadow="cardToShowcase && cardToShowcase.isCommander"
+      :special-shadow="
+        !noSpecialShadow && cardToShowcase && cardToShowcase.isCommander
+      "
       @edit-card="$emit('edit-card', cardToShowcase)"
       @close="isCardShowcaseOpen = false"
     />
@@ -62,6 +64,8 @@ export default {
     cards: { type: Array, required: true },
     isAuto: { type: Boolean, required: false },
     isCompu: { type: Boolean, required: false },
+    noSpecialShadow: { type: Boolean, default: false },
+    showTotal: { type: Boolean, default: false },
   },
 
   data() {
@@ -151,23 +155,5 @@ export default {
 
 .card-container:hover .card-container-inner {
   transform: rotate(-2deg) translateX(-0.1rem);
-}
-
-.modal-centerer {
-  display: flex;
-  justify-content: center;
-}
-
-.modal-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-}
-</style>
-
-<style>
-.card-showcase-modal .modal-content {
-  max-height: unset;
 }
 </style>

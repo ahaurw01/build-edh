@@ -6,10 +6,13 @@
           <BTag
             v-for="purpose in card.purposes"
             :key="purpose"
-            type="is-primary"
+            type="is-white"
             size="is-medium"
           >
-            {{ purpose }}
+            <div class="purpose-tag">
+              <BIcon icon="cards-outline" />
+              <span>{{ purpose }}</span>
+            </div>
           </BTag>
         </BTaglist>
 
@@ -78,6 +81,15 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 1rem;
+}
+
+.purpose-tag {
+  display: flex;
+  align-items: center;
+}
+
+.tag {
+  background-color: hsl(0, 0%, 96%) !important;
 }
 </style>
 
