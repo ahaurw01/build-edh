@@ -135,6 +135,8 @@ export default {
             imageUris: {
               large: uri(toUse[0]),
             },
+            existsInFoil: false,
+            existsInNonFoil: true,
           },
         },
         {
@@ -144,6 +146,8 @@ export default {
             imageUris: {
               large: uri(toUse[1]),
             },
+            existsInFoil: false,
+            existsInNonFoil: true,
           },
         },
         {
@@ -153,6 +157,8 @@ export default {
             imageUris: {
               large: uri(toUse[2]),
             },
+            existsInFoil: false,
+            existsInNonFoil: true,
           },
         },
       ],
