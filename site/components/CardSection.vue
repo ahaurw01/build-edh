@@ -2,7 +2,8 @@
   <div class="card-section">
     <div class="card-section-title">
       <BIcon v-if="showIcon" :icon="icon" />
-      <span class="card-section-title-text">{{ title }}</span>
+      <span v-if="showIcon">&nbsp;</span>
+      <span>{{ title }}</span>
       <span v-if="showTotal">&nbsp;({{ numCardsTotal }})</span>
     </div>
 
@@ -141,10 +142,6 @@ export default {
   align-items: center;
   font-size: 110%;
   margin: 0.5rem 0;
-}
-
-.card-section-title-text {
-  margin-left: 0.5rem;
 }
 
 .card-columns {
