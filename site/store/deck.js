@@ -6,6 +6,11 @@ import last from 'lodash/last'
 import get from 'lodash/get'
 import compact from 'lodash/compact'
 import chunk from 'lodash/chunk'
+import { ToastProgrammatic as Toast } from 'buefy'
+
+function openToast({ message, type = 'is-success', position = 'is-bottom' }) {
+  Toast.open({ message, type, position })
+}
 
 export const state = () => ({
   deck: null,
@@ -129,6 +134,10 @@ export const actions = {
         compuPurposes: newCompuPurposes,
       }
     )
+
+    openToast({
+      message: 'Successfully updated!',
+    })
     commit('deckCompuPurposes', deck)
   },
 
@@ -164,6 +173,9 @@ export const actions = {
       }
     )
 
+    openToast({
+      message: `Added ${commander.source.name} as commander!`,
+    })
     commit('addCommander', commander)
   },
 
@@ -182,11 +194,18 @@ export const actions = {
       }
     )
 
+    openToast({
+      message: `Updated ${commander.source.name}!`,
+    })
     commit('updateCommander', commander)
   },
 
   async deleteCommander({ commit, state }, uuid) {
     await this.$axios.delete(`/api/decks/${state.deck._id}/commanders/${uuid}`)
+    openToast({
+      message: `Removed commander.`,
+      type: 'is-info',
+    })
     commit('deleteCommander', uuid)
   },
 
@@ -201,6 +220,9 @@ export const actions = {
       count,
     })
 
+    openToast({
+      message: `Added card!`,
+    })
     commit('updateThe99', the99)
   },
 
@@ -219,6 +241,9 @@ export const actions = {
       count,
     })
 
+    openToast({
+      message: `Updated card!`,
+    })
     commit('updateThe99', the99)
   },
 
@@ -226,6 +251,11 @@ export const actions = {
     const {
       data: { the99 },
     } = await this.$axios.delete(`/api/decks/${state.deck._id}/the99/${uuid}`)
+
+    openToast({
+      message: `Removed card.`,
+      type: 'is-info',
+    })
     commit('updateThe99', the99)
   },
 
@@ -238,6 +268,9 @@ export const actions = {
           updates,
         }
       )
+      openToast({
+        message: `Successful bulk upload!`,
+      })
       commit('deck', deck)
     } catch ({ response }) {
       if (!response || !response.data) {
