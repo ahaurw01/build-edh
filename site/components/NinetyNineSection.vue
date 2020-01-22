@@ -16,7 +16,11 @@
       <div class="modal-card" style="overflow: visible">
         <header class="modal-card-head">
           <p class="modal-card-title">
-            {{ cardToEdit.isCommander ? 'Update Commander' : 'Edit Card' }}
+            {{
+              cardToEdit && cardToEdit.isCommander
+                ? 'Update Commander'
+                : 'Edit Card'
+            }}
           </p>
         </header>
         <CardModalForm :card="cardToEdit" edit />

@@ -20,6 +20,7 @@
           <div v-if="card" class="column">
             <Card
               :card="card.source"
+              :is-foil="card.isFoil"
               :count="card.count"
               :show-edit-button="showEditButton"
               :special-shadow="specialShadow"
