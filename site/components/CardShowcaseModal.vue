@@ -2,16 +2,16 @@
   <BModal :active="isOpen" custom-class="card-showcase-modal" v-on="$listeners">
     <div class="modal-centerer">
       <div class="modal-column">
-        <BTaglist v-if="card && card.purposes.length > 0">
+        <BTaglist v-if="purposes.length">
           <BTag
-            v-for="purpose in card.purposes"
-            :key="purpose"
+            v-for="purpose in purposes"
+            :key="purpose.text"
             type="is-white"
             size="is-medium"
           >
             <div class="purpose-tag">
-              <BIcon icon="cards-outline" />
-              <span>{{ purpose }}</span>
+              <BIcon :icon="purpose.icon" />
+              <span>&nbsp;{{ purpose.text }}</span>
             </div>
           </BTag>
         </BTaglist>
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Card from '~/components/Card'
 export default {
   components: {
@@ -66,6 +67,28 @@ export default {
     isOpen: { type: Boolean, required: true },
     showEditButton: { type: Boolean, default: false },
     specialShadow: { type: Boolean, default: false },
+  },
+
+  computed: {
+    ...mapGetters({
+      cardUuidToCompuPurposeTitles: 'deck/cardUuidToCompuPurposeTitles',
+    }),
+
+    purposes() {
+      if (!this.card) return []
+      return [
+        ...this.card.purposes.map(text => ({
+          icon: 'cards-outline',
+          text,
+        })),
+        ...(this.cardUuidToCompuPurposeTitles[this.card.uuid] || []).map(
+          text => ({
+            icon: 'auto-fix',
+            text,
+          })
+        ),
+      ]
+    },
   },
 }
 </script>

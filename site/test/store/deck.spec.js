@@ -573,6 +573,26 @@ describe('Deck Store', () => {
       })
     })
 
+    describe('cardUuidToCompuPurposeTitles', () => {
+      test('constructs map of uuid => titles', () => {
+        const compuPurposeHash = {
+          purpose1: [{ uuid: '1' }, { uuid: '2' }],
+          purpose2: [{ uuid: '2' }, { uuid: '3' }],
+        }
+
+        const result = getters.cardUuidToCompuPurposeTitles(
+          {},
+          { compuPurposeHash }
+        )
+
+        expect(result).toEqual({
+          '1': ['purpose1'],
+          '2': ['purpose1', 'purpose2'],
+          '3': ['purpose2'],
+        })
+      })
+    })
+
     describe('numCards', () => {
       test('sums num commanders and 99', () => {
         const commanders = [{}, {}]
