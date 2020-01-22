@@ -1,10 +1,12 @@
 <template>
-  <div class="box">
-    <h4 class="title is-4">
-      {{ title }} <span v-if="showTotal">({{ numCardsTotal }})</span>
-      <BIcon v-if="isAuto" icon="flash" />
-      <BIcon v-if="isCompu" icon="auto-fix" />
-    </h4>
+  <div class="card-section">
+    <div class="card-section-title">
+      <span>
+        {{ title }} <span v-if="showTotal">({{ numCardsTotal }})</span>
+        <BIcon v-if="isAuto" icon="flash" />
+        <BIcon v-if="isCompu" icon="auto-fix" />
+      </span>
+    </div>
 
     <div class="card-columns">
       <div
@@ -125,9 +127,44 @@ export default {
 </script>
 
 <style scoped>
+.card-section {
+  margin-bottom: 1rem;
+}
+
+.card-section-title {
+  font-size: 110%;
+  margin: 0.5rem;
+  text-align: center;
+}
+
+@media (min-width: 769px) {
+  .card-section-title {
+    text-align: left;
+  }
+}
+
+.card-section-title > span {
+  position: relative;
+}
+
+/* .card-section-title > span::after {
+  content: ' ';
+  position: absolute;
+  left: 0.1rem;
+  right: 0.1rem;
+  bottom: -0.2rem;
+  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.25);
+} */
+
 .card-columns {
   display: flex;
   justify-content: space-around;
+}
+
+@media (min-width: 769px) {
+  .card-columns {
+    justify-content: flex-start;
+  }
 }
 
 .cards-container {
