@@ -111,7 +111,7 @@ export default {
     ManaCost,
   },
   props: {
-    forCommander: { type: Boolean, default: false },
+    onlyForCommander: { type: Boolean, default: false },
     card: { type: Object, default: null },
     edit: { type: Boolean, default: false },
   },
@@ -137,6 +137,10 @@ export default {
       colorIdentity: 'deck/colorIdentity',
       printings: 'deck/printings',
     }),
+
+    forCommander() {
+      return this.onlyForCommander || (this.card && this.card.isCommander)
+    },
 
     printingsForCard() {
       const { name } = this.selectedCard || {}

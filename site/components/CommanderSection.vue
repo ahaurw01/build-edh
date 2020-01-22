@@ -7,7 +7,7 @@
             Add Commander
           </p>
         </header>
-        <CardModalForm for-commander />
+        <CardModalForm only-for-commander />
       </div>
     </BModal>
 
@@ -18,7 +18,7 @@
             Update Commander
           </p>
         </header>
-        <CardModalForm for-commander :card="commanderToEdit" edit />
+        <CardModalForm only-for-commander :card="commanderToEdit" edit />
       </div>
     </BModal>
 
