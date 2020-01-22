@@ -7,6 +7,7 @@
       :is-auto="grouping.isAutomaticGroup"
       :is-compu="grouping.isCompuPurposeGroup"
       :cards="grouping.cards"
+      show-icon
       show-total
       @edit-card="editCard"
     />

@@ -1,11 +1,9 @@
 <template>
   <div class="card-section">
     <div class="card-section-title">
-      <span>
-        {{ title }} <span v-if="showTotal">({{ numCardsTotal }})</span>
-        <BIcon v-if="isAuto" icon="flash" />
-        <BIcon v-if="isCompu" icon="auto-fix" />
-      </span>
+      <BIcon v-if="showIcon" :icon="icon" />
+      <span class="card-section-title-text">{{ title }}</span>
+      <span v-if="showTotal">&nbsp;({{ numCardsTotal }})</span>
     </div>
 
     <div class="card-columns">
@@ -68,6 +66,7 @@ export default {
     isCompu: { type: Boolean, required: false },
     noSpecialShadow: { type: Boolean, default: false },
     showTotal: { type: Boolean, default: false },
+    showIcon: { type: Boolean, default: false },
   },
 
   data() {
@@ -85,6 +84,12 @@ export default {
 
     numCardsTotal() {
       return this.cards.reduce((total, { count }) => total + count, 0)
+    },
+
+    icon() {
+      if (this.isAuto) return 'flash'
+      if (this.isCompu) return 'auto-fix'
+      return 'cards-outline'
     },
   },
 
@@ -132,29 +137,15 @@ export default {
 }
 
 .card-section-title {
+  display: flex;
+  align-items: center;
   font-size: 110%;
-  margin: 0.5rem;
-  text-align: center;
+  margin: 0.5rem 0;
 }
 
-@media (min-width: 769px) {
-  .card-section-title {
-    text-align: left;
-  }
+.card-section-title-text {
+  margin-left: 0.5rem;
 }
-
-.card-section-title > span {
-  position: relative;
-}
-
-/* .card-section-title > span::after {
-  content: ' ';
-  position: absolute;
-  left: 0.1rem;
-  right: 0.1rem;
-  bottom: -0.2rem;
-  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.25);
-} */
 
 .card-columns {
   display: flex;
