@@ -204,6 +204,7 @@ export default {
         purposes: this.purposes,
         isFoil: this.isFoil,
         count: this.count,
+        name: this.selectedCard.name,
       })
       this.parent.close()
     },

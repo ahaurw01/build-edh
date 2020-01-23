@@ -136,7 +136,7 @@ export const actions = {
     )
 
     openToast({
-      message: 'Successfully updated!',
+      message: 'Successfully updated.',
     })
     commit('deckCompuPurposes', deck)
   },
@@ -161,7 +161,10 @@ export const actions = {
     commit('printings', { [card.name]: printings })
   },
 
-  async addCommander({ commit, state }, { scryfallId, purposes, isFoil }) {
+  async addCommander(
+    { commit, state },
+    { scryfallId, purposes, isFoil, name }
+  ) {
     const { data: commander } = await this.$axios.post(
       `/api/decks/${state.deck._id}/commanders`,
       {
@@ -174,14 +177,14 @@ export const actions = {
     )
 
     openToast({
-      message: `Added ${commander.source.name} as commander!`,
+      message: `Added ${name} as commander.`,
     })
     commit('addCommander', commander)
   },
 
   async updateCommander(
     { commit, state },
-    { uuid, purposes, isFoil, scryfallId }
+    { uuid, purposes, isFoil, scryfallId, name }
   ) {
     const { data: commander } = await this.$axios.put(
       `/api/decks/${state.deck._id}/commanders/${uuid}`,
@@ -195,7 +198,7 @@ export const actions = {
     )
 
     openToast({
-      message: `Updated ${commander.source.name}!`,
+      message: `Updated ${name}.`,
     })
     commit('updateCommander', commander)
   },
@@ -209,26 +212,30 @@ export const actions = {
     commit('deleteCommander', uuid)
   },
 
-  async addCard({ commit, state }, { scryfallId, purposes, count }) {
+  async addCard(
+    { commit, state },
+    { scryfallId, purposes, count, isFoil, name }
+  ) {
     const {
       data: { the99 },
     } = await this.$axios.post(`/api/decks/${state.deck._id}/the99`, {
       card: {
         scryfallId,
         purposes,
+        isFoil,
       },
       count,
     })
 
     openToast({
-      message: `Added card!`,
+      message: `Added ${name}.`,
     })
     commit('updateThe99', the99)
   },
 
   async updateCard(
     { commit, state },
-    { uuid, purposes, isFoil, scryfallId, count }
+    { uuid, purposes, isFoil, scryfallId, count, name }
   ) {
     const {
       data: { the99 },
@@ -242,7 +249,7 @@ export const actions = {
     })
 
     openToast({
-      message: `Updated card!`,
+      message: `Updated ${name}.`,
     })
     commit('updateThe99', the99)
   },
