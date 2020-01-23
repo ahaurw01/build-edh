@@ -6,6 +6,11 @@ import last from 'lodash/last'
 import get from 'lodash/get'
 import compact from 'lodash/compact'
 import chunk from 'lodash/chunk'
+import { ToastProgrammatic as Toast } from 'buefy'
+
+function openToast({ message, type = 'is-success', position = 'is-bottom' }) {
+  Toast.open({ message, type, position })
+}
 
 export const state = () => ({
   deck: null,
@@ -129,6 +134,10 @@ export const actions = {
         compuPurposes: newCompuPurposes,
       }
     )
+
+    openToast({
+      message: 'Successfully updated.',
+    })
     commit('deckCompuPurposes', deck)
   },
 
@@ -152,7 +161,10 @@ export const actions = {
     commit('printings', { [card.name]: printings })
   },
 
-  async addCommander({ commit, state }, { scryfallId, purposes, isFoil }) {
+  async addCommander(
+    { commit, state },
+    { scryfallId, purposes, isFoil, name }
+  ) {
     const { data: commander } = await this.$axios.post(
       `/api/decks/${state.deck._id}/commanders`,
       {
@@ -164,12 +176,15 @@ export const actions = {
       }
     )
 
+    openToast({
+      message: `Added ${name} as commander.`,
+    })
     commit('addCommander', commander)
   },
 
   async updateCommander(
     { commit, state },
-    { uuid, purposes, isFoil, scryfallId }
+    { uuid, purposes, isFoil, scryfallId, name }
   ) {
     const { data: commander } = await this.$axios.put(
       `/api/decks/${state.deck._id}/commanders/${uuid}`,
@@ -182,31 +197,45 @@ export const actions = {
       }
     )
 
+    openToast({
+      message: `Updated ${name}.`,
+    })
     commit('updateCommander', commander)
   },
 
   async deleteCommander({ commit, state }, uuid) {
     await this.$axios.delete(`/api/decks/${state.deck._id}/commanders/${uuid}`)
+    openToast({
+      message: `Removed commander.`,
+      type: 'is-info',
+    })
     commit('deleteCommander', uuid)
   },
 
-  async addCard({ commit, state }, { scryfallId, purposes, count }) {
+  async addCard(
+    { commit, state },
+    { scryfallId, purposes, count, isFoil, name }
+  ) {
     const {
       data: { the99 },
     } = await this.$axios.post(`/api/decks/${state.deck._id}/the99`, {
       card: {
         scryfallId,
         purposes,
+        isFoil,
       },
       count,
     })
 
+    openToast({
+      message: `Added ${name}.`,
+    })
     commit('updateThe99', the99)
   },
 
   async updateCard(
     { commit, state },
-    { uuid, purposes, isFoil, scryfallId, count }
+    { uuid, purposes, isFoil, scryfallId, count, name }
   ) {
     const {
       data: { the99 },
@@ -219,6 +248,9 @@ export const actions = {
       count,
     })
 
+    openToast({
+      message: `Updated ${name}.`,
+    })
     commit('updateThe99', the99)
   },
 
@@ -226,6 +258,11 @@ export const actions = {
     const {
       data: { the99 },
     } = await this.$axios.delete(`/api/decks/${state.deck._id}/the99/${uuid}`)
+
+    openToast({
+      message: `Removed card.`,
+      type: 'is-info',
+    })
     commit('updateThe99', the99)
   },
 
@@ -238,6 +275,9 @@ export const actions = {
           updates,
         }
       )
+      openToast({
+        message: `Successful bulk upload!`,
+      })
       commit('deck', deck)
     } catch ({ response }) {
       if (!response || !response.data) {
