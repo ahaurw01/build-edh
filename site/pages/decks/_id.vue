@@ -69,21 +69,14 @@
             <AddSingleOrBulkModal />
           </BModal>
 
-          <div class="new-card-modal-opener">
-            <BButton
-              size="is-medium"
-              icon-left="plus"
-              type="is-info"
-              @click="isNewCardModalActive = true"
-            />
-            <div v-if="numCards === 0" class="call-to-action">
-              <BIcon
-                type="is-dark"
-                icon="call-received"
-                custom-class="call-to-action-icon"
-              />
-            </div>
-          </div>
+          <BButton
+            size="is-medium"
+            icon-left="plus"
+            type="is-info"
+            class="new-card-modal-opener"
+            :class="{ 'call-to-action': numCards === 0 }"
+            @click="isNewCardModalActive = true"
+          />
           <BButton
             size="is-medium"
             icon-left="book-open"
@@ -186,12 +179,7 @@ export default {
 }
 
 .call-to-action {
-  position: absolute;
-  pointer-events: none;
-  top: -4rem;
-  right: -4rem;
   animation: 4s ease point-it-out infinite;
-  opacity: 0.5;
 }
 
 @media (min-width: 769px) {
@@ -202,29 +190,23 @@ export default {
 
 @keyframes point-it-out {
   80% {
-    transform: translateX(0) translateY(0);
+    transform: scale(1);
   }
 
   85% {
-    transform: translateX(-1rem) translateY(1rem);
+    transform: scale(1.25);
   }
 
   90% {
-    transform: translateX(0) translateY(0);
+    transform: scale(1);
   }
 
   95% {
-    transform: translateX(-1rem) translateY(1rem);
+    transform: scale(1.25);
   }
 
   100% {
-    transform: translateX(0) translateY(0);
+    transform: scale(1);
   }
-}
-</style>
-
-<style>
-.call-to-action-icon::before {
-  font-size: 6rem !important;
 }
 </style>
