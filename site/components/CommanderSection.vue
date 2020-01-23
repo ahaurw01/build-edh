@@ -1,16 +1,5 @@
 <template>
   <section>
-    <BModal :active.sync="isNewCommanderModalActive" has-modal-card>
-      <div class="modal-card tab-card" style="overflow: visible">
-        <header class="modal-card-head">
-          <p class="modal-card-title">
-            Add Commander
-          </p>
-        </header>
-        <CardModalForm only-for-commander />
-      </div>
-    </BModal>
-
     <BModal :active.sync="isEditCommanderModalActive" has-modal-card>
       <div class="modal-card tab-card" style="overflow: visible">
         <header class="modal-card-head">
@@ -37,13 +26,12 @@
       @edit-card="editCommander"
     />
 
-    <button
-      v-if="canAddCommander"
-      class="button is-primary"
-      @click="isNewCommanderModalActive = true"
-    >
-      Add Commander
-    </button>
+    <BNotification
+      v-if="commanders.length === 0"
+      :closable="false"
+      type="is-light"
+      message="No commander added yet"
+    />
   </section>
 </template>
 

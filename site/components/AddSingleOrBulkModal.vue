@@ -5,7 +5,10 @@
         Add Card(s)
       </p>
     </header>
-    <BTabs>
+    <BTabs :value="selectedTabIndex" @input="userSelectedTabIndex = $event">
+      <BTabItem v-if="canAddCommander" label="Add Commander">
+        <CardModalForm only-for-commander />
+      </BTabItem>
       <BTabItem label="Add Single Card">
         <CardModalForm />
       </BTabItem>
@@ -17,6 +20,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import CardModalForm from './CardModalForm'
 import BulkAddModalForm from './BulkAddModalForm'
 
@@ -24,6 +28,31 @@ export default {
   components: {
     CardModalForm,
     BulkAddModalForm,
+  },
+
+  data() {
+    return {
+      userSelectedTabIndex: null,
+    }
+  },
+
+  computed: {
+    ...mapGetters({
+      canAddCommander: 'deck/canAddCommander',
+      commanders: 'deck/commanders',
+    }),
+
+    selectedTabIndex() {
+      if (this.userSelectedTabIndex !== null) {
+        return this.userSelectedTabIndex
+      }
+
+      if (!this.canAddCommander || !this.commanders.length) {
+        return 0
+      }
+
+      return 1
+    },
   },
 }
 </script>

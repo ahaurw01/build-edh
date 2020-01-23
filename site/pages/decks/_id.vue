@@ -69,13 +69,21 @@
             <AddSingleOrBulkModal />
           </BModal>
 
-          <BButton
-            size="is-medium"
-            icon-left="plus"
-            type="is-info"
-            class="new-card-modal-opener"
-            @click="isNewCardModalActive = true"
-          />
+          <div class="new-card-modal-opener">
+            <BButton
+              size="is-medium"
+              icon-left="plus"
+              type="is-info"
+              @click="isNewCardModalActive = true"
+            />
+            <div v-if="numCards === 0" class="call-to-action">
+              <BIcon
+                type="is-dark"
+                icon="call-received"
+                custom-class="call-to-action-icon"
+              />
+            </div>
+          </div>
           <BButton
             size="is-medium"
             icon-left="book-open"
@@ -135,6 +143,7 @@ export default {
       purpose: 'deck/purpose',
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
+      numCards: 'deck/numCards',
     }),
   },
 
@@ -176,9 +185,46 @@ export default {
   left: 1rem;
 }
 
+.call-to-action {
+  position: absolute;
+  pointer-events: none;
+  top: -4rem;
+  right: -4rem;
+  animation: 4s ease point-it-out infinite;
+  opacity: 0.5;
+}
+
 @media (min-width: 769px) {
   .sidebar-opener {
     display: none;
   }
+}
+
+@keyframes point-it-out {
+  80% {
+    transform: translateX(0) translateY(0);
+  }
+
+  85% {
+    transform: translateX(-1rem) translateY(1rem);
+  }
+
+  90% {
+    transform: translateX(0) translateY(0);
+  }
+
+  95% {
+    transform: translateX(-1rem) translateY(1rem);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+</style>
+
+<style>
+.call-to-action-icon::before {
+  font-size: 6rem !important;
 }
 </style>
