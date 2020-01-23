@@ -1,8 +1,10 @@
 import {
   bulkInputToNameRegex,
   isBulkInputCommander,
+  isBulkInputFoil,
+  setCodeFromBulkInput,
   purposesFromBulkInput,
-  scryfallIdForInput,
+  sourceForInput,
   validateBulkInput,
   validateCommanders,
   validateThe99,
@@ -66,6 +68,22 @@ describe('Deck Validation', () => {
 
       expect(result.test('Rafiq of the Many')).toBe(true)
     })
+
+    test('knows about foil tag', () => {
+      const input = 'rafiq of the many *F*  # double strike'
+
+      const result = bulkInputToNameRegex(input)
+
+      expect(result.test('Rafiq of the Many')).toBe(true)
+    })
+
+    test('knows about set code', () => {
+      const input = 'rafiq of the many (xyz)  # double strike'
+
+      const result = bulkInputToNameRegex(input)
+
+      expect(result.test('Rafiq of the Many')).toBe(true)
+    })
   })
 
   describe('isBulkInputCommander', () => {
@@ -91,6 +109,46 @@ describe('Deck Validation', () => {
       const input = 'rafiq of the many # double strike, looking left'
 
       expect(isBulkInputCommander(input)).toBe(false)
+    })
+  })
+
+  describe('isBulkInputFoil', () => {
+    test('no if no foil tag', () => {
+      const input = 'foil'
+
+      expect(isBulkInputFoil(input)).toBe(false)
+    })
+
+    test('yes if starting foil tag', () => {
+      const input = '*f* foil'
+
+      expect(isBulkInputFoil(input)).toBe(true)
+    })
+
+    test('yes if ending foil tag', () => {
+      const input = 'foil *F*'
+
+      expect(isBulkInputFoil(input)).toBe(true)
+    })
+  })
+
+  describe('setCodeFromBulkInput', () => {
+    test('nothing if no set code', () => {
+      const input = 'foil'
+
+      expect(setCodeFromBulkInput(input)).toBeFalsy()
+    })
+
+    test('finds starting set code', () => {
+      const input = '(hi) foil'
+
+      expect(setCodeFromBulkInput(input)).toBe('hi')
+    })
+
+    test('finds ending set code', () => {
+      const input = 'foil (hi)'
+
+      expect(setCodeFromBulkInput(input)).toBe('hi')
     })
   })
 
@@ -191,17 +249,17 @@ describe('Deck Validation', () => {
     })
   })
 
-  describe('scryfallIdForInput', () => {
-    test('finds proper scryfallId', () => {
+  describe('sourceForInput', () => {
+    test('finds proper source', () => {
       const sources = [
         { scryfallId: 1, name: 'Lightning Bolt' },
         { scryfallId: 2, name: 'Rafiq of the Many' },
         { scryfallId: 3, name: 'Counterspell' },
       ]
 
-      const result = scryfallIdForInput('Rafiq of the Many # ...', sources)
+      const result = sourceForInput('Rafiq of the Many # ...', sources)
 
-      expect(result).toBe(2)
+      expect(result.scryfallId).toBe(2)
     })
   })
 
