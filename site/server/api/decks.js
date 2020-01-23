@@ -10,8 +10,9 @@ const {
   validateCommanders,
   validateThe99,
   isBulkInputCommander,
+  isBulkInputFoil,
   purposesFromBulkInput,
-  scryfallIdForInput,
+  sourceForInput,
 } = require('./deck-validation')
 
 module.exports = {
@@ -146,10 +147,12 @@ function bulkUpdateDeckAssembly(ctx, next) {
 
   // Construct new deck.
   updates.forEach(input => {
+    const source = sourceForInput(input, ctx.state.bulkInputSources)
     const card = {
-      scryfallId: scryfallIdForInput(input, ctx.state.bulkInputSources),
+      scryfallId: source.scryfallId,
       uuid: uuid(),
       purposes: purposesFromBulkInput(input),
+      isFoil: isBulkInputFoil(input) && source.existsInFoil,
     }
 
     ;(isBulkInputCommander(input) ? deck.commanders : deck.the99).push(card)

@@ -195,11 +195,26 @@ const allCardFieldsGroup = {
   _id: '$name',
 }
 
-Card.findWithNames = names =>
-  Card.aggregate()
-    .match({ name: { $in: names } })
-    .group(allCardFieldsGroup)
-    .exec()
+/**
+ * Find cards with given name regular expressions and sets.
+ *
+ * @param {Object[]} filters  {nameRegex, setCode}
+ *
+ * @return {Card[]}
+ */
+Card.findWithNames = async filters => {
+  const cards = []
+  for (const { nameRegex, setCode } of filters) {
+    const query = {
+      name: { $regex: nameRegex },
+    }
+    if (setCode) query.setCode = setCode
+    const card = await Card.findOne(query)
+    if (card) cards.push(card)
+  }
+
+  return cards
+}
 
 module.exports = {
   User,

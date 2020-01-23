@@ -5,13 +5,21 @@ const bulkInputToNameRegex = (input = '') =>
   new RegExp(
     `^${input
       .split('#')[0]
-      .replace(/\*cmdr\*/i, '')
+      .replace(/[*](cmdr|f)[*]/gi, '')
+      .replace(/[(].*?[)]/i, '')
       .trim()}$`,
     'i'
   )
 
 const isBulkInputCommander = (input = '') =>
   /\*cmdr\*/i.test(input.split('#')[0])
+
+const isBulkInputFoil = (input = '') => /\*f\*/i.test(input.split('#')[0])
+
+const setCodeFromBulkInput = (input = '') => {
+  const match = /[(](.*?)[)]/.exec(input.split('#')[0])
+  return match ? match[1].toLowerCase() : undefined
+}
 
 const purposesFromBulkInput = (input = '') =>
   _((input.split('#')[1] || '').split(','))
@@ -20,9 +28,9 @@ const purposesFromBulkInput = (input = '') =>
     .uniq()
     .value()
 
-const scryfallIdForInput = (input = '', sources) => {
+const sourceForInput = (input = '', sources) => {
   const regexp = bulkInputToNameRegex(input)
-  return sources.find(source => regexp.test(source.name)).scryfallId
+  return sources.find(source => regexp.test(source.name))
 }
 
 module.exports = {
@@ -35,8 +43,10 @@ module.exports = {
   validateThe99,
   bulkInputToNameRegex,
   isBulkInputCommander,
+  isBulkInputFoil,
+  setCodeFromBulkInput,
   purposesFromBulkInput,
-  scryfallIdForInput,
+  sourceForInput,
 }
 
 /**
@@ -63,7 +73,10 @@ function parseBulkInputNumbers(ctx, next) {
  */
 async function populateBulkInputSources(ctx, next) {
   ctx.state.bulkInputSources = await Card.findWithNames(
-    (ctx.request.body.updates || []).map(bulkInputToNameRegex)
+    (ctx.request.body.updates || []).map(input => ({
+      nameRegex: bulkInputToNameRegex(input),
+      setCode: setCodeFromBulkInput(input),
+    }))
   )
 
   return next()

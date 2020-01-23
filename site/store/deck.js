@@ -662,6 +662,19 @@ export const getters = {
 
     return hash
   },
+
+  textExport: (state, { commanders, the99 }) => {
+    return [...commanders, ...the99]
+      .map(
+        card =>
+          `${card.source.name}${card.isCommander ? ' *CMDR* ' : ' '}(${
+            card.source.setCode
+          })${card.isFoil ? ' *F*' : ''}${
+            card.purposes.length ? ` # ${card.purposes.join(', ')}` : ''
+          }`
+      )
+      .join('\n')
+  },
 }
 
 /**
