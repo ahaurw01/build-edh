@@ -204,7 +204,7 @@ const allCardFieldsGroup = {
  */
 Card.findWithNames = async filters => {
   const cards = []
-  for ({ nameRegex, setCode } of filters) {
+  for (const { nameRegex, setCode } of filters) {
     const query = {
       name: { $regex: nameRegex },
     }
