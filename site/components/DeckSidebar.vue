@@ -30,12 +30,37 @@
         :compu-purposes="compuPurposes"
         @change="updateCompuPurposes"
       />
+
+      <hr />
+
+      <h3 class="title is-3">Export</h3>
+      <BButton @click="isExportModalOpen = true">View as text</BButton>
     </div>
+
+    <BModal :active.sync="isExportModalOpen" has-modal-card>
+      <div class="modal-card" style="width: auto">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Text Export</p>
+        </header>
+        <section class="modal-card-body">
+          <textarea v-model="textExport" readonly rows="10" class="textarea" />
+        </section>
+        <footer class="modal-card-foot">
+          <BButton @click="isExportModalOpen = false">
+            Close
+          </BButton>
+          <BButton type="is-info" @click="copyText">
+            Copy all to clipboard
+          </BButton>
+        </footer>
+      </div>
+    </BModal>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { ToastProgrammatic as Toast } from 'buefy'
 import DeckStats from './DeckStats'
 import CompuPurposes from './CompuPurposes'
 
@@ -45,10 +70,17 @@ export default {
     isOpen: { type: Boolean, required: true },
   },
 
+  data() {
+    return {
+      isExportModalOpen: false,
+    }
+  },
+
   computed: {
     ...mapGetters({
       usePurposeGroups: 'deck/usePurposeGroups',
       compuPurposes: 'deck/compuPurposes',
+      textExport: 'deck/textExport',
     }),
   },
 
@@ -57,6 +89,21 @@ export default {
       setUsePurposeGroups: 'deck/setUsePurposeGroups',
       updateCompuPurposes: 'deck/updateCompuPurposes',
     }),
+
+    copyText() {
+      const el = document.createElement('textarea')
+      el.value = this.textExport
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
+
+      Toast.open({
+        message: '<i class="mdi mdi-check"></i> Copied',
+        position: 'is-bottom',
+        type: 'is-info',
+      })
+    },
   },
 }
 </script>
@@ -108,5 +155,9 @@ export default {
     max-height: calc(100vh - 40px);
     overflow: auto;
   }
+}
+
+.textarea {
+  width: calc(100vw - 50px);
 }
 </style>
