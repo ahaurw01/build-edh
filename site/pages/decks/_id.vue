@@ -103,6 +103,8 @@ import NinetyNineSection from '~/components/NinetyNineSection'
 import DeckSidebar from '~/components/DeckSidebar'
 import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 export default {
+  auth: false,
+
   components: {
     DeckPropertyModalForm,
     CommanderSection,

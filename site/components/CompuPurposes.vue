@@ -52,17 +52,13 @@ export default {
 
   computed: {
     ...mapGetters({
-      owner: 'deck/owner',
+      iAmOwner: 'deck/iAmOwner',
     }),
 
     allCompuPurposesAreValid() {
       return this.allCompuPurposes.every(({ rules = [{}] }) =>
         rules.every(rule => this.isRuleValid(rule))
       )
-    },
-
-    iAmOwner() {
-      return this.$auth.user._id === this.owner._id
     },
   },
 

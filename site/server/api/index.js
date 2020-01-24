@@ -31,6 +31,10 @@ apiRouter.post('/register', register)
 apiRouter.get('/cards', getCards)
 apiRouter.get('/cards/printings', getPrintings)
 
+apiRouter.get('/decks/:id', getDeck)
+
+apiRouter.get('/users/:id', getUser)
+
 // Authed routes below here:
 apiRouter.use(koaJwt({ secret: 'secret' }))
 
@@ -38,7 +42,6 @@ apiRouter.get('/me', me)
 
 apiRouter.post('/decks', createDeck)
 apiRouter.get('/decks/mine', getMyDecks)
-apiRouter.get('/decks/:id', getDeck)
 
 apiRouter.use('/decks/:id', ensureDeckOwner)
 apiRouter.put('/decks/:id/bulk', ...bulkUpdateDeckMiddlewares)
@@ -49,7 +52,5 @@ apiRouter.delete('/decks/:id/commanders/:uuid', deleteDeckCommander)
 apiRouter.post('/decks/:id/the99', ...addDeckCardMiddlewares)
 apiRouter.put('/decks/:id/the99/:uuid', ...updateDeckCardMiddlewares)
 apiRouter.delete('/decks/:id/the99/:uuid', ...deleteDeckCardMiddlewares)
-
-apiRouter.get('/users/:id', getUser)
 
 module.exports = apiRouter
