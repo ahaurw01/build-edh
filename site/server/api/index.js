@@ -5,7 +5,7 @@ const { login, register, me } = require('./auth')
 const {
   ensureDeckOwner,
   createDeck,
-  getMyDecks,
+  getDecksByOwner,
   getDeck,
   updateDeck,
   bulkUpdateDeckMiddlewares,
@@ -41,7 +41,7 @@ apiRouter.use(koaJwt({ secret: 'secret' }))
 apiRouter.get('/me', me)
 
 apiRouter.post('/decks', createDeck)
-apiRouter.get('/decks/mine', getMyDecks)
+apiRouter.get('/decks', getDecksByOwner)
 
 apiRouter.use('/decks/:id', ensureDeckOwner)
 apiRouter.put('/decks/:id/bulk', ...bulkUpdateDeckMiddlewares)

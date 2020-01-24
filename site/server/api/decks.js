@@ -18,7 +18,7 @@ const {
 module.exports = {
   ensureDeckOwner,
   createDeck,
-  getMyDecks,
+  getDecksByOwner,
   getDeck,
   updateDeck,
   bulkUpdateDeckMiddlewares: [
@@ -87,8 +87,8 @@ async function createDeck(ctx) {
   ctx.body = await deck.save()
 }
 
-async function getMyDecks(ctx) {
-  const owner = ctx.state.user._id
+async function getDecksByOwner(ctx) {
+  const owner = ctx.query.ownerId || ctx.state.user._id
   const decks = await Deck.find({ owner })
   ctx.body = decks
 }
