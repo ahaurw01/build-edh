@@ -305,7 +305,7 @@ export const actions = {
   async deleteDeck({ state }) {
     await this.$axios.delete(`/api/decks/${state.deck._id}`)
     openToast({
-      message: `${state.deck.name || 'Deck'} deleted.`,
+      message: `Deleted ${state.deck.name || 'the deck'}.`,
     })
   },
 }
