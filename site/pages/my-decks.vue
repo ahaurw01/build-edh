@@ -37,7 +37,7 @@ export default {
   },
 
   async fetch({ store, $axios }) {
-    const { data: decks } = await $axios.get(`/api/decks/mine`)
+    const { data: decks } = await $axios.get(`/api/decks`)
     store.commit('decks/decks', decks)
   },
 
