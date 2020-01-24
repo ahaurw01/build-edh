@@ -138,12 +138,8 @@ export default {
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
       numCards: 'deck/numCards',
-      owner: 'deck/owner',
+      iAmOwner: 'deck/iAmOwner',
     }),
-
-    iAmOwner() {
-      return this.$auth.user._id === this.owner._id
-    },
   },
 
   methods: {
