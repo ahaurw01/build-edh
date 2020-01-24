@@ -14,7 +14,7 @@
           <h4 class="title is-4">{{ compuPurpose.title }}</h4>
         </div>
       </div>
-      <div class="level-right">
+      <div v-if="iAmOwner" class="level-right">
         <div class="level-item">
           <BButton icon-right="pencil" type="is-info" @click="$emit('edit')" />
         </div>
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Rule from './CompuPurposes/Rule'
 
 export default {
@@ -56,6 +57,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      iAmOwner: 'deck/iAmOwner',
+    }),
+
     rules() {
       return this.compuPurpose.rules || [{}]
     },
