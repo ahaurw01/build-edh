@@ -1,11 +1,9 @@
 <template>
   <section class="section">
     <div class="container">
-      <h2 class="title is-2">
-        My decks
-      </h2>
+      <h2 class="title is-2">{{ user.username }}'s decks</h2>
 
-      <div class="section has-text-centered">
+      <div v-if="userIsMe" class="section has-text-centered">
         <button class="button is-large is-primary" @click="createDeck">
           <BIcon icon="plus" />
           <span>
@@ -17,7 +15,7 @@
       <section class="tile is-ancestor">
         <div class="tile is-vertical is-parent">
           <div v-for="deck in decks" :key="deck._id" class="tile is-child ">
-            <NuxtLink :to="`/decks/${deck._id}`">
+            <NuxtLink :to="`/deck/${deck._id}`">
               <DeckTile :deck="deck" />
             </NuxtLink>
           </div>
@@ -32,17 +30,29 @@ import { mapGetters } from 'vuex'
 import DeckTile from '~/components/DeckTile'
 
 export default {
+  auth: false,
+
   components: {
     DeckTile,
   },
 
-  async fetch({ store, $axios }) {
-    const { data: decks } = await $axios.get(`/api/decks`)
-    store.commit('decks/decks', decks)
+  async fetch({ store, params, $axios, error }) {
+    try {
+      const { data: user } = await $axios.get(`/api/users/${params.username}`)
+      const { data: decks } = await $axios.get(`/api/decks?ownerId=${user._id}`)
+      store.commit('decks/user', user)
+      store.commit('decks/decks', decks)
+    } catch (e) {
+      error({ statusCode: 404, message: 'User not found' })
+    }
   },
 
   computed: {
-    ...mapGetters({ decks: 'decks/decks' }),
+    ...mapGetters({
+      decks: 'decks/decks',
+      user: 'decks/user',
+      userIsMe: 'decks/userIsMe',
+    }),
   },
 
   methods: {

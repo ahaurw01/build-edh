@@ -33,6 +33,7 @@ apiRouter.get('/cards', getCards)
 apiRouter.get('/cards/printings', getPrintings)
 
 apiRouter.get('/decks/:id', getDeck)
+apiRouter.get('/decks', getDecksByOwner)
 
 apiRouter.get('/users/:id', getUser)
 
@@ -42,7 +43,6 @@ apiRouter.use(koaJwt({ secret: 'secret' }))
 apiRouter.get('/me', me)
 
 apiRouter.post('/decks', createDeck)
-apiRouter.get('/decks', getDecksByOwner)
 
 apiRouter.use('/decks/:id', ensureDeckOwner)
 apiRouter.put('/decks/:id/bulk', ...bulkUpdateDeckMiddlewares)
