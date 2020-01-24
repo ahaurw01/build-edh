@@ -60,6 +60,7 @@ module.exports = {
     validateThe99,
     deleteDeckCardSave,
   ],
+  deleteDeck,
 }
 
 async function ensureDeckOwner(ctx, next) {
@@ -489,4 +490,16 @@ async function deleteDeckCardSave(ctx, next) {
   }
 
   return next()
+}
+
+async function deleteDeck(ctx) {
+  const { id } = ctx.params
+  const deck = await Deck.findById(id)
+  if (!deck) return (ctx.response.status = 404)
+
+  if (deck.owner.toString() !== ctx.state.user._id)
+    return (ctx.response.status = 403)
+
+  await deck.remove()
+  ctx.response.status = 204
 }

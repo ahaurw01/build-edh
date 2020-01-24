@@ -33,8 +33,11 @@
 
       <hr />
 
-      <h3 class="title is-3">Export</h3>
       <BButton @click="isExportModalOpen = true">View as text</BButton>
+
+      <BButton v-if="iAmOwner" type="is-danger" @click="confirmDelete">
+        Delete this deck
+      </BButton>
     </div>
 
     <BModal :active.sync="isExportModalOpen" has-modal-card>
@@ -81,6 +84,7 @@ export default {
       usePurposeGroups: 'deck/usePurposeGroups',
       compuPurposes: 'deck/compuPurposes',
       textExport: 'deck/textExport',
+      iAmOwner: 'deck/iAmOwner',
     }),
   },
 
@@ -88,6 +92,7 @@ export default {
     ...mapActions({
       setUsePurposeGroups: 'deck/setUsePurposeGroups',
       updateCompuPurposes: 'deck/updateCompuPurposes',
+      deleteDeck: 'deck/deleteDeck',
     }),
 
     copyText() {
@@ -102,6 +107,25 @@ export default {
         message: '<i class="mdi mdi-check"></i> Copied',
         position: 'is-bottom',
         type: 'is-info',
+      })
+    },
+
+    confirmDelete() {
+      this.$buefy.dialog.confirm({
+        message: 'Are you sure you want to delete this deck?',
+        onConfirm: () => this.reallyConfirmDelete(),
+      })
+    },
+
+    reallyConfirmDelete() {
+      this.$buefy.dialog.confirm({
+        message: 'ARE YOU REALLY SURE YOU WANT TO DELETE THIS DECK????',
+        onConfirm: async () => {
+          await this.deleteDeck()
+          this.$router.push({
+            path: '/my-decks',
+          })
+        },
       })
     },
   },
