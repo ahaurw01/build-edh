@@ -301,6 +301,13 @@ export const actions = {
   setUsePurposeGroups({ commit }, value) {
     commit('usePurposeGroups', value)
   },
+
+  async deleteDeck({ state }) {
+    await this.$axios.delete(`/api/decks/${state.deck._id}`)
+    openToast({
+      message: `Deleted ${state.deck.name || 'the deck'}.`,
+    })
+  },
 }
 
 export const getters = {

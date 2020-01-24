@@ -15,6 +15,7 @@ const {
   addDeckCardMiddlewares,
   updateDeckCardMiddlewares,
   deleteDeckCardMiddlewares,
+  deleteDeck,
 } = require('./decks')
 const { getUser } = require('./users')
 const { getCards, getPrintings } = require('./cards')
@@ -52,5 +53,6 @@ apiRouter.delete('/decks/:id/commanders/:uuid', deleteDeckCommander)
 apiRouter.post('/decks/:id/the99', ...addDeckCardMiddlewares)
 apiRouter.put('/decks/:id/the99/:uuid', ...updateDeckCardMiddlewares)
 apiRouter.delete('/decks/:id/the99/:uuid', ...deleteDeckCardMiddlewares)
+apiRouter.delete('/decks/:id', deleteDeck)
 
 module.exports = apiRouter
