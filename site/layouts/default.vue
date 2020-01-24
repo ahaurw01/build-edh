@@ -48,8 +48,9 @@ export default {
   },
 
   methods: {
-    logOut() {
-      this.$auth.logout()
+    async logOut() {
+      await this.$auth.logout()
+      window.location = '/'
     },
     hitBurger() {
       this.burgerActive = !this.burgerActive
