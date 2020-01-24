@@ -8,7 +8,7 @@
     />
 
     <BButton
-      v-if="allCompuPurposesAreValid"
+      v-if="iAmOwner && allCompuPurposesAreValid"
       type="is-dark"
       icon-left="auto-fix"
       @click="addEmptyCompuPurpose"
@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import CompuPurpose from './CompuPurpose'
 import CompuPurposeModalForm from './CompuPurposeModalForm'
 
@@ -50,10 +51,18 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      owner: 'deck/owner',
+    }),
+
     allCompuPurposesAreValid() {
       return this.allCompuPurposes.every(({ rules = [{}] }) =>
         rules.every(rule => this.isRuleValid(rule))
       )
+    },
+
+    iAmOwner() {
+      return this.$auth.user._id === this.owner._id
     },
   },
 

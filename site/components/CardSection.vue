@@ -40,7 +40,7 @@
     <CardShowcaseModal
       :card="cardToShowcase"
       :is-open="isCardShowcaseOpen"
-      show-edit-button
+      :show-edit-button="iAmOwner"
       :special-shadow="
         !noSpecialShadow && cardToShowcase && cardToShowcase.isCommander
       "
@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import chunk from 'lodash/chunk'
 import Card from '~/components/Card'
 import CardShowcaseModal from '~/components/CardShowcaseModal'
@@ -79,6 +80,10 @@ export default {
   },
 
   computed: {
+    ...mapGetters({
+      iAmOwner: 'deck/iAmOwner',
+    }),
+
     columns() {
       return chunk(this.cards, Math.ceil(this.cards.length / this.numColumns))
     },

@@ -11,14 +11,6 @@
       </div>
     </BModal>
 
-    <CardShowcaseModal
-      :card="cardToShowcase"
-      :is-open="isCardShowcaseOpen"
-      show-edit-button
-      @edit-card="editCommander(cardToShowcase)"
-      @close="isCardShowcaseOpen = false"
-    />
-
     <CardSection
       :title="title"
       :cards="commanders"
@@ -39,20 +31,15 @@
 import { mapGetters } from 'vuex'
 import CardSection from '~/components/CardSection'
 import CardModalForm from '~/components/CardModalForm'
-import CardShowcaseModal from '~/components/CardShowcaseModal'
 export default {
   components: {
     CardSection,
     CardModalForm,
-    CardShowcaseModal,
   },
   data() {
     return {
-      isNewCommanderModalActive: false,
       isEditCommanderModalActive: false,
       commanderToEdit: null,
-      isCardShowcaseOpen: false,
-      cardToShowcase: null,
     }
   },
 
@@ -60,12 +47,10 @@ export default {
     title() {
       return this.commanders.length === 2 ? 'Commanders' : 'Commander'
     },
-    ...mapGetters(
-      ['commanders', 'canAddCommander'].reduce((acc, key) => {
-        acc[key] = `deck/${key}`
-        return acc
-      }, {})
-    ),
+
+    ...mapGetters({
+      commanders: 'deck/commanders',
+    }),
   },
   methods: {
     editCommander(commander) {

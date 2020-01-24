@@ -7,7 +7,7 @@
             <div class="column">
               <h2 class="title is-2">{{ name }}</h2>
             </div>
-            <div class="column is-narrow">
+            <div v-if="iAmOwner" class="column is-narrow">
               <button class="button" @click="isEditNameModalActive = true">
                 <BIcon icon="pencil" />
               </button>
@@ -18,7 +18,7 @@
             <div class="column">
               <h4 class="subtitle is-4">{{ purpose }}</h4>
             </div>
-            <div class="column is-narrow">
+            <div v-if="iAmOwner" class="column is-narrow">
               <button class="button" @click="isEditPurposeModalActive = true">
                 <BIcon icon="pencil" />
               </button>
@@ -35,7 +35,7 @@
                 {{ paragraph }}
               </p>
             </div>
-            <div class="column is-narrow">
+            <div v-if="iAmOwner" class="column is-narrow">
               <button
                 class="button"
                 @click="isEditDescriptionModalActive = true"
@@ -70,6 +70,7 @@
           </BModal>
 
           <BButton
+            v-if="iAmOwner"
             size="is-medium"
             icon-left="plus"
             type="is-info"
@@ -137,6 +138,7 @@ export default {
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
       numCards: 'deck/numCards',
+      iAmOwner: 'deck/iAmOwner',
     }),
   },
 

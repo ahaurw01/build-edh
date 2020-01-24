@@ -304,7 +304,18 @@ export const actions = {
 }
 
 export const getters = {
+  user: state => state.auth.user,
+  owner: state => state.owner,
   ownerUsername: state => state.owner.username,
+  iAmOwner: (
+    state,
+    { owner: { _id: ownerId } },
+    {
+      auth: {
+        user: { _id: myId = -1 },
+      },
+    }
+  ) => ownerId === myId,
   name: state => state.deck.name || 'Untitled deck',
   purpose: state => state.deck.purpose || 'No purpose',
   description: state => state.deck.description || 'No description',
