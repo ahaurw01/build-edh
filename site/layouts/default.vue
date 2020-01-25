@@ -3,7 +3,12 @@
     <nav class="navbar">
       <div class="navbar-brand">
         <div class="navbar-item">
-          <h1 class="title">
+          <NuxtLink v-if="isLoggedIn" to="/my-decks">
+            <h1 class="title">
+              BuildEDH
+            </h1>
+          </NuxtLink>
+          <h1 v-else class="title">
             BuildEDH
           </h1>
         </div>
