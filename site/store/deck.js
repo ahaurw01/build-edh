@@ -19,6 +19,7 @@ export const state = () => ({
   printings: {},
   bulkAddErrorMessages: [],
   usePurposeGroups: true,
+  sortByCmc: true,
 })
 
 export const mutations = {
@@ -93,6 +94,10 @@ export const mutations = {
 
   usePurposeGroups(state, value) {
     state.usePurposeGroups = value
+  },
+
+  sortByCmc(state, value) {
+    state.sortByCmc = value
   },
 }
 
@@ -302,6 +307,10 @@ export const actions = {
     commit('usePurposeGroups', value)
   },
 
+  setSortByCmc({ commit }, value) {
+    commit('sortByCmc', value)
+  },
+
   async deleteDeck({ state }) {
     await this.$axios.delete(`/api/decks/${state.deck._id}`)
     openToast({
@@ -331,6 +340,7 @@ export const getters = {
   cardSuggestions: state => state.cardSuggestions,
   printings: state => state.printings,
   usePurposeGroups: state => state.usePurposeGroups,
+  sortByCmc: state => state.sortByCmc,
   suggestedPurposes: (state, { commanders, the99 }) =>
     uniq([
       ...flatten([...commanders, ...the99].map(c => c.purposes)),
@@ -360,8 +370,8 @@ export const getters = {
   // Look at state.usePurposeGroups to determine grouping strategy.
   //
   cardGroupings: (
-    { usePurposeGroups },
-    { commanders, the99, compuPurposeHash }
+    state,
+    { usePurposeGroups, sortByCmc, commanders, the99, compuPurposeHash }
   ) => {
     const hashByCompuPurpose = usePurposeGroups ? compuPurposeHash : {}
     const cardNamesInCompuPurposeGroups = flatten(
@@ -388,25 +398,27 @@ export const getters = {
     )
 
     function makeGroupedCards(hash, purpose) {
-      return sortBy(hash[purpose], 'source.cmc', 'source.name').reduce(
-        (cards, card) => {
-          const lastCard = last(cards)
-          if (lastCard && card.source.name === lastCard.source.name) {
-            lastCard.count += 1
-          } else {
-            cards = [
-              ...cards,
-              {
-                ...card,
-                count: 1,
-              },
-            ]
-          }
+      return sortBy(
+        hash[purpose],
+        ...(sortByCmc
+          ? ['source.cmc', 'source.name']
+          : ['source.name', 'source.cmc'])
+      ).reduce((cards, card) => {
+        const lastCard = last(cards)
+        if (lastCard && card.source.name === lastCard.source.name) {
+          lastCard.count += 1
+        } else {
+          cards = [
+            ...cards,
+            {
+              ...card,
+              count: 1,
+            },
+          ]
+        }
 
-          return cards
-        },
-        []
-      )
+        return cards
+      }, [])
     }
 
     const groupings = [
