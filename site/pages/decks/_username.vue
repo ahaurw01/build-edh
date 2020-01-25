@@ -4,21 +4,27 @@
       <h2 class="title is-2">{{ user.username }}'s decks</h2>
 
       <div v-if="userIsMe" class="section has-text-centered">
-        <button class="button is-large is-primary" @click="createDeck">
-          <BIcon icon="plus" />
-          <span>
-            Create New Deck
-          </span>
-        </button>
+        <BButton
+          size="is-large"
+          type="is-primary"
+          icon-left="plus"
+          @click="createDeck"
+        >
+          Create New Deck
+        </BButton>
       </div>
 
-      <section class="tile is-ancestor">
-        <div class="tile is-vertical is-parent">
-          <div v-for="deck in decks" :key="deck._id" class="tile is-child ">
+      <section class="section">
+        <div v-if="decks.length" class="columns is-multiline">
+          <div v-for="deck in decks" :key="deck._id" class="column is-half">
             <NuxtLink :to="`/deck/${deck._id}`">
               <DeckTile :deck="deck" />
             </NuxtLink>
           </div>
+        </div>
+
+        <div v-else>
+          <BNotification :closable="false" message="No decks just yet." />
         </div>
       </section>
     </div>

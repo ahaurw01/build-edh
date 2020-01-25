@@ -91,7 +91,22 @@ async function createDeck(ctx) {
 async function getDecksByOwner(ctx) {
   const owner = ctx.query.ownerId || ctx.state.user._id
   const decks = await Deck.find({ owner })
-  ctx.body = decks
+
+  const commanderScryfallIds = _.flatten(
+    decks.map(({ commanders }) => commanders)
+  ).map(({ scryfallId }) => scryfallId)
+
+  const sources = await Card.find({
+    scryfallId: { $in: commanderScryfallIds },
+  })
+
+  ctx.body = decks.map(deck => ({
+    ...deck.toJSON(),
+    commanders: deck.commanders.map(commander => ({
+      ...commander,
+      source: _.find(sources, { scryfallId: commander.scryfallId }),
+    })),
+  }))
 }
 
 async function getDeck(ctx) {
