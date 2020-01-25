@@ -78,12 +78,14 @@ describe('Deck Store', () => {
         const commanders = []
         const the99 = []
         const compuPurposeHash = {}
-        const state = { usePurposeGroups: true }
+        const state = {}
 
         const result = getters.cardGroupings(state, {
           commanders,
           the99,
           compuPurposeHash,
+          usePurposeGroups: true,
+          sortByCmc: true,
         })
 
         expect(result).toEqual([])
@@ -126,12 +128,14 @@ describe('Deck Store', () => {
           },
         ]
         const compuPurposeHash = {}
-        const state = { usePurposeGroups: true }
+        const state = {}
 
         const result = getters.cardGroupings(state, {
           commanders,
           the99,
           compuPurposeHash,
+          usePurposeGroups: true,
+          sortByCmc: true,
         })
 
         expect(result).toEqual([
@@ -225,12 +229,14 @@ describe('Deck Store', () => {
           },
         ]
         const compuPurposeHash = {}
-        const state = { usePurposeGroups: true }
+        const state = {}
 
         const result = getters.cardGroupings(state, {
           commanders,
           the99,
           compuPurposeHash,
+          usePurposeGroups: true,
+          sortByCmc: true,
         })
 
         expect(result).toEqual([
@@ -314,18 +320,6 @@ describe('Deck Store', () => {
             purposes: ['Favorite Art'],
           },
           {
-            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
-            purposes: [],
-          },
-          {
-            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
-            purposes: [],
-          },
-          {
-            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
-            purposes: [],
-          },
-          {
             source: {
               name: 'Dryad Arbor',
               faces: [{ types: ['Land', 'Creature'] }],
@@ -342,34 +336,17 @@ describe('Deck Store', () => {
           },
         ]
         const compuPurposeHash = {}
-        const state = { usePurposeGroups: false }
+        const state = {}
 
         const result = getters.cardGroupings(state, {
           commanders,
           the99,
           compuPurposeHash,
+          usePurposeGroups: true,
+          sortByCmc: true,
         })
 
         expect(result).toEqual([
-          {
-            purpose: 'Land',
-            isAutomaticGroup: true,
-            cards: [
-              {
-                source: {
-                  name: 'Dryad Arbor',
-                  faces: [{ types: ['Land', 'Creature'] }],
-                },
-                purposes: [],
-                count: 1,
-              },
-              {
-                source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
-                purposes: ['Favorite Art'],
-                count: 4,
-              },
-            ],
-          },
           {
             purpose: 'Artifact',
             isAutomaticGroup: true,
@@ -382,6 +359,16 @@ describe('Deck Store', () => {
             ],
           },
           {
+            purpose: 'Favorite Art',
+            cards: [
+              {
+                source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+                purposes: ['Favorite Art'],
+                count: 1,
+              },
+            ],
+          },
+          {
             purpose: 'Instant',
             isAutomaticGroup: true,
             cards: [
@@ -389,6 +376,20 @@ describe('Deck Store', () => {
                 source: {
                   name: 'Lightning Bolt',
                   faces: [{ types: ['Instant'] }],
+                },
+                purposes: [],
+                count: 1,
+              },
+            ],
+          },
+          {
+            purpose: 'Land',
+            isAutomaticGroup: true,
+            cards: [
+              {
+                source: {
+                  name: 'Dryad Arbor',
+                  faces: [{ types: ['Land', 'Creature'] }],
                 },
                 purposes: [],
                 count: 1,
@@ -418,12 +419,14 @@ describe('Deck Store', () => {
         ]
         const the99 = []
         const compuPurposeHash = {}
-        const state = { usePurposeGroups: true }
+        const state = {}
 
         const result = getters.cardGroupings(state, {
           commanders,
           the99,
           compuPurposeHash,
+          usePurposeGroups: true,
+          sortByCmc: true,
         })
 
         expect(result).toEqual([
@@ -433,6 +436,154 @@ describe('Deck Store', () => {
               {
                 source: { name: 'Krenko, Mob Boss' },
                 purposes: ['Token Generation'],
+                count: 1,
+              },
+            ],
+          },
+        ])
+      })
+
+      test('sorts by cmc', () => {
+        const commanders = []
+        const the99 = [
+          {
+            source: { name: 'Negate', cmc: 2 },
+            purposes: ['Counter'],
+          },
+          {
+            source: { name: 'Counterspell', cmc: 2 },
+            purposes: ['Counter'],
+          },
+          {
+            source: { name: 'Flusterstorm', cmc: 1 },
+            purposes: ['Counter'],
+          },
+          {
+            source: { name: 'Lightning Strike', cmc: 2 },
+            purposes: ['Burn'],
+          },
+          {
+            source: { name: 'Shock', cmc: 1 },
+            purposes: ['Burn'],
+          },
+        ]
+        const compuPurposeHash = {}
+        const state = {}
+
+        const result = getters.cardGroupings(state, {
+          commanders,
+          the99,
+          compuPurposeHash,
+          usePurposeGroups: true,
+          sortByCmc: true,
+        })
+
+        expect(result).toEqual([
+          {
+            purpose: 'Counter',
+            cards: [
+              {
+                source: { name: 'Flusterstorm', cmc: 1 },
+                purposes: ['Counter'],
+                count: 1,
+              },
+              {
+                source: { name: 'Counterspell', cmc: 2 },
+                purposes: ['Counter'],
+                count: 1,
+              },
+              {
+                source: { name: 'Negate', cmc: 2 },
+                purposes: ['Counter'],
+                count: 1,
+              },
+            ],
+          },
+          {
+            purpose: 'Burn',
+            cards: [
+              {
+                source: { name: 'Shock', cmc: 1 },
+                purposes: ['Burn'],
+                count: 1,
+              },
+              {
+                source: { name: 'Lightning Strike', cmc: 2 },
+                purposes: ['Burn'],
+                count: 1,
+              },
+            ],
+          },
+        ])
+      })
+
+      test('sorts by name', () => {
+        const commanders = []
+        const the99 = [
+          {
+            source: { name: 'Negate', cmc: 2 },
+            purposes: ['Counter'],
+          },
+          {
+            source: { name: 'Counterspell', cmc: 2 },
+            purposes: ['Counter'],
+          },
+          {
+            source: { name: 'Flusterstorm', cmc: 1 },
+            purposes: ['Counter'],
+          },
+          {
+            source: { name: 'Lightning Strike', cmc: 2 },
+            purposes: ['Burn'],
+          },
+          {
+            source: { name: 'Shock', cmc: 1 },
+            purposes: ['Burn'],
+          },
+        ]
+        const compuPurposeHash = {}
+        const state = {}
+
+        const result = getters.cardGroupings(state, {
+          commanders,
+          the99,
+          compuPurposeHash,
+          usePurposeGroups: true,
+          sortByCmc: false,
+        })
+
+        expect(result).toEqual([
+          {
+            purpose: 'Counter',
+            cards: [
+              {
+                source: { name: 'Counterspell', cmc: 2 },
+                purposes: ['Counter'],
+                count: 1,
+              },
+              {
+                source: { name: 'Flusterstorm', cmc: 1 },
+                purposes: ['Counter'],
+                count: 1,
+              },
+              {
+                source: { name: 'Negate', cmc: 2 },
+                purposes: ['Counter'],
+                count: 1,
+              },
+            ],
+          },
+          {
+            purpose: 'Burn',
+            cards: [
+              {
+                source: { name: 'Lightning Strike', cmc: 2 },
+                purposes: ['Burn'],
+                count: 1,
+              },
+              {
+                source: { name: 'Shock', cmc: 1 },
+                purposes: ['Burn'],
                 count: 1,
               },
             ],

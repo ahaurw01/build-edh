@@ -17,6 +17,10 @@
       <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
         Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
       </BSwitch>
+      <br />
+      <BSwitch :value="sortByCmc" @input="setSortByCmc">
+        Sort by <b>{{ sortByCmc ? 'cmc' : 'card name' }}</b>
+      </BSwitch>
 
       <hr />
 
@@ -82,6 +86,7 @@ export default {
   computed: {
     ...mapGetters({
       usePurposeGroups: 'deck/usePurposeGroups',
+      sortByCmc: 'deck/sortByCmc',
       compuPurposes: 'deck/compuPurposes',
       textExport: 'deck/textExport',
       iAmOwner: 'deck/iAmOwner',
@@ -91,6 +96,7 @@ export default {
   methods: {
     ...mapActions({
       setUsePurposeGroups: 'deck/setUsePurposeGroups',
+      setSortByCmc: 'deck/setSortByCmc',
       updateCompuPurposes: 'deck/updateCompuPurposes',
       deleteDeck: 'deck/deleteDeck',
     }),
