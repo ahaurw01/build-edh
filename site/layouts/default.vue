@@ -1,36 +1,22 @@
 <template>
   <div class="main">
-    <nav class="navbar">
-      <div class="navbar-brand">
-        <div class="navbar-item">
+    <BNavbar shadow>
+      <template slot="brand">
+        <BNavbarItem tag="NuxtLink" to="/">
           <h1 class="title">
             BuildEDH
           </h1>
-        </div>
-        <a
-          role="button"
-          class="navbar-burger"
-          :class="{ 'is-active': burgerActive }"
-          aria-label="menu"
-          :aria-expanded="burgerActive"
-          @click="hitBurger"
-        >
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-        </a>
-      </div>
+        </BNavbarItem>
+      </template>
+      <template slot="end">
+        <BNavbarItem tag="div">
+          <BButton v-show="isLoggedIn" @click="logOut">
+            Log Out
+          </BButton>
+        </BNavbarItem>
+      </template>
+    </BNavbar>
 
-      <div class="navbar-menu" :class="{ 'is-active': burgerActive }">
-        <div class="navbar-end">
-          <div class="navbar-item">
-            <button v-show="isLoggedIn" class="button" @click="logOut">
-              Log Out
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
     <Nuxt />
   </div>
 </template>
