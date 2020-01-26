@@ -1,6 +1,13 @@
 const _ = require('lodash')
+const { normalizeSync } = require('normalize-diacritics')
 const mongoose = require('mongoose')
 const { Schema } = mongoose
+
+function normalizeSearchName(name) {
+  return normalizeSync(name)
+    .toLowerCase()
+    .replace(/[\s'"!&*():.?/-]/g, '')
+}
 
 const userSchema = new Schema({
   username: String,
@@ -37,6 +44,7 @@ const cardSchema = new Schema({
   scryfallId: { type: String, index: true },
   oracleId: String,
   name: { type: String, index: true },
+  searchName: { type: String, index: true },
   cmc: { type: Number, index: true },
   ci: { type: [String], index: true },
   isLegal: Boolean,
@@ -151,6 +159,7 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
     scryfallId: rawCard.id,
     oracleId: rawCard.oracle_id,
     name: rawCard.name,
+    searchName: normalizeSearchName(rawCard.name),
     cmc: rawCard.cmc,
     ci: rawCard.color_identity,
     isLegal: rawCard.legalities.commander === 'legal',
@@ -215,6 +224,8 @@ Card.findWithNames = async filters => {
 
   return cards
 }
+
+Card.normalizeSearchName = normalizeSearchName
 
 module.exports = {
   User,

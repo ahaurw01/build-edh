@@ -30,7 +30,8 @@ async function getCards(ctx) {
   if (isPartner === 'false') isPartner = false
 
   const filters = {}
-  if (nameLike) filters.name = new RegExp(nameLike, 'i')
+  if (nameLike)
+    filters.searchName = new RegExp(Card.normalizeSearchName(nameLike), 'i')
   if (canBeCommander != null) filters.canBeCommander = canBeCommander
   if (isLegal != null) filters.isLegal = isLegal
   if (isPartner != null) filters.isPartner = isPartner
