@@ -39,7 +39,7 @@ async function getCards(ctx) {
   let cards = await Card.aggregate()
     .match(filters)
     .group(allCardFieldsGroup)
-    .limit(10)
+    .limit(20)
     .exec()
 
   cards = _.sortBy(cards, ({ name: { length } }) => length)
