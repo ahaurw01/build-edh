@@ -7189,6 +7189,11 @@ nopt@~1.0.10:
   dependencies:
     abbrev "1"
 
+normalize-diacritics@2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/normalize-diacritics/-/normalize-diacritics-2.9.0.tgz#b520bc7b1914cd7ff4794aa64bee203b3910302a"
+  integrity sha512-u0McAnJRk1MICPAFNAFXwOjN84NfJQPoo/z9MNG0O/GRAPvxZIlEEZFqlujAhQcd672AHnQPPFSIalc8TxF/7w==
+
 normalize-package-data@^2.3.2, normalize-package-data@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/normalize-package-data/-/normalize-package-data-2.5.0.tgz#e66db1838b200c1dfc233225d12cb36520e234a8"
