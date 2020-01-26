@@ -44,10 +44,17 @@ async function getCards(ctx) {
   ctx.body = { cards }
 }
 
+const basicLandCache = {}
+
 async function getPrintings(ctx) {
   const { name } = ctx.query
 
   ctx.assert(name, 400, 'No name provided')
 
+  if (basicLandCache[name]) ctx.body = { printings: basicLandCache[name] }
+
   ctx.body = { printings: await Card.find({ name }) }
+
+  if (['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'].indexOf(name) > -1)
+    basicLandCache[name] = ctx.body.printings
 }
