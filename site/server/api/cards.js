@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const { Card, allCardFieldsGroup } = require('./models')
 
 module.exports = {
@@ -35,11 +36,13 @@ async function getCards(ctx) {
   if (isPartner != null) filters.isPartner = isPartner
   if (ci != null) filters.$expr = { $setIsSubset: ['$ci', ci] }
 
-  const cards = await Card.aggregate()
+  let cards = await Card.aggregate()
     .match(filters)
     .group(allCardFieldsGroup)
     .limit(10)
     .exec()
+
+  cards = _.sortBy(cards, ({ name: { length } }) => length)
 
   ctx.body = { cards }
 }
