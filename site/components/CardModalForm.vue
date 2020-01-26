@@ -185,6 +185,7 @@ export default {
   },
   methods: {
     selectCard(card) {
+      if (!card) return
       this.selectedCard = card
       this.isFoil =
         this.selectedCard.existsInFoil && !this.selectedCard.existsInNonFoil
