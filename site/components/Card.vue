@@ -1,7 +1,10 @@
 <template>
   <div :class="size" class="mtg-card">
     <span v-if="count > 1" class="count">x{{ count }}</span>
-    <img :src="imgSrc" :class="{ 'special-shadow': specialShadow }" />
+    <img
+      :src="loading ? placeholderSrc : imgSrc"
+      :class="{ 'special-shadow': specialShadow, loading }"
+    />
     <button
       v-if="showEditButton"
       class="button edit-button"
@@ -15,6 +18,7 @@
 
 <script>
 import get from 'lodash/get'
+import { placeholderSrc } from './InlineImage'
 
 export default {
   props: {
@@ -34,6 +38,15 @@ export default {
     isFoil: { type: Boolean, default: false },
     reverse: { type: Boolean, default: false },
   },
+
+  data() {
+    return {
+      placeholderSrc,
+      loading: true,
+      image: null,
+    }
+  },
+
   computed: {
     imgSrc() {
       const faceIndex = this.reverse ? 1 : 0
@@ -47,6 +60,26 @@ export default {
 
     isOnlyEverFoil() {
       return !this.card.existsInNonFoil
+    },
+  },
+
+  mounted() {
+    this.fetchImage()
+  },
+
+  updated() {
+    this.fetchImage()
+  },
+
+  methods: {
+    fetchImage() {
+      if (this.image) return
+      const image = document.createElement('img')
+      image.src = this.imgSrc
+      image.onload = () => {
+        this.loading = false
+      }
+      this.image = image
     },
   },
 }
@@ -69,6 +102,10 @@ export default {
 
 img.special-shadow {
   box-shadow: 0 0 4px 3px hsl(48, 100%, 67%);
+}
+
+.loading {
+  filter: grayscale(0.5);
 }
 
 .large {
