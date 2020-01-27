@@ -8,7 +8,8 @@ const apiRouter = require('./api')
 
 const app = new Koa()
 
-if (app.env === 'production') app.use(sslify({ xForwardedProtoResolver }))
+if (app.env === 'production')
+  app.use(sslify({ resolver: xForwardedProtoResolver }))
 app.use(apiRouter.routes()).use(apiRouter.allowedMethods())
 
 config.dev = !(app.env === 'production')
