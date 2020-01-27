@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <BNavbar shadow>
+    <BNavbar shadow :mobile-burger="isLoggedIn">
       <template slot="brand">
         <BNavbarItem tag="NuxtLink" to="/">
           <h1 class="title">
