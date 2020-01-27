@@ -425,7 +425,8 @@ async function updateDeckCardAssembly(ctx, next) {
     // Drop all cards that are identical in nature to the one being updated.
     const matchesUpdatingCard =
       card.scryfallId === existingCard.scryfallId &&
-      card.isFoil === existingCard.isFoil
+      card.isFoil === existingCard.isFoil &&
+      card.isConsideration === existingCard.isConsideration
     return !matchesUpdatingCard
   })
 
