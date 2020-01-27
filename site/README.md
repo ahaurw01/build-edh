@@ -1,4 +1,4 @@
-# EDHlist site
+# edhlist site
 
 ## Build Setup
 

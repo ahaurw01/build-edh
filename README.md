@@ -1,4 +1,4 @@
-# EDHlist
+# edhlist
 
 ## Card database setup
 
