@@ -221,44 +221,68 @@ export const actions = {
     { commit, state },
     { scryfallId, purposes, count, isFoil, isConsideration, name }
   ) {
-    const {
-      data: { the99 },
-    } = await this.$axios.post(`/api/decks/${state.deck._id}/the99`, {
-      card: {
-        scryfallId,
-        purposes,
-        isFoil,
-        isConsideration,
-      },
-      count,
-    })
+    try {
+      const {
+        data: { the99 },
+      } = await this.$axios.post(`/api/decks/${state.deck._id}/the99`, {
+        card: {
+          scryfallId,
+          purposes,
+          isFoil,
+          isConsideration,
+        },
+        count,
+      })
 
-    openToast({
-      message: `Added ${name}.`,
-    })
-    commit('updateThe99', the99)
+      openToast({
+        message: `Added ${name}.`,
+      })
+      commit('updateThe99', the99)
+    } catch (e) {
+      const message = get(e, 'response.data', '').startsWith(
+        'Illegal duplicates'
+      )
+        ? `${name} already added`
+        : `Error adding ${name}. Maybe try again?`
+      openToast({
+        message,
+        type: 'is-danger',
+      })
+    }
   },
 
   async updateCard(
     { commit, state },
     { uuid, purposes, isFoil, isConsideration, scryfallId, count, name }
   ) {
-    const {
-      data: { the99 },
-    } = await this.$axios.put(`/api/decks/${state.deck._id}/the99/${uuid}`, {
-      card: {
-        scryfallId,
-        isFoil,
-        purposes,
-        isConsideration,
-      },
-      count,
-    })
+    try {
+      const {
+        data: { the99 },
+      } = await this.$axios.put(`/api/decks/${state.deck._id}/the99/${uuid}`, {
+        card: {
+          scryfallId,
+          isFoil,
+          purposes,
+          isConsideration,
+        },
+        count,
+      })
 
-    openToast({
-      message: `Updated ${name}.`,
-    })
-    commit('updateThe99', the99)
+      openToast({
+        message: `Updated ${name}.`,
+      })
+      commit('updateThe99', the99)
+    } catch (e) {
+      const message = get(e, 'response.data', '').startsWith(
+        'Illegal duplicates'
+      )
+        ? `${name} already added`
+        : `Error adding ${name}. Maybe try again?`
+      openToast({
+        message,
+        type: 'is-danger',
+      })
+    }
   },
 
   async deleteCard({ commit, state }, uuid) {
