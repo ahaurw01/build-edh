@@ -360,186 +360,65 @@ export const getters = {
 
   bulkAddErrorMessages: state => state.bulkAddErrorMessages,
 
-  // Assemble groupings of cards based on their assigned purposes or type.
-  // [
-  //  {purpose: 'Card draw', cards: [...]},
-  //  {purpose: 'Ramp', cards: [...]},
-  // ]
-  //
-  // Cards are deduplicated with a `count` property (if canHaveMultiple).
-  //
-  // We give automatic groups based on dominant card type if no purposes are present.
-  //
-  // Look at state.usePurposeGroups to determine grouping strategy.
-  //
-  cardGroupings: (
+  cardGroupingsForThe99: (
     state,
-    { usePurposeGroups, sortByCmc, commanders, the99, compuPurposeHash }
-  ) => {
-    const hashByCompuPurpose = usePurposeGroups ? compuPurposeHash : {}
-    const cardNamesInCompuPurposeGroups = flatten(
-      Object.values(compuPurposeHash)
-    ).map(c => c.source.name)
-    const [hashByPurpose, hashByType] = [...commanders, ...the99].reduce(
-      ([purposeHash, typeHash], card) => {
-        const { purposes } = card
-        if (purposes.length && usePurposeGroups) {
-          purposes.forEach(purpose => {
-            purposeHash[purpose] = [...(purposeHash[purpose] || []), card]
-          })
-        } else if (
-          !usePurposeGroups ||
-          !cardNamesInCompuPurposeGroups.includes(card.source.name)
-        ) {
-          const type = dominantCardType(card)
-          typeHash[type] = [...(typeHash[type] || []), card]
-        }
+    { usePurposeGroups, sortByCmc, commanders, the99, compuPurposeHashForThe99 }
+  ) =>
+    makeCardGroupings({
+      usePurposeGroups,
+      sortByCmc,
+      commanders,
+      cards: the99,
+      compuPurposeHash: compuPurposeHashForThe99,
+    }),
 
-        return [purposeHash, typeHash]
-      },
-      [{}, {}]
-    )
-
-    function makeGroupedCards(hash, purpose) {
-      return sortBy(
-        hash[purpose],
-        ...(sortByCmc
-          ? ['source.cmc', 'source.name']
-          : ['source.name', 'source.cmc'])
-      ).reduce((cards, card) => {
-        const lastCard = last(cards)
-        if (lastCard && card.source.name === lastCard.source.name) {
-          lastCard.count += 1
-        } else {
-          cards = [
-            ...cards,
-            {
-              ...card,
-              count: 1,
-            },
-          ]
-        }
-
-        return cards
-      }, [])
+  cardGroupingsForConsiderations: (
+    state,
+    {
+      usePurposeGroups,
+      sortByCmc,
+      considerations,
+      compuPurposeHashForConsiderations,
     }
+  ) =>
+    makeCardGroupings({
+      usePurposeGroups,
+      sortByCmc,
+      commanders: [],
+      cards: considerations,
+      compuPurposeHash: compuPurposeHashForConsiderations,
+    }).filter(({ cards }) => cards.length), // Unlike mainboard, don't show groups with no cards.
 
-    const groupings = [
-      ...Object.keys(hashByPurpose).map(purpose => ({
-        purpose,
-        cards: makeGroupedCards(hashByPurpose, purpose),
-      })),
-      ...Object.keys(hashByCompuPurpose).map(purpose => ({
-        purpose,
-        isCompuPurposeGroup: true,
-        cards: makeGroupedCards(hashByCompuPurpose, purpose),
-      })),
-      ...Object.keys(hashByType).map(purpose => ({
-        purpose,
-        isAutomaticGroup: true,
-        cards: makeGroupedCards(hashByType, purpose),
-      })),
-    ]
+  compuPurposeHashForThe99: (state, { commanders, the99, compuPurposes }) =>
+    makeCompuPurposeHash({ commanders, cards: the99, compuPurposes }),
+  compuPurposeHashForConsiderations: (
+    state,
+    { considerations, compuPurposes }
+  ) =>
+    makeCompuPurposeHash({
+      commanders: [],
+      cards: considerations,
+      compuPurposes,
+    }),
 
-    return sortBy(groupings, [
-      grouping =>
-        -1 * grouping.cards.reduce((count, card) => count + card.count, 0),
-      'purpose',
-    ])
-  },
-
-  // Hash of compuPurpose title => cards that match the rules.
-  //
-  compuPurposeHash: (state, { commanders, the99, compuPurposes }) => {
-    return compuPurposes.reduce((hash, compuPurpose) => {
-      hash[compuPurpose.title] = [...commanders, ...the99].filter(
-        ({ source }) => {
-          // Check that the card's details matches the rules and conditions.
-          // If "is" is true, we are checking that at least one condition of the
-          // rule matches the card.
-          // If "is" is false, we are checking that every condition of the rule
-          // does not match the card.
-          //
-          return compuPurpose.rules.every(({ field, conditions, is }) => {
-            const method = is ? 'some' : 'every'
-            return conditions[method](condition => {
-              const [front = {}, back = {}] = source.faces
-              switch (field) {
-                case 'type':
-                  return (
-                    [...(front.types || []), ...(back.types || [])].includes(
-                      condition.value
-                    ) === is
-                  )
-                case 'subtype':
-                  return (
-                    [
-                      ...(front.subTypes || []),
-                      ...(back.subTypes || []),
-                    ].includes(condition.value) === is
-                  )
-                case 'supertype':
-                  return (
-                    [
-                      ...(front.superTypes || []),
-                      ...(back.superTypes || []),
-                    ].includes(condition.value) === is
-                  )
-                case 'cmc':
-                  return (source.cmc === condition.value) === is
-                case 'power':
-                  return (
-                    [front.power || -999, back.power || -999].includes(
-                      condition.value
-                    ) === is
-                  )
-                case 'toughness':
-                  return (
-                    [front.toughness || -999, back.toughness || -999].includes(
-                      condition.value
-                    ) === is
-                  )
-                case 'loyalty':
-                  return (
-                    [front.loyalty || -999, back.loyalty || -999].includes(
-                      condition.value
-                    ) === is
-                  )
-                case 'color': {
-                  let colors = [...(front.colors || []), ...(back.colors || [])]
-                  if (!colors.length) colors = ['C']
-                  return colors.includes(condition.value) === is
-                }
-                case 'numcolors':
-                  return (
-                    ((front.colors || []).length === condition.value) === is
-                  )
-                case 'name':
-                  return (
-                    new RegExp(condition.value, 'i').test(source.name) === is
-                  )
-                case 'rules':
-                  return (
-                    new RegExp(condition.value, 'i').test(
-                      source.faces
-                        .map(({ oracleText }) => oracleText)
-                        .join('\n')
-                    ) === is
-                  )
-                default:
-                  return false
-              }
-            })
-          })
+  compuPurposeHashForAll: (
+    state,
+    { compuPurposeHashForThe99, compuPurposeHashForConsiderations }
+  ) => {
+    return Object.entries(compuPurposeHashForConsiderations).reduce(
+      (all, [title, cards]) => {
+        return {
+          ...all,
+          [title]: [...(all[title] || []), ...cards],
         }
-      )
-      return hash
-    }, {})
+      },
+      compuPurposeHashForThe99
+    )
   },
 
-  cardUuidToCompuPurposeTitles: (state, { compuPurposeHash }) => {
+  cardUuidToCompuPurposeTitles: (state, { compuPurposeHashForAll }) => {
     const map = {}
-    Object.entries(compuPurposeHash).forEach(([title, cards]) => {
+    Object.entries(compuPurposeHashForAll).forEach(([title, cards]) => {
       cards.forEach(card => {
         if (!map[card.uuid]) map[card.uuid] = []
         map[card.uuid].push(title)
@@ -731,4 +610,178 @@ function dominantCardType(card) {
   const types = get(card, 'source.faces[0].types', [])
 
   return typesInOrderOfDominance.filter(t => types.includes(t))[0] || 'Other'
+}
+
+// Assemble groupings of cards based on their assigned purposes or type.
+// [
+//  {purpose: 'Card draw', cards: [...]},
+//  {purpose: 'Ramp', cards: [...]},
+// ]
+//
+// Cards are deduplicated with a `count` property (if canHaveMultiple).
+//
+// We give automatic groups based on dominant card type if no purposes are present.
+//
+// Look at state.usePurposeGroups to determine grouping strategy.
+//
+function makeCardGroupings({
+  usePurposeGroups,
+  sortByCmc,
+  commanders,
+  cards,
+  compuPurposeHash,
+}) {
+  const hashByCompuPurpose = usePurposeGroups ? compuPurposeHash : {}
+  const cardNamesInCompuPurposeGroups = flatten(
+    Object.values(compuPurposeHash)
+  ).map(c => c.source.name)
+  const [hashByPurpose, hashByType] = [...commanders, ...cards].reduce(
+    ([purposeHash, typeHash], card) => {
+      const { purposes } = card
+      if (purposes.length && usePurposeGroups) {
+        purposes.forEach(purpose => {
+          purposeHash[purpose] = [...(purposeHash[purpose] || []), card]
+        })
+      } else if (
+        !usePurposeGroups ||
+        !cardNamesInCompuPurposeGroups.includes(card.source.name)
+      ) {
+        const type = dominantCardType(card)
+        typeHash[type] = [...(typeHash[type] || []), card]
+      }
+
+      return [purposeHash, typeHash]
+    },
+    [{}, {}]
+  )
+
+  function makeGroupedCards(hash, purpose) {
+    return sortBy(
+      hash[purpose],
+      ...(sortByCmc
+        ? ['source.cmc', 'source.name']
+        : ['source.name', 'source.cmc'])
+    ).reduce((cards, card) => {
+      const lastCard = last(cards)
+      if (lastCard && card.source.name === lastCard.source.name) {
+        lastCard.count += 1
+      } else {
+        cards = [
+          ...cards,
+          {
+            ...card,
+            count: 1,
+          },
+        ]
+      }
+
+      return cards
+    }, [])
+  }
+
+  const groupings = [
+    ...Object.keys(hashByPurpose).map(purpose => ({
+      purpose,
+      cards: makeGroupedCards(hashByPurpose, purpose),
+    })),
+    ...Object.keys(hashByCompuPurpose).map(purpose => ({
+      purpose,
+      isCompuPurposeGroup: true,
+      cards: makeGroupedCards(hashByCompuPurpose, purpose),
+    })),
+    ...Object.keys(hashByType).map(purpose => ({
+      purpose,
+      isAutomaticGroup: true,
+      cards: makeGroupedCards(hashByType, purpose),
+    })),
+  ]
+
+  return sortBy(groupings, [
+    grouping =>
+      -1 * grouping.cards.reduce((count, card) => count + card.count, 0),
+    'purpose',
+  ])
+}
+
+// Hash of compuPurpose title => cards that match the rul, compuPurposeses, compuPurpos, compuPurposeses, compuPurposes.
+//
+function makeCompuPurposeHash({ commanders, cards, compuPurposes }) {
+  return compuPurposes.reduce((hash, compuPurpose) => {
+    hash[compuPurpose.title] = [...commanders, ...cards].filter(
+      ({ source }) => {
+        // Check that the card's details matches the rules and conditions.
+        // If "is" is true, we are checking that at least one condition of the
+        // rule matches the card.
+        // If "is" is false, we are checking that every condition of the rule
+        // does not match the card.
+        //
+        return compuPurpose.rules.every(({ field, conditions, is }) => {
+          const method = is ? 'some' : 'every'
+          return conditions[method](condition => {
+            const [front = {}, back = {}] = source.faces
+            switch (field) {
+              case 'type':
+                return (
+                  [...(front.types || []), ...(back.types || [])].includes(
+                    condition.value
+                  ) === is
+                )
+              case 'subtype':
+                return (
+                  [
+                    ...(front.subTypes || []),
+                    ...(back.subTypes || []),
+                  ].includes(condition.value) === is
+                )
+              case 'supertype':
+                return (
+                  [
+                    ...(front.superTypes || []),
+                    ...(back.superTypes || []),
+                  ].includes(condition.value) === is
+                )
+              case 'cmc':
+                return (source.cmc === condition.value) === is
+              case 'power':
+                return (
+                  [front.power || -999, back.power || -999].includes(
+                    condition.value
+                  ) === is
+                )
+              case 'toughness':
+                return (
+                  [front.toughness || -999, back.toughness || -999].includes(
+                    condition.value
+                  ) === is
+                )
+              case 'loyalty':
+                return (
+                  [front.loyalty || -999, back.loyalty || -999].includes(
+                    condition.value
+                  ) === is
+                )
+              case 'color': {
+                let colors = [...(front.colors || []), ...(back.colors || [])]
+                if (!colors.length) colors = ['C']
+                return colors.includes(condition.value) === is
+              }
+              case 'numcolors':
+                return ((front.colors || []).length === condition.value) === is
+              case 'name':
+                return new RegExp(condition.value, 'i').test(source.name) === is
+              case 'rules':
+                return (
+                  new RegExp(condition.value, 'i').test(
+                    source.faces.map(({ oracleText }) => oracleText).join('\n')
+                  ) === is
+                )
+              default:
+                return false
+            }
+          })
+        })
+      }
+    )
+    return hash
+  }, {})
 }
