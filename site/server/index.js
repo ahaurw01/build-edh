@@ -2,10 +2,13 @@ const Koa = require('koa')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 const mongoose = require('mongoose')
+const { default: sslify, xForwardedProtoResolver } = require('koa-sslify')
 const config = require('../nuxt.config.js')
 const apiRouter = require('./api')
 
 const app = new Koa()
+
+if (app.env === 'production') app.use(sslify({ xForwardedProtoResolver }))
 app.use(apiRouter.routes()).use(apiRouter.allowedMethods())
 
 config.dev = !(app.env === 'production')
