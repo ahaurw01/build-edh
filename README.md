@@ -1,4 +1,4 @@
-# build-edh
+# EDHlist
 
 ## Card database setup
 

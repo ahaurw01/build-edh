@@ -4,7 +4,7 @@
       <template slot="brand">
         <BNavbarItem tag="NuxtLink" to="/">
           <h1 class="title">
-            BuildEDH
+            EDHlist
           </h1>
         </BNavbarItem>
       </template>

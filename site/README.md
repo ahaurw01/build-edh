@@ -1,8 +1,8 @@
-# build-edh site
+# EDHlist site
 
 ## Build Setup
 
-``` bash
+```bash
 # install dependencies
 $ npm install
 
