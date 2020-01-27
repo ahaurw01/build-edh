@@ -73,17 +73,17 @@ describe('Deck Store', () => {
       })
     })
 
-    describe('cardGroupings', () => {
+    describe('cardGroupingsForThe99', () => {
       test('is empty array for no cards', () => {
         const commanders = []
         const the99 = []
-        const compuPurposeHash = {}
+        const compuPurposeHashForThe99 = {}
         const state = {}
 
-        const result = getters.cardGroupings(state, {
+        const result = getters.cardGroupingsForThe99(state, {
           commanders,
           the99,
-          compuPurposeHash,
+          compuPurposeHashForThe99,
           usePurposeGroups: true,
           sortByCmc: true,
         })
@@ -127,13 +127,13 @@ describe('Deck Store', () => {
             purposes: ['Ramp'],
           },
         ]
-        const compuPurposeHash = {}
+        const compuPurposeHashForThe99 = {}
         const state = {}
 
-        const result = getters.cardGroupings(state, {
+        const result = getters.cardGroupingsForThe99(state, {
           commanders,
           the99,
-          compuPurposeHash,
+          compuPurposeHashForThe99,
           usePurposeGroups: true,
           sortByCmc: true,
         })
@@ -228,13 +228,13 @@ describe('Deck Store', () => {
             purposes: [],
           },
         ]
-        const compuPurposeHash = {}
+        const compuPurposeHashForThe99 = {}
         const state = {}
 
-        const result = getters.cardGroupings(state, {
+        const result = getters.cardGroupingsForThe99(state, {
           commanders,
           the99,
-          compuPurposeHash,
+          compuPurposeHashForThe99,
           usePurposeGroups: true,
           sortByCmc: true,
         })
@@ -335,13 +335,13 @@ describe('Deck Store', () => {
             purposes: [],
           },
         ]
-        const compuPurposeHash = {}
+        const compuPurposeHashForThe99 = {}
         const state = {}
 
-        const result = getters.cardGroupings(state, {
+        const result = getters.cardGroupingsForThe99(state, {
           commanders,
           the99,
-          compuPurposeHash,
+          compuPurposeHashForThe99,
           usePurposeGroups: true,
           sortByCmc: true,
         })
@@ -418,13 +418,13 @@ describe('Deck Store', () => {
           },
         ]
         const the99 = []
-        const compuPurposeHash = {}
+        const compuPurposeHashForThe99 = {}
         const state = {}
 
-        const result = getters.cardGroupings(state, {
+        const result = getters.cardGroupingsForThe99(state, {
           commanders,
           the99,
-          compuPurposeHash,
+          compuPurposeHashForThe99,
           usePurposeGroups: true,
           sortByCmc: true,
         })
@@ -467,13 +467,13 @@ describe('Deck Store', () => {
             purposes: ['Burn'],
           },
         ]
-        const compuPurposeHash = {}
+        const compuPurposeHashForThe99 = {}
         const state = {}
 
-        const result = getters.cardGroupings(state, {
+        const result = getters.cardGroupingsForThe99(state, {
           commanders,
           the99,
-          compuPurposeHash,
+          compuPurposeHashForThe99,
           usePurposeGroups: true,
           sortByCmc: true,
         })
@@ -541,13 +541,13 @@ describe('Deck Store', () => {
             purposes: ['Burn'],
           },
         ]
-        const compuPurposeHash = {}
+        const compuPurposeHashForThe99 = {}
         const state = {}
 
-        const result = getters.cardGroupings(state, {
+        const result = getters.cardGroupingsForThe99(state, {
           commanders,
           the99,
-          compuPurposeHash,
+          compuPurposeHashForThe99,
           usePurposeGroups: true,
           sortByCmc: false,
         })
@@ -592,7 +592,7 @@ describe('Deck Store', () => {
       })
     })
 
-    describe('compuPurposeHash', () => {
+    describe('compuPurposeHashForThe99', () => {
       test('type', () => {
         const commanders = [
           { source: { faces: [{ types: ['Artifact', 'Creature'] }] } },
@@ -616,7 +616,7 @@ describe('Deck Store', () => {
           },
         ]
 
-        const result = getters.compuPurposeHash(
+        const result = getters.compuPurposeHashForThe99(
           {},
           { commanders, the99, compuPurposes }
         )
@@ -648,7 +648,7 @@ describe('Deck Store', () => {
           },
         ]
 
-        const result = getters.compuPurposeHash(
+        const result = getters.compuPurposeHashForThe99(
           {},
           { commanders, the99, compuPurposes }
         )
@@ -681,7 +681,7 @@ describe('Deck Store', () => {
           },
         ]
 
-        const result = getters.compuPurposeHash(
+        const result = getters.compuPurposeHashForThe99(
           {},
           { commanders, the99, compuPurposes }
         )
@@ -712,7 +712,7 @@ describe('Deck Store', () => {
           },
         ]
 
-        const result = getters.compuPurposeHash(
+        const result = getters.compuPurposeHashForThe99(
           {},
           { commanders, the99, compuPurposes }
         )
@@ -724,16 +724,42 @@ describe('Deck Store', () => {
       })
     })
 
+    describe('compuPurposeHashForAll', () => {
+      test('merges both hashes', () => {
+        // The hashes' values are arrays of card objects, not strings.
+        // But that doesn't matter for the test.
+        const compuPurposeHashForThe99 = {
+          'adds mana': ['sol ring', 'mountain'],
+          'goes boom': ['nev disk'],
+        }
+        const compuPurposeHashForConsiderations = {
+          'adds mana': ['signet'],
+          'say no': ['pyroblast'],
+        }
+
+        const result = getters.compuPurposeHashForAll(
+          {},
+          { compuPurposeHashForThe99, compuPurposeHashForConsiderations }
+        )
+
+        expect(result).toEqual({
+          'adds mana': ['sol ring', 'mountain', 'signet'],
+          'goes boom': ['nev disk'],
+          'say no': ['pyroblast'],
+        })
+      })
+    })
+
     describe('cardUuidToCompuPurposeTitles', () => {
       test('constructs map of uuid => titles', () => {
-        const compuPurposeHash = {
+        const compuPurposeHashForAll = {
           purpose1: [{ uuid: '1' }, { uuid: '2' }],
           purpose2: [{ uuid: '2' }, { uuid: '3' }],
         }
 
         const result = getters.cardUuidToCompuPurposeTitles(
           {},
-          { compuPurposeHash }
+          { compuPurposeHashForAll }
         )
 
         expect(result).toEqual({

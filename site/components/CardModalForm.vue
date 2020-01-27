@@ -63,16 +63,32 @@
         />
       </BField>
 
-      <BField label="How Shiny">
-        <BSwitch
-          :disabled="!hasFoilChoice"
-          :value="isFoil"
-          type="is-warning"
-          @input="isFoil = $event"
-        >
-          {{ isFoil ? 'Foil' : 'Non-foil' }}
-        </BSwitch>
-      </BField>
+      <div class="columns">
+        <div class="column">
+          <BField label="How Shiny">
+            <BSwitch
+              :disabled="!hasFoilChoice"
+              :value="isFoil"
+              type="is-warning"
+              @input="isFoil = $event"
+            >
+              {{ isFoil ? 'Foil' : 'Non-foil' }}
+            </BSwitch>
+          </BField>
+        </div>
+        <div v-if="!forCommander" class="column">
+          <BField label="Consideration">
+            <BSwitch
+              :value="!isConsideration"
+              @input="isConsideration = !$event"
+            >
+              {{
+                isConsideration ? 'Just a consideration' : "It's in the deck"
+              }}
+            </BSwitch>
+          </BField>
+        </div>
+      </div>
 
       <BField v-if="showCount && !forCommander" label="Number">
         <BNumberinput v-model="count" :min="1" :max="99" />
@@ -128,6 +144,7 @@ export default {
           : 1,
       printingFilter: '',
       isFoil: this.card ? this.card.isFoil : false,
+      isConsideration: this.card ? this.card.isConsideration : false,
     }
   },
   computed: {
@@ -204,6 +221,7 @@ export default {
         scryfallId: this.selectedCard.scryfallId,
         purposes: this.purposes,
         isFoil: this.isFoil,
+        isConsideration: this.isConsideration,
         count: this.count,
         name: this.selectedCard.name,
       })

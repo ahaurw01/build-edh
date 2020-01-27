@@ -338,6 +338,7 @@ async function addDeckCardAssembly(ctx, next) {
   ctx.assert(!!scryfallId, 400, 'Missing scryfallId')
   const purposes = _.get(ctx.request, 'body.card.purposes', [])
   const isFoil = _.get(ctx.request, 'body.card.isFoil', false)
+  const isConsideration = _.get(ctx.request, 'body.card.isConsideration', false)
   const count = _.get(ctx.request, 'body.count', 1)
 
   const { deck } = ctx.state
@@ -349,6 +350,7 @@ async function addDeckCardAssembly(ctx, next) {
       uuid: uuid(),
       purposes,
       isFoil,
+      isConsideration,
     }))
   deck.the99 = [...deck.the99, ...cards]
 
@@ -411,14 +413,20 @@ async function updateDeckCardAssembly(ctx, next) {
   ctx.assert(!!existingCard, 400, 'UUID not found')
   ctx.assert(ctx.request.body.card, 400, 'No updates provided')
 
-  const { isFoil = false, purposes = [], scryfallId } = ctx.request.body.card
+  const {
+    isFoil = false,
+    isConsideration = false,
+    purposes = [],
+    scryfallId,
+  } = ctx.request.body.card
   const count = _.get(ctx.request, 'body.count', 1)
 
   const the99WithoutUpdatingCard = deck.the99.filter(card => {
     // Drop all cards that are identical in nature to the one being updated.
     const matchesUpdatingCard =
       card.scryfallId === existingCard.scryfallId &&
-      card.isFoil === existingCard.isFoil
+      card.isFoil === existingCard.isFoil &&
+      card.isConsideration === existingCard.isConsideration
     return !matchesUpdatingCard
   })
 
@@ -430,6 +438,7 @@ async function updateDeckCardAssembly(ctx, next) {
       uuid: uuid(),
       purposes,
       isFoil,
+      isConsideration,
     }))
   deck.the99 = [...the99WithoutUpdatingCard, ...cards]
 
