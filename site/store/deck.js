@@ -219,7 +219,7 @@ export const actions = {
 
   async addCard(
     { commit, state },
-    { scryfallId, purposes, count, isFoil, name }
+    { scryfallId, purposes, count, isFoil, isConsideration, name }
   ) {
     const {
       data: { the99 },
@@ -228,6 +228,7 @@ export const actions = {
         scryfallId,
         purposes,
         isFoil,
+        isConsideration,
       },
       count,
     })
@@ -240,7 +241,7 @@ export const actions = {
 
   async updateCard(
     { commit, state },
-    { uuid, purposes, isFoil, scryfallId, count, name }
+    { uuid, purposes, isFoil, isConsideration, scryfallId, count, name }
   ) {
     const {
       data: { the99 },
@@ -249,6 +250,7 @@ export const actions = {
         scryfallId,
         isFoil,
         purposes,
+        isConsideration,
       },
       count,
     })
@@ -353,7 +355,8 @@ export const getters = {
     const colors = flatten(commanders.map(c => c.source.ci))
     return ['W', 'U', 'B', 'R', 'G'].filter(c => colors.includes(c))
   },
-  the99: state => state.deck.the99,
+  the99: state => state.deck.the99.filter(c => !c.isConsideration),
+  considerations: state => state.deck.the99.filter(c => c.isConsideration),
 
   bulkAddErrorMessages: state => state.bulkAddErrorMessages,
 

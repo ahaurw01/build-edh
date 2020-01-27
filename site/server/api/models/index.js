@@ -26,6 +26,7 @@ const deckCardSchema = {
   scryfallId: String,
   purposes: [String],
   isFoil: Boolean,
+  isConsideration: Boolean,
 }
 
 const deckSchema = new Schema({
