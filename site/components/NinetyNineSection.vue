@@ -15,7 +15,7 @@
     <div v-if="cardGroupingsForConsiderations.length">
       <hr />
 
-      <h3 class="title is-3">Considerations</h3>
+      <h4 class="title is-4">Considerations</h4>
 
       <CardSection
         v-for="grouping in cardGroupingsForConsiderations"
