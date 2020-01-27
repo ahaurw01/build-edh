@@ -687,7 +687,7 @@ function makeCardGroupings({
         : ['source.name', 'source.cmc'])
     ).reduce((cards, card) => {
       const lastCard = last(cards)
-      if (lastCard && card.source.name === lastCard.source.name) {
+      if (lastCard && card.source.scryfallId === lastCard.source.scryfallId) {
         lastCard.count += 1
       } else {
         cards = [

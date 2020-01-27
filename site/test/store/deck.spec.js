@@ -95,35 +95,35 @@ describe('Deck Store', () => {
         const commanders = []
         const the99 = [
           {
-            source: { name: 'Lightning Bolt' },
+            source: { name: 'Lightning Bolt', scryfallId: 'Lightning Bolt' },
             purposes: ['Burn', 'Targeted Removal'],
           },
           {
-            source: { name: 'Mountain' },
+            source: { name: 'Mountain', scryfallId: 'Mountain' },
             purposes: ['Land'],
           },
           {
-            source: { name: 'Mountain' },
+            source: { name: 'Mountain', scryfallId: 'Mountain' },
             purposes: ['Land'],
           },
           {
-            source: { name: 'Mountain' },
+            source: { name: 'Mountain', scryfallId: 'Mountain' },
             purposes: ['Land'],
           },
           {
-            source: { name: 'Mountain' },
+            source: { name: 'Mountain', scryfallId: 'Mountain' },
             purposes: ['Land'],
           },
           {
-            source: { name: 'Mountain' },
+            source: { name: 'Mountain', scryfallId: 'Mountain' },
             purposes: ['Land'],
           },
           {
-            source: { name: 'Earthquake' },
+            source: { name: 'Earthquake', scryfallId: 'Earthquake' },
             purposes: ['Burn', 'Board Wipe'],
           },
           {
-            source: { name: 'Sol Ring' },
+            source: { name: 'Sol Ring', scryfallId: 'Sol Ring' },
             purposes: ['Ramp'],
           },
         ]
@@ -142,19 +142,26 @@ describe('Deck Store', () => {
           {
             purpose: 'Land',
             cards: [
-              { source: { name: 'Mountain' }, purposes: ['Land'], count: 5 },
+              {
+                source: { name: 'Mountain', scryfallId: 'Mountain' },
+                purposes: ['Land'],
+                count: 5,
+              },
             ],
           },
           {
             purpose: 'Burn',
             cards: [
               {
-                source: { name: 'Earthquake' },
+                source: { name: 'Earthquake', scryfallId: 'Earthquake' },
                 purposes: ['Burn', 'Board Wipe'],
                 count: 1,
               },
               {
-                source: { name: 'Lightning Bolt' },
+                source: {
+                  name: 'Lightning Bolt',
+                  scryfallId: 'Lightning Bolt',
+                },
                 purposes: ['Burn', 'Targeted Removal'],
                 count: 1,
               },
@@ -164,7 +171,7 @@ describe('Deck Store', () => {
             purpose: 'Board Wipe',
             cards: [
               {
-                source: { name: 'Earthquake' },
+                source: { name: 'Earthquake', scryfallId: 'Earthquake' },
                 purposes: ['Burn', 'Board Wipe'],
                 count: 1,
               },
@@ -173,14 +180,21 @@ describe('Deck Store', () => {
           {
             purpose: 'Ramp',
             cards: [
-              { source: { name: 'Sol Ring' }, purposes: ['Ramp'], count: 1 },
+              {
+                source: { name: 'Sol Ring', scryfallId: 'Sol Ring' },
+                purposes: ['Ramp'],
+                count: 1,
+              },
             ],
           },
           {
             purpose: 'Targeted Removal',
             cards: [
               {
-                source: { name: 'Lightning Bolt' },
+                source: {
+                  name: 'Lightning Bolt',
+                  scryfallId: 'Lightning Bolt',
+                },
                 purposes: ['Burn', 'Targeted Removal'],
                 count: 1,
               },
@@ -193,38 +207,67 @@ describe('Deck Store', () => {
         const commanders = []
         const the99 = [
           {
-            source: { name: 'Lightning Bolt', faces: [{ types: ['Instant'] }] },
+            source: {
+              name: 'Lightning Bolt',
+              scryfallId: 'Lightning Bolt',
+              faces: [{ types: ['Instant'] }],
+            },
             purposes: [],
           },
           {
-            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            source: {
+              name: 'Mountain',
+              scryfallId: 'Lightning Bolt',
+              faces: [{ types: ['Land'] }],
+            },
             purposes: ['Favorite Art'],
           },
           {
-            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            source: {
+              name: 'Mountain',
+              scryfallId: 'Lightning Bolt',
+              faces: [{ types: ['Land'] }],
+            },
             purposes: [],
           },
           {
-            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            source: {
+              name: 'Mountain',
+              scryfallId: 'Lightning Bolt',
+              faces: [{ types: ['Land'] }],
+            },
             purposes: [],
           },
           {
-            source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+            source: {
+              name: 'Mountain',
+              scryfallId: 'Lightning Bolt',
+              faces: [{ types: ['Land'] }],
+            },
             purposes: [],
           },
           {
             source: {
               name: 'Dryad Arbor',
+              scryfallId: 'Dryad Arbor',
               faces: [{ types: ['Land', 'Creature'] }],
             },
             purposes: [],
           },
           {
-            source: { name: 'Earthquake', faces: [{ types: ['Sorcery'] }] },
+            source: {
+              name: 'Earthquake',
+              scryfallId: 'Earthquake',
+              faces: [{ types: ['Sorcery'] }],
+            },
             purposes: [],
           },
           {
-            source: { name: 'Sol Ring', faces: [{ types: ['Artifact'] }] },
+            source: {
+              name: 'Sol Ring',
+              scryfallId: 'Sol Ring',
+              faces: [{ types: ['Artifact'] }],
+            },
             purposes: [],
           },
         ]
@@ -247,13 +290,18 @@ describe('Deck Store', () => {
               {
                 source: {
                   name: 'Dryad Arbor',
+                  scryfallId: 'Dryad Arbor',
                   faces: [{ types: ['Land', 'Creature'] }],
                 },
                 purposes: [],
                 count: 1,
               },
               {
-                source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+                source: {
+                  name: 'Mountain',
+                  scryfallId: 'Lightning Bolt',
+                  faces: [{ types: ['Land'] }],
+                },
                 purposes: [],
                 count: 3,
               },
@@ -264,7 +312,11 @@ describe('Deck Store', () => {
             isAutomaticGroup: true,
             cards: [
               {
-                source: { name: 'Sol Ring', faces: [{ types: ['Artifact'] }] },
+                source: {
+                  name: 'Sol Ring',
+                  scryfallId: 'Sol Ring',
+                  faces: [{ types: ['Artifact'] }],
+                },
                 purposes: [],
                 count: 1,
               },
@@ -274,7 +326,11 @@ describe('Deck Store', () => {
             purpose: 'Favorite Art',
             cards: [
               {
-                source: { name: 'Mountain', faces: [{ types: ['Land'] }] },
+                source: {
+                  name: 'Mountain',
+                  scryfallId: 'Lightning Bolt',
+                  faces: [{ types: ['Land'] }],
+                },
                 purposes: ['Favorite Art'],
                 count: 1,
               },
@@ -287,6 +343,7 @@ describe('Deck Store', () => {
               {
                 source: {
                   name: 'Lightning Bolt',
+                  scryfallId: 'Lightning Bolt',
                   faces: [{ types: ['Instant'] }],
                 },
                 purposes: [],
@@ -299,7 +356,11 @@ describe('Deck Store', () => {
             isAutomaticGroup: true,
             cards: [
               {
-                source: { name: 'Earthquake', faces: [{ types: ['Sorcery'] }] },
+                source: {
+                  name: 'Earthquake',
+                  scryfallId: 'Earthquake',
+                  faces: [{ types: ['Sorcery'] }],
+                },
                 purposes: [],
                 count: 1,
               },
@@ -447,23 +508,35 @@ describe('Deck Store', () => {
         const commanders = []
         const the99 = [
           {
-            source: { name: 'Negate', cmc: 2 },
+            source: { name: 'Negate', cmc: 2, scryfallId: 'Negate' },
             purposes: ['Counter'],
           },
           {
-            source: { name: 'Counterspell', cmc: 2 },
+            source: {
+              name: 'Counterspell',
+              cmc: 2,
+              scryfallId: 'Counterspell',
+            },
             purposes: ['Counter'],
           },
           {
-            source: { name: 'Flusterstorm', cmc: 1 },
+            source: {
+              name: 'Flusterstorm',
+              cmc: 1,
+              scryfallId: 'Flusterstorm',
+            },
             purposes: ['Counter'],
           },
           {
-            source: { name: 'Lightning Strike', cmc: 2 },
+            source: {
+              name: 'Lightning Strike',
+              cmc: 2,
+              scryfallId: 'Lightning Strike',
+            },
             purposes: ['Burn'],
           },
           {
-            source: { name: 'Shock', cmc: 1 },
+            source: { name: 'Shock', cmc: 1, scryfallId: 'Shock' },
             purposes: ['Burn'],
           },
         ]
@@ -483,17 +556,25 @@ describe('Deck Store', () => {
             purpose: 'Counter',
             cards: [
               {
-                source: { name: 'Flusterstorm', cmc: 1 },
+                source: {
+                  name: 'Flusterstorm',
+                  scryfallId: 'Flusterstorm',
+                  cmc: 1,
+                },
                 purposes: ['Counter'],
                 count: 1,
               },
               {
-                source: { name: 'Counterspell', cmc: 2 },
+                source: {
+                  name: 'Counterspell',
+                  scryfallId: 'Counterspell',
+                  cmc: 2,
+                },
                 purposes: ['Counter'],
                 count: 1,
               },
               {
-                source: { name: 'Negate', cmc: 2 },
+                source: { name: 'Negate', scryfallId: 'Negate', cmc: 2 },
                 purposes: ['Counter'],
                 count: 1,
               },
@@ -503,12 +584,16 @@ describe('Deck Store', () => {
             purpose: 'Burn',
             cards: [
               {
-                source: { name: 'Shock', cmc: 1 },
+                source: { name: 'Shock', scryfallId: 'Shock', cmc: 1 },
                 purposes: ['Burn'],
                 count: 1,
               },
               {
-                source: { name: 'Lightning Strike', cmc: 2 },
+                source: {
+                  name: 'Lightning Strike',
+                  scryfallId: 'Lightning Strike',
+                  cmc: 2,
+                },
                 purposes: ['Burn'],
                 count: 1,
               },
@@ -521,23 +606,35 @@ describe('Deck Store', () => {
         const commanders = []
         const the99 = [
           {
-            source: { name: 'Negate', cmc: 2 },
+            source: { name: 'Negate', cmc: 2, scryfallId: 'Negate' },
             purposes: ['Counter'],
           },
           {
-            source: { name: 'Counterspell', cmc: 2 },
+            source: {
+              name: 'Counterspell',
+              cmc: 2,
+              scryfallId: 'Counterspell',
+            },
             purposes: ['Counter'],
           },
           {
-            source: { name: 'Flusterstorm', cmc: 1 },
+            source: {
+              name: 'Flusterstorm',
+              cmc: 1,
+              scryfallId: 'Flusterstorm',
+            },
             purposes: ['Counter'],
           },
           {
-            source: { name: 'Lightning Strike', cmc: 2 },
+            source: {
+              name: 'Lightning Strike',
+              cmc: 2,
+              scryfallId: 'Lightning Strike',
+            },
             purposes: ['Burn'],
           },
           {
-            source: { name: 'Shock', cmc: 1 },
+            source: { name: 'Shock', cmc: 1, scryfallId: 'Shock' },
             purposes: ['Burn'],
           },
         ]
@@ -557,17 +654,25 @@ describe('Deck Store', () => {
             purpose: 'Counter',
             cards: [
               {
-                source: { name: 'Counterspell', cmc: 2 },
+                source: {
+                  name: 'Counterspell',
+                  scryfallId: 'Counterspell',
+                  cmc: 2,
+                },
                 purposes: ['Counter'],
                 count: 1,
               },
               {
-                source: { name: 'Flusterstorm', cmc: 1 },
+                source: {
+                  name: 'Flusterstorm',
+                  scryfallId: 'Flusterstorm',
+                  cmc: 1,
+                },
                 purposes: ['Counter'],
                 count: 1,
               },
               {
-                source: { name: 'Negate', cmc: 2 },
+                source: { name: 'Negate', scryfallId: 'Negate', cmc: 2 },
                 purposes: ['Counter'],
                 count: 1,
               },
@@ -577,14 +682,96 @@ describe('Deck Store', () => {
             purpose: 'Burn',
             cards: [
               {
-                source: { name: 'Lightning Strike', cmc: 2 },
+                source: {
+                  name: 'Lightning Strike',
+                  scryfallId: 'Lightning Strike',
+                  cmc: 2,
+                },
                 purposes: ['Burn'],
                 count: 1,
               },
               {
-                source: { name: 'Shock', cmc: 1 },
+                source: { name: 'Shock', scryfallId: 'Shock', cmc: 1 },
                 purposes: ['Burn'],
                 count: 1,
+              },
+            ],
+          },
+        ])
+      })
+
+      test('handles different printings of the same card', () => {
+        const commanders = []
+        const the99 = [
+          {
+            source: {
+              name: 'Island',
+              scryfallId: 'alpha-printing',
+              canHaveMultiple: true,
+            },
+
+            purposes: ['Land'],
+          },
+          {
+            source: {
+              name: 'Island',
+              scryfallId: 'alpha-printing',
+              canHaveMultiple: true,
+            },
+
+            purposes: ['Land'],
+          },
+          {
+            source: {
+              name: 'Island',
+              scryfallId: 'beta-printing',
+              canHaveMultiple: true,
+            },
+
+            purposes: ['Land'],
+          },
+          {
+            source: {
+              name: 'Island',
+              scryfallId: 'beta-printing',
+              canHaveMultiple: true,
+            },
+
+            purposes: ['Land'],
+          },
+        ]
+        const compuPurposeHashForThe99 = {}
+        const state = {}
+
+        const result = getters.cardGroupingsForThe99(state, {
+          commanders,
+          the99,
+          compuPurposeHashForThe99,
+          usePurposeGroups: true,
+          sortByCmc: true,
+        })
+
+        expect(result).toEqual([
+          {
+            purpose: 'Land',
+            cards: [
+              {
+                source: {
+                  name: 'Island',
+                  scryfallId: 'alpha-printing',
+                  canHaveMultiple: true,
+                },
+                count: 2,
+                purposes: ['Land'],
+              },
+              {
+                source: {
+                  name: 'Island',
+                  scryfallId: 'beta-printing',
+                  canHaveMultiple: true,
+                },
+                count: 2,
+                purposes: ['Land'],
               },
             ],
           },
