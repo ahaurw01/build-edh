@@ -169,8 +169,14 @@ export default {
 
 <style scoped>
 .card-container {
-  margin: 40px 0;
+  margin: -20px 0 10px;
   display: flex;
+}
+
+@media (min-width: 769px) {
+  .card-container {
+    margin: 40px 0;
+  }
 }
 
 .card-left,

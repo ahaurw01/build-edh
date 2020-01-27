@@ -1,5 +1,5 @@
 {
-  "name": "build-edh",
+  "name": "edhlist",
   "version": "1.0.0",
   "description": "Build purposeful EDH decks.",
   "main": "index.js",
