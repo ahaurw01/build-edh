@@ -6,6 +6,9 @@ const { default: sslify, xForwardedProtoResolver } = require('koa-sslify')
 const config = require('../nuxt.config.js')
 const apiRouter = require('./api')
 
+// Acknowledge deprecations
+mongoose.set('useFindAndModify', false)
+
 const app = new Koa()
 
 if (app.env === 'production')

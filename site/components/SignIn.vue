@@ -3,6 +3,7 @@
     <h4 class="subtitle is-4 has-text-centered">
       Register or log in to get started.
     </h4>
+    <BButton @click="discordLogin">Continue with Discord</BButton>
     <BTabs position="is-centered">
       <BTabItem label="Register">
         <section class="columns is-centered">
@@ -128,6 +129,10 @@ export default {
             this.loginPasswordError = ''
           }
         })
+    },
+
+    discordLogin() {
+      this.$auth.loginWith('discord', { params: { prompt: 'none' } })
     },
   },
 }

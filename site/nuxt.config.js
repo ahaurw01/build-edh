@@ -1,6 +1,12 @@
 const pkg = require('../package')
 
+const baseURL = process.env.BASE_URL || 'http://localhost:3333'
+
 module.exports = {
+  baseURL,
+
+  DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+
   mode: 'universal',
 
   /*
@@ -45,7 +51,7 @@ module.exports = {
    ** Axios module configuration
    */
   axios: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3333',
+    baseURL,
   },
 
   /*
@@ -59,6 +65,16 @@ module.exports = {
       callback: '/',
     },
     strategies: {
+      discord: {
+        _scheme: 'oauth2',
+        authorization_endpoint: 'https://discordapp.com/api/oauth2/authorize',
+        access_token_endpoint: '/api/login/discord',
+        userinfo_endpoint: '/api/me',
+        scope: ['identify', 'email'],
+        response_type: 'code',
+        redirect_uri: baseURL,
+        client_id: '671516199460274178',
+      },
       local: {
         endpoints: {
           login: {
