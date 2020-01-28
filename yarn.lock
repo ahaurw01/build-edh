@@ -3530,6 +3530,11 @@ dimport@^1.0.0:
   dependencies:
     rewrite-imports "^2.0.3"
 
+discord-oauth2@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/discord-oauth2/-/discord-oauth2-2.0.2.tgz#7a7aa8706b2554e0024d038501589489f891b743"
+  integrity sha512-35ANRmEEPhtvkrkL70OslGAq+ztFpmDEU5x3K0yiq2NCiNp/gszvRI+rJyNeIvI3OCKCSGIcqrhYZ0daowYn4Q==
+
 doctrine@1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-1.5.0.tgz#379dce730f6166f76cefa4e6707a159b02c5a6fa"
