@@ -1,5 +1,4 @@
 const supertest = require('supertest')
-const bcrypt = require('bcrypt')
 const { User } = require('../../../server/api/models')
 const { app } = require('../../../server')
 const server = app.callback()
@@ -12,7 +11,6 @@ async function mockLogin() {
     .mockImplementation(() =>
       Promise.resolve(new User({ id: 1, username: 'aaron' }))
     )
-  jest.spyOn(bcrypt, 'compare').mockImplementation(() => true)
 
   const {
     body: { token },
