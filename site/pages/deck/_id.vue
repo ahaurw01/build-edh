@@ -1,7 +1,7 @@
 <template>
   <section class="deck-section section">
     <div class="container is-fullhd">
-      <div class="columns">
+      <div class="columns deck-page-columns">
         <div class="deck-view column">
           <div class="columns is-vcentered">
             <div class="column">
@@ -94,6 +94,7 @@
             @click="isMobileSidebarOpen = true"
           />
         </div>
+        <div class="separator" />
         <DeckSidebar
           :is-open="isMobileSidebarOpen"
           @close="isMobileSidebarOpen = false"
@@ -161,6 +162,11 @@ export default {
 </script>
 
 <style scoped>
+.deck-page-columns {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .deck-section {
   display: flex;
   flex: 1;
@@ -170,8 +176,22 @@ export default {
 
 .deck-view {
   flex: 1;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - 52px);
   overflow: auto;
+}
+
+.separator {
+  display: none;
+  width: 2px;
+  height: calc(100vh - 52px - 2rem);
+  margin: 1rem 2px;
+  background: whitesmoke;
+}
+
+@media (min-width: 769px) {
+  .separator {
+    display: block;
+  }
 }
 
 .owner {
