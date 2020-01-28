@@ -9,8 +9,8 @@
                 {{ name }}
                 <h6 class="title is-6 owner has-text-grey">
                   by
-                  <NuxtLink :to="`/decks/${ownerUsername}`">{{
-                    ownerUsername
+                  <NuxtLink :to="`/decks/${owner._id}`">{{
+                    owner.username
                   }}</NuxtLink>
                 </h6>
               </h2>
@@ -142,7 +142,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      ownerUsername: 'deck/ownerUsername',
+      owner: 'deck/owner',
       name: 'deck/name',
       purpose: 'deck/purpose',
       description: 'deck/description',
