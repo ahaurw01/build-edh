@@ -5,7 +5,15 @@
         <div class="deck-view column">
           <div class="columns is-vcentered">
             <div class="column">
-              <h2 class="title is-2">{{ name }}</h2>
+              <h2 class="title is-2">
+                {{ name }}
+                <h6 class="title is-6 owner has-text-grey">
+                  by
+                  <NuxtLink :to="`/decks/${ownerUsername}`">{{
+                    ownerUsername
+                  }}</NuxtLink>
+                </h6>
+              </h2>
             </div>
             <div v-if="iAmOwner" class="column is-narrow">
               <button class="button" @click="isEditNameModalActive = true">
@@ -164,6 +172,11 @@ export default {
   flex: 1;
   max-height: calc(100vh - 40px);
   overflow: auto;
+}
+
+.owner {
+  margin-top: 0.5rem;
+  margin-left: 1rem;
 }
 
 .description-paragraph {
