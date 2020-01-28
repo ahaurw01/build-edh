@@ -10,12 +10,17 @@ function normalizeSearchName(name) {
 }
 
 const userSchema = new Schema({
-  username: String,
-  passwordHash: String,
+  discordId: { type: String, index: true, unique: true },
+  username: { type: String, index: true },
+  discriminator: String,
+  email: { type: String, index: true, unique: true },
+  avatarHash: String,
 })
 userSchema.methods.safeProps = function() {
   return {
     username: this.username,
+    discriminator: this.discriminator,
+    avatarHash: this.avatarHash,
     _id: this._id,
   }
 }

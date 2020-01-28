@@ -1,5 +1,5 @@
 const supertest = require('supertest')
-const bcrypt = require('bcrypt')
+const DiscordOauth2 = require('discord-oauth2')
 const { User } = require('../../../server/api/models')
 const { app } = require('../../../server')
 const server = app.callback()
@@ -8,17 +8,20 @@ module.exports = { mockLogin }
 
 async function mockLogin() {
   jest
-    .spyOn(User, 'findOne')
+    .spyOn(User, 'findOneAndUpdate')
     .mockImplementation(() =>
       Promise.resolve(new User({ id: 1, username: 'aaron' }))
     )
-  jest.spyOn(bcrypt, 'compare').mockImplementation(() => true)
+
+  DiscordOauth2.prototype.tokenRequest = DiscordOauth2.prototype.getUser = function() {
+    return Promise.resolve({})
+  }
 
   const {
-    body: { token },
+    body: { access_token },
   } = await supertest(server)
-    .post('/api/login')
-    .send({ username: 'aaron', password: 'password' })
+    .post('/api/login/discord')
+    .send({ code: 'mock code' })
 
-  return `Bearer ${token}`
+  return `Bearer ${access_token}`
 }

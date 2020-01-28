@@ -1,14 +1,12 @@
 <template>
   <div class="main">
-    <BNavbar shadow :mobile-burger="isLoggedIn">
+    <BNavbar shadow :mobile-burger="false">
       <template slot="brand">
         <BNavbarItem tag="NuxtLink" to="/">
           <h1 class="title">
             <span>edh</span><span class="has-text-grey">list</span>
           </h1>
         </BNavbarItem>
-      </template>
-      <template slot="end">
         <BNavbarItem tag="div">
           <BButton v-show="isLoggedIn" @click="logOut">
             Log Out
@@ -61,5 +59,10 @@ export default {
 .main {
   display: flex;
   flex-direction: column;
+}
+</style>
+<style>
+.navbar-brand {
+  justify-content: space-between;
 }
 </style>

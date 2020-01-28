@@ -1,7 +1,7 @@
 const koaJwt = require('koa-jwt')
 const Router = require('koa-router')
 const bodyParser = require('koa-bodyparser')
-const { login, register, me } = require('./auth')
+const { me, discordLogin } = require('./auth')
 const {
   ensureDeckOwner,
   createDeck,
@@ -26,8 +26,7 @@ const apiRouter = new Router({
 apiRouter.use(bodyParser())
 
 // Un-authed routes:
-apiRouter.post('/login', login)
-apiRouter.post('/register', register)
+apiRouter.post('/login/discord', discordLogin)
 
 apiRouter.get('/cards', getCards)
 apiRouter.get('/cards/printings', getPrintings)
