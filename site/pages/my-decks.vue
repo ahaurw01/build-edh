@@ -5,7 +5,7 @@
 <script>
 export default {
   middleware({ store, redirect }) {
-    return redirect(`/decks/${store.state.auth.user.username}`)
+    return redirect(`/decks/${store.state.auth.user._id}`)
   },
 }
 </script>

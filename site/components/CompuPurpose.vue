@@ -11,7 +11,7 @@
     <div v-else class="level is-mobile">
       <div class="level-left">
         <div class="level-item">
-          <h4 class="title is-4">{{ compuPurpose.title }}</h4>
+          <h5 class="title is-5">{{ compuPurpose.title }}</h5>
         </div>
       </div>
       <div v-if="iAmOwner" class="level-right">

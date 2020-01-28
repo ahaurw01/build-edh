@@ -9,11 +9,7 @@
     />
 
     <div class="box deck-sidebar-content">
-      <h2 class="title is-2">
-        <span>Insights</span>
-      </h2>
-
-      <h3 class="title is-3 ">Settings</h3>
+      <h4 class="title is-4 ">Settings</h4>
       <BSwitch :value="usePurposeGroups" @input="setUsePurposeGroups">
         Group by <b>{{ usePurposeGroups ? 'purposes' : 'card type' }}</b>
       </BSwitch>
@@ -24,12 +20,12 @@
 
       <hr />
 
-      <h3 class="title is-3">Stats</h3>
+      <h4 class="title is-4">Stats</h4>
       <DeckStats />
 
       <hr />
 
-      <h3 class="title is-3">Computed Purposes</h3>
+      <h4 class="title is-4">Computed Purposes</h4>
       <CompuPurposes
         :compu-purposes="compuPurposes"
         @change="updateCompuPurposes"
@@ -182,8 +178,13 @@ export default {
     transform: none;
     width: auto;
     min-width: auto;
-    max-height: calc(100vh - 40px);
+    max-height: calc(100vh - 52px);
     overflow: auto;
+  }
+
+  .deck-sidebar-content {
+    padding: 0.5rem 0;
+    box-shadow: none;
   }
 }
 
