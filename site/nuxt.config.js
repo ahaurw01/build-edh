@@ -58,6 +58,7 @@ module.exports = {
    ** Auth config
    */
   auth: {
+    plugins: ['~/plugins/auth.js'],
     redirect: {
       login: '/',
       logout: '/',
@@ -74,17 +75,6 @@ module.exports = {
         response_type: 'code',
         redirect_uri: baseURL,
         client_id: '671516199460274178',
-      },
-      local: {
-        endpoints: {
-          login: {
-            url: '/api/login',
-            method: 'post',
-            propertyName: 'token',
-          },
-          logout: false,
-          user: { url: '/api/me', method: 'get', propertyName: 'user' },
-        },
       },
     },
   },
