@@ -35,7 +35,6 @@ export default {
   methods: {
     ...mapActions({
       setUsePurposeGroups: 'deck/setUsePurposeGroups',
-      updateCompuPurposes: 'deck/updateCompuPurposes',
     }),
   },
 }
