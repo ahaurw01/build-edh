@@ -111,6 +111,8 @@ import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
 import DeckSidebar from '~/components/DeckSidebar'
 import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
+import Presser from '~/components/Presser'
+
 export default {
   auth: false,
 
@@ -151,6 +153,19 @@ export default {
       numCards: 'deck/numCards',
       iAmOwner: 'deck/iAmOwner',
     }),
+  },
+
+  mounted() {
+    this.presser = new Presser()
+    this.presser.on('addCard', () => {
+      if (this.iAmOwner) {
+        this.isNewCardModalActive = true
+      }
+    })
+  },
+
+  beforeDestroy() {
+    this.presser.off('addCard')
   },
 
   methods: {
