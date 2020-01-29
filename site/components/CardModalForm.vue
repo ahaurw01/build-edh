@@ -4,6 +4,7 @@
       <BField :label="forCommander ? 'Commander' : 'Card'">
         <BAutocomplete
           v-model="nameLike"
+          v-focus
           field="name"
           :data="cardSuggestions"
           keep-first
@@ -126,6 +127,15 @@ export default {
     Card,
     ManaCost,
   },
+
+  directives: {
+    focus(el) {
+      setTimeout(() => {
+        el.querySelector('input').focus()
+      }, 100)
+    },
+  },
+
   props: {
     onlyForCommander: { type: Boolean, default: false },
     card: { type: Object, default: null },
@@ -197,9 +207,9 @@ export default {
   },
 
   mounted() {
-    this.$refs.form.querySelector('input').focus()
     if (this.selectedCard) this.getPrintings(this.selectedCard)
   },
+
   methods: {
     selectCard(card) {
       if (!card) return
