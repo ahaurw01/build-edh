@@ -4,6 +4,7 @@
       <BField :label="forCommander ? 'Commander' : 'Card'">
         <BAutocomplete
           v-model="nameLike"
+          v-focus
           field="name"
           :data="cardSuggestions"
           keep-first
@@ -30,7 +31,7 @@
 
       <BField v-if="printingsForCard.length > 0" label="Printing">
         <BAutocomplete
-          :data="printingsForCard"
+          :data="filteredPrintingsForCard"
           :value="selectedCard.setName"
           field="setName"
           selection
@@ -126,6 +127,17 @@ export default {
     Card,
     ManaCost,
   },
+
+  directives: {
+    focus(el) {
+      setTimeout(() => {
+        const input = el.querySelector('input')
+        if (!input) return
+        if (!input.value) input.focus()
+      }, 100)
+    },
+  },
+
   props: {
     onlyForCommander: { type: Boolean, default: false },
     card: { type: Object, default: null },
@@ -161,12 +173,17 @@ export default {
 
     printingsForCard() {
       const { name } = this.selectedCard || {}
-      const printings = this.printings[name] || []
+      return this.printings[name] || []
+    },
 
-      if (!this.printingFilter) return printings
+    filteredPrintingsForCard() {
+      if (!this.printingFilter) return this.printingsForCard
 
-      const regexp = new RegExp(this.printingFilter, 'i')
-      return printings.filter(({ setName }) => regexp.test(setName))
+      const regexp = new RegExp(
+        this.printingFilter.replace(/[^a-z0-9]/gi, ''),
+        'i'
+      )
+      return this.printingsForCard.filter(({ setName }) => regexp.test(setName))
     },
 
     actionName() {
@@ -197,9 +214,9 @@ export default {
   },
 
   mounted() {
-    this.$refs.form.querySelector('input').focus()
     if (this.selectedCard) this.getPrintings(this.selectedCard)
   },
+
   methods: {
     selectCard(card) {
       if (!card) return

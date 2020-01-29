@@ -7,12 +7,12 @@
             <div class="column">
               <h2 class="title is-2">
                 {{ name }}
-                <h6 class="title is-6 owner has-text-grey">
+                <p class="title is-6 owner has-text-grey">
                   by
                   <NuxtLink :to="`/decks/${owner._id}`">{{
                     owner.username
                   }}</NuxtLink>
-                </h6>
+                </p>
               </h2>
             </div>
             <div v-if="iAmOwner" class="column is-narrow">
@@ -111,6 +111,8 @@ import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
 import DeckSidebar from '~/components/DeckSidebar'
 import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
+import Presser from '~/components/Presser'
+
 export default {
   auth: false,
 
@@ -151,6 +153,19 @@ export default {
       numCards: 'deck/numCards',
       iAmOwner: 'deck/iAmOwner',
     }),
+  },
+
+  mounted() {
+    this.presser = new Presser()
+    this.presser.on('addCard', () => {
+      if (this.iAmOwner) {
+        this.isNewCardModalActive = true
+      }
+    })
+  },
+
+  beforeDestroy() {
+    this.presser.off('addCard')
   },
 
   methods: {
