@@ -179,7 +179,10 @@ export default {
     filteredPrintingsForCard() {
       if (!this.printingFilter) return this.printingsForCard
 
-      const regexp = new RegExp(this.printingFilter, 'i')
+      const regexp = new RegExp(
+        this.printingFilter.replace(/[^a-z0-9]/gi, ''),
+        'i'
+      )
       return this.printingsForCard.filter(({ setName }) => regexp.test(setName))
     },
 
