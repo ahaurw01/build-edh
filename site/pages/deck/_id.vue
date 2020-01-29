@@ -7,12 +7,12 @@
             <div class="column">
               <h2 class="title is-2">
                 {{ name }}
-                <h6 class="title is-6 owner has-text-grey">
+                <p class="title is-6 owner has-text-grey">
                   by
                   <NuxtLink :to="`/decks/${owner._id}`">{{
                     owner.username
                   }}</NuxtLink>
-                </h6>
+                </p>
               </h2>
             </div>
             <div v-if="iAmOwner" class="column is-narrow">
