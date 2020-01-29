@@ -19,7 +19,7 @@ const {
 } = require('./decks')
 const { getUser } = require('./users')
 const { getCards, getPrintings } = require('./cards')
-const { getCardPrice } = require('./prices')
+const { getCardPrice, getDeckPricesMiddlewares } = require('./prices')
 
 const apiRouter = new Router({
   prefix: '/api',
@@ -38,6 +38,7 @@ apiRouter.get('/decks', getDecksByOwner)
 apiRouter.get('/users/:id', getUser)
 
 apiRouter.get('/prices/card/:tcgplayerId', getCardPrice)
+apiRouter.get('/prices/deck/:deckId', ...getDeckPricesMiddlewares)
 
 // Authed routes below here:
 apiRouter.use(koaJwt({ secret: 'secret' }))

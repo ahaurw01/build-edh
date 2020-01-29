@@ -237,7 +237,6 @@ Card.normalizeSearchName = normalizeSearchName
 
 const priceSchema = new Schema({
   tcgplayerId: { type: Number, index: true, unique: true },
-  card: { type: Schema.Types.ObjectId, index: true, unique: true },
   usd: String,
   usdFoil: String,
 })

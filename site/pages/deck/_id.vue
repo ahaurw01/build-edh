@@ -162,6 +162,8 @@ export default {
         this.isNewCardModalActive = true
       }
     })
+
+    this.getPricesForDeck()
   },
 
   beforeDestroy() {
@@ -171,6 +173,7 @@ export default {
   methods: {
     ...mapActions({
       resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
+      getPricesForDeck: 'deck/getPricesForDeck',
     }),
   },
 }

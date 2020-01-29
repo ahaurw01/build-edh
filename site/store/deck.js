@@ -107,6 +107,13 @@ export const mutations = {
       [price.tcgplayerId]: price,
     }
   },
+
+  addPrices(state, prices) {
+    state.prices = {
+      ...state.prices,
+      ...prices,
+    }
+  },
 }
 
 export const actions = {
@@ -359,6 +366,15 @@ export const actions = {
       data: { price },
     } = await this.$axios.get(`/api/prices/card/${source.tcgplayerId}`)
     commit('addPrice', price)
+  },
+
+  async getPricesForDeck({ commit, state }) {
+    if (!state.deck) return
+
+    const {
+      data: { prices },
+    } = await this.$axios.get(`/api/prices/deck/${state.deck._id}`)
+    commit('addPrices', prices)
   },
 }
 
