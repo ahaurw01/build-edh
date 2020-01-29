@@ -49,6 +49,7 @@ const Deck = mongoose.model('Deck', deckSchema)
 const cardSchema = new Schema({
   scryfallId: { type: String, index: true },
   oracleId: String,
+  tcgplayerId: Number,
   name: { type: String, index: true },
   searchName: { type: String, index: true },
   cmc: { type: Number, index: true },
@@ -164,6 +165,7 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
   const doc = {
     scryfallId: rawCard.id,
     oracleId: rawCard.oracle_id,
+    tcgplayerId: rawCard.tcgplayer_id,
     name: rawCard.name,
     searchName: normalizeSearchName(rawCard.name),
     cmc: rawCard.cmc,
@@ -233,9 +235,19 @@ Card.findWithNames = async filters => {
 
 Card.normalizeSearchName = normalizeSearchName
 
+const priceSchema = new Schema({
+  tcgplayerId: { type: String, index: true, unique: true },
+  card: { type: Schema.Types.ObjectId, index: true, unique: true },
+  usd: String,
+  usdFoil: String,
+})
+
+const Price = mongoose.model('Price', priceSchema)
+
 module.exports = {
   User,
   Deck,
   Card,
+  Price,
   allCardFieldsGroup,
 }
