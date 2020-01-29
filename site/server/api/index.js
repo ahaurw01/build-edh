@@ -37,7 +37,7 @@ apiRouter.get('/decks', getDecksByOwner)
 
 apiRouter.get('/users/:id', getUser)
 
-apiRouter.get('/prices/card/:id', getCardPrice)
+apiRouter.get('/prices/card/:tcgplayerId', getCardPrice)
 
 // Authed routes below here:
 apiRouter.use(koaJwt({ secret: 'secret' }))

@@ -45,13 +45,16 @@
             />
           </div>
         </div>
+
+        <div class="price has-text-white">{{ price }}</div>
       </div>
     </div>
   </BModal>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import get from 'lodash/get'
+import { mapGetters, mapActions } from 'vuex'
 import Card from '~/components/Card'
 export default {
   components: {
@@ -73,6 +76,7 @@ export default {
   computed: {
     ...mapGetters({
       cardUuidToCompuPurposeTitles: 'deck/cardUuidToCompuPurposeTitles',
+      prices: 'deck/prices',
     }),
 
     purposes() {
@@ -90,6 +94,32 @@ export default {
         ),
       ]
     },
+
+    price() {
+      const tcgplayerId = get(this, 'card.source.tcgplayerId')
+      if (!tcgplayerId || !this.prices[tcgplayerId]) return null
+
+      const { usd, usdFoil } = this.prices[tcgplayerId]
+
+      let displayValue = get(this, 'card.isFoil', false) ? usdFoil : usd
+
+      if (displayValue) displayValue = `$${displayValue}`
+
+      return displayValue
+    },
+  },
+
+  watch: {
+    'card.source.tcgplayerId': function() {
+      const { source } = this.card || {}
+      if (source) this.getPriceForCard(source)
+    },
+  },
+
+  methods: {
+    ...mapActions({
+      getPriceForCard: 'deck/getPriceForCard',
+    }),
   },
 }
 </script>

@@ -6,30 +6,30 @@ module.exports = {
 }
 
 async function getCardPrice(ctx) {
-  const { id } = ctx.params
+  const { tcgplayerId } = ctx.params
   // See if we have one cached.
-  const price = await Price.findOne({ card: id })
+  let price = await Price.findOne({ tcgplayerId })
   if (price) {
     ctx.body = { price }
     return
   }
 
-  const card = await Card.findById(id)
-  if (!card || !card.tcgplayerId) {
+  const card = await Card.findOne({ tcgplayerId })
+  if (!card) {
     ctx.status = 404
     return
   }
 
   // Gives us a hash of tcgplayerId -> {usd: Number, usdFoil: Number}
-  const prices = await getPricesForProductIds(card.tcgplayerId)
+  const prices = await getPricesForProductIds(tcgplayerId)
+
+  price = await Price.create({
+    card,
+    tcgplayerId: card.tcgplayerId,
+    ...prices[tcgplayerId],
+  })
 
   ctx.body = {
-    price: prices[card.tcgplayerId],
+    price,
   }
-
-  await Price.create({
-    card: card._id,
-    tcgplayerId: card.tcgplayerId,
-    ...prices[card.tcgplayerId],
-  })
 }

@@ -20,6 +20,7 @@ export const state = () => ({
   bulkAddErrorMessages: [],
   usePurposeGroups: true,
   sortByCmc: true,
+  prices: {},
 })
 
 export const mutations = {
@@ -98,6 +99,13 @@ export const mutations = {
 
   sortByCmc(state, value) {
     state.sortByCmc = value
+  },
+
+  addPrice(state, price) {
+    state.prices = {
+      ...state.prices,
+      [price.tcgplayerId]: price,
+    }
   },
 }
 
@@ -343,6 +351,15 @@ export const actions = {
       message: `Deleted ${state.deck.name || 'the deck'}.`,
     })
   },
+
+  async getPriceForCard({ commit, state }, source) {
+    if (!source || state.prices[source.tcgplayerId]) return
+
+    const {
+      data: { price },
+    } = await this.$axios.get(`/api/prices/card/${source.tcgplayerId}`)
+    commit('addPrice', price)
+  },
 }
 
 export const getters = {
@@ -356,6 +373,7 @@ export const getters = {
   description: state => state.deck.description || 'No description',
   descriptionParagraphs: state =>
     (state.deck.description || 'No description').split('\n'),
+  prices: state => state.prices,
   compuPurposes: state => state.deck.compuPurposes,
   commanders: state =>
     state.deck.commanders.map(c => ({ ...c, isCommander: true })),

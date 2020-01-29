@@ -32,6 +32,7 @@ async function getPricesForProductIds(productIds) {
       return {
         ...prices,
         [cur.productId]: {
+          tcgplayerId: cur.productId,
           ...(prices[cur.productId] || {}),
           [cur.subTypeName === 'Foil' ? 'usdFoil' : 'usd']: cur.midPrice,
         },
