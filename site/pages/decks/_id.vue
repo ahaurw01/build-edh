@@ -44,7 +44,7 @@ export default {
 
   async fetch({ store, params, $axios, error }) {
     try {
-      const { data: user } = await $axios.get(`/api/users/${params.username}`)
+      const { data: user } = await $axios.get(`/api/users/${params.id}`)
       const { data: decks } = await $axios.get(`/api/decks?ownerId=${user._id}`)
       store.commit('decks/user', user)
       store.commit('decks/decks', decks)

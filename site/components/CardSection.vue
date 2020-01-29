@@ -10,12 +10,12 @@
     <div class="card-columns">
       <div
         v-for="column in columns"
-        :key="column[0].source.name"
+        :key="column[0].source.scryfallId"
         class="cards-container"
       >
         <div
           v-for="card in column"
-          :key="card.source.name"
+          :key="card.source.scryfallId"
           class="card-container"
         >
           <button

@@ -64,7 +64,7 @@ export default {
 
   methods: {
     isRuleValid(rule) {
-      return rule.conditions.every(c => c.value)
+      return rule.conditions.every(c => c.value != null)
     },
 
     changeCompuPurpose(index, compuPurpose) {

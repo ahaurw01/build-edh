@@ -1,11 +1,19 @@
 <template>
   <section class="deck-section section">
     <div class="container is-fullhd">
-      <div class="columns">
+      <div class="columns deck-page-columns">
         <div class="deck-view column">
           <div class="columns is-vcentered">
             <div class="column">
-              <h2 class="title is-2">{{ name }}</h2>
+              <h2 class="title is-2">
+                {{ name }}
+                <p class="title is-6 owner has-text-grey">
+                  by
+                  <NuxtLink :to="`/decks/${owner._id}`">{{
+                    owner.username
+                  }}</NuxtLink>
+                </p>
+              </h2>
             </div>
             <div v-if="iAmOwner" class="column is-narrow">
               <button class="button" @click="isEditNameModalActive = true">
@@ -86,6 +94,7 @@
             @click="isMobileSidebarOpen = true"
           />
         </div>
+        <div class="separator" />
         <DeckSidebar
           :is-open="isMobileSidebarOpen"
           @close="isMobileSidebarOpen = false"
@@ -102,6 +111,8 @@ import CommanderSection from '~/components/CommanderSection'
 import NinetyNineSection from '~/components/NinetyNineSection'
 import DeckSidebar from '~/components/DeckSidebar'
 import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
+import Presser from '~/components/Presser'
+
 export default {
   auth: false,
 
@@ -134,7 +145,7 @@ export default {
 
   computed: {
     ...mapGetters({
-      ownerUsername: 'deck/ownerUsername',
+      owner: 'deck/owner',
       name: 'deck/name',
       purpose: 'deck/purpose',
       description: 'deck/description',
@@ -142,6 +153,19 @@ export default {
       numCards: 'deck/numCards',
       iAmOwner: 'deck/iAmOwner',
     }),
+  },
+
+  mounted() {
+    this.presser = new Presser()
+    this.presser.on('addCard', () => {
+      if (this.iAmOwner) {
+        this.isNewCardModalActive = true
+      }
+    })
+  },
+
+  beforeDestroy() {
+    this.presser.off('addCard')
   },
 
   methods: {
@@ -153,6 +177,11 @@ export default {
 </script>
 
 <style scoped>
+.deck-page-columns {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .deck-section {
   display: flex;
   flex: 1;
@@ -162,8 +191,27 @@ export default {
 
 .deck-view {
   flex: 1;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - 52px);
   overflow: auto;
+}
+
+.separator {
+  display: none;
+  width: 2px;
+  height: calc(100vh - 52px - 2rem);
+  margin: 1rem 2px;
+  background: whitesmoke;
+}
+
+@media (min-width: 769px) {
+  .separator {
+    display: block;
+  }
+}
+
+.owner {
+  margin-top: 0.5rem;
+  margin-left: 1rem;
 }
 
 .description-paragraph {
