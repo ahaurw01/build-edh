@@ -637,6 +637,20 @@ export const getters = {
       )
       .join('\n')
   },
+
+  deckPrice: (state, { commanders, the99, prices }) => {
+    const price = [...commanders, ...the99].reduce((total, card) => {
+      const { tcgplayerId } = card.source
+      const { isFoil } = card
+      const entry = prices[tcgplayerId]
+      if (entry) {
+        total += isFoil ? +(entry.usdFoil || 0) : +(entry.usd || 0)
+      }
+      return total
+    }, 0)
+
+    return price.toFixed(2)
+  },
 }
 
 /**
