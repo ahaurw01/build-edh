@@ -16,6 +16,7 @@
         </li>
       </ul>
     </li>
+    <li><b>Total deck price:</b> ${{ deckPrice }}</li>
   </ul>
 </template>
 
@@ -29,6 +30,7 @@ export default {
       averageCmc: 'deck/averageCmc',
       medianCmc: 'deck/medianCmc',
       castingCostPipCounts: 'deck/castingCostPipCounts',
+      deckPrice: 'deck/deckPrice',
     }),
   },
 

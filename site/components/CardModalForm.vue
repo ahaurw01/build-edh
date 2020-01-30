@@ -122,6 +122,8 @@ import debounce from 'lodash/debounce'
 import { mapGetters, mapActions } from 'vuex'
 import Card from '~/components/Card'
 import ManaCost from '~/components/ManaCost'
+import Presser from '~/components/Presser'
+
 export default {
   components: {
     Card,
@@ -215,6 +217,12 @@ export default {
 
   mounted() {
     if (this.selectedCard) this.getPrintings(this.selectedCard)
+    this.presser = new Presser()
+    this.presser.on('submitForm', () => this.onSave())
+  },
+
+  beforeDestroy() {
+    this.presser.off()
   },
 
   methods: {

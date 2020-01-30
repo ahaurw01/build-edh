@@ -8,6 +8,8 @@
     "@nuxtjs/axios": "5.9.2",
     "@nuxtjs/pwa": "3.0.0-beta.19",
     "array-shuffle": "^1.0.1",
+    "axios": "0.19.2",
+    "axios-auth-refresh": "2.2.1",
     "cross-env": "6.0.3",
     "discord-oauth2": "2.0.2",
     "jsonwebtoken": "8.5.1",

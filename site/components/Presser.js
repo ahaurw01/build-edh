@@ -3,6 +3,10 @@ const EVENTS = {
     check: e => e.key === 'p' && (e.metaKey || e.ctrlKey),
     preventDefault: true,
   },
+  submitForm: {
+    check: e => e.key === 'Enter' && (e.metaKey || e.ctrlKey),
+    preventDefault: true,
+  },
 }
 
 export default class Presser {

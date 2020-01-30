@@ -20,6 +20,7 @@ export const state = () => ({
   bulkAddErrorMessages: [],
   usePurposeGroups: true,
   sortByCmc: true,
+  prices: {},
 })
 
 export const mutations = {
@@ -98,6 +99,20 @@ export const mutations = {
 
   sortByCmc(state, value) {
     state.sortByCmc = value
+  },
+
+  addPrice(state, price) {
+    state.prices = {
+      ...state.prices,
+      [price.tcgplayerId]: price,
+    }
+  },
+
+  addPrices(state, prices) {
+    state.prices = {
+      ...state.prices,
+      ...prices,
+    }
   },
 }
 
@@ -343,6 +358,24 @@ export const actions = {
       message: `Deleted ${state.deck.name || 'the deck'}.`,
     })
   },
+
+  async getPriceForCard({ commit, state }, source) {
+    if (!source || state.prices[source.tcgplayerId]) return
+
+    const {
+      data: { price },
+    } = await this.$axios.get(`/api/prices/card/${source.tcgplayerId}`)
+    commit('addPrice', price)
+  },
+
+  async getPricesForDeck({ commit, state }) {
+    if (!state.deck) return
+
+    const {
+      data: { prices },
+    } = await this.$axios.get(`/api/prices/deck/${state.deck._id}`)
+    commit('addPrices', prices)
+  },
 }
 
 export const getters = {
@@ -355,6 +388,7 @@ export const getters = {
   description: state => state.deck.description || 'No description',
   descriptionParagraphs: state =>
     (state.deck.description || 'No description').split('\n'),
+  prices: state => state.prices,
   compuPurposes: state => state.deck.compuPurposes,
   commanders: state =>
     state.deck.commanders.map(c => ({ ...c, isCommander: true })),
@@ -602,6 +636,20 @@ export const getters = {
           }`
       )
       .join('\n')
+  },
+
+  deckPrice: (state, { commanders, the99, prices }) => {
+    const price = [...commanders, ...the99].reduce((total, card) => {
+      const { tcgplayerId } = card.source
+      const { isFoil } = card
+      const entry = prices[tcgplayerId]
+      if (entry) {
+        total += isFoil ? +(entry.usdFoil || 0) : +(entry.usd || 0)
+      }
+      return total
+    }, 0)
+
+    return price.toFixed(2)
   },
 }
 
