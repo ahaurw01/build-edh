@@ -1,52 +1,55 @@
 <template>
-  <BModal :active="isOpen" custom-class="card-showcase-modal" v-on="$listeners">
-    <div class="modal-centerer">
-      <div class="modal-column">
-        <BTaglist v-if="purposes.length">
-          <BTag
-            v-for="purpose in purposes"
-            :key="purpose.text"
-            type="is-white"
-            size="is-medium"
-          >
-            <div class="purpose-tag">
-              <BIcon :icon="purpose.icon" />
-              <span>&nbsp;{{ purpose.text }}</span>
-            </div>
-          </BTag>
-        </BTaglist>
-
-        <div class="columns">
-          <div v-if="card" class="column">
-            <Card
-              :card="card.source"
-              :is-foil="card.isFoil"
-              :count="card.count"
-              :show-edit-button="showEditButton"
-              :special-shadow="specialShadow"
-              size="large"
-              @edit-card="
-                $emit('close')
-                $emit('edit-card', card)
-              "
-            />
+  <BModal
+    :active="isOpen"
+    custom-class="card-showcase-modal"
+    has-modal-card
+    v-on="$listeners"
+  >
+    <div class="modal-column">
+      <BTaglist v-if="purposes.length">
+        <BTag
+          v-for="purpose in purposes"
+          :key="purpose.text"
+          type="is-white"
+          size="is-medium"
+        >
+          <div class="purpose-tag">
+            <BIcon :icon="purpose.icon" />
+            <span>&nbsp;{{ purpose.text }}</span>
           </div>
-          <div
-            v-if="
-              card && card.source.faces[1] && card.source.faces[1].imageUris
+        </BTag>
+      </BTaglist>
+
+      <div class="columns">
+        <div v-if="card" class="column">
+          <Card
+            :card="card.source"
+            :is-foil="card.isFoil"
+            :count="card.count"
+            :show-edit-button="showEditButton"
+            :special-shadow="specialShadow"
+            size="large"
+            @edit-card="
+              $emit('close')
+              $emit('edit-card', card)
             "
-            class="column"
-          >
-            <Card
-              :card="card.source"
-              :special-shadow="specialShadow"
-              size="large"
-              reverse
-            />
-          </div>
+          />
         </div>
+        <div
+          v-if="card && card.source.faces[1] && card.source.faces[1].imageUris"
+          class="column"
+        >
+          <Card
+            :card="card.source"
+            :special-shadow="specialShadow"
+            size="large"
+            reverse
+          />
+        </div>
+      </div>
 
-        <div class="price has-text-white">{{ price }}</div>
+      <div class="price has-text-white is-size-5">
+        <b>{{ price }}</b>
       </div>
     </div>
   </BModal>
@@ -103,7 +106,7 @@ export default {
 
       let displayValue = get(this, 'card.isFoil', false) ? usdFoil : usd
 
-      if (displayValue) displayValue = `$${displayValue}`
+      if (displayValue) displayValue = `$${(+displayValue).toFixed(2)}`
 
       return displayValue
     },
@@ -125,7 +128,7 @@ export default {
 </script>
 
 <style scoped>
-.modal-centerer {
+.modal-content {
   display: flex;
   justify-content: center;
 }
@@ -144,11 +147,24 @@ export default {
 
 .tag {
   background-color: hsl(0, 0%, 96%) !important;
+  z-index: 1;
+}
+
+.columns {
+  margin-bottom: 0;
+}
+
+.column {
+  padding: 0;
+}
+
+.price {
+  z-index: 1;
 }
 </style>
 
 <style>
-.card-showcase-modal .modal-content {
-  max-height: unset;
+.card-showcase-modal .animation-content {
+  overflow: auto;
 }
 </style>
