@@ -191,7 +191,7 @@ export const actions = {
   },
 
   async addCommander(
-    { commit, state },
+    { commit, state, dispatch },
     { scryfallId, purposes, isFoil, name }
   ) {
     const { data: commander } = await this.$axios.post(
@@ -209,10 +209,11 @@ export const actions = {
       message: `Added ${name} as commander.`,
     })
     commit('addCommander', commander)
+    dispatch('getPricesForDeck')
   },
 
   async updateCommander(
-    { commit, state },
+    { commit, state, dispatch },
     { uuid, purposes, isFoil, scryfallId, name }
   ) {
     const { data: commander } = await this.$axios.put(
@@ -230,6 +231,7 @@ export const actions = {
       message: `Updated ${name}.`,
     })
     commit('updateCommander', commander)
+    dispatch('getPricesForDeck')
   },
 
   async deleteCommander({ commit, state }, uuid) {
@@ -242,7 +244,7 @@ export const actions = {
   },
 
   async addCard(
-    { commit, state },
+    { commit, state, dispatch },
     { scryfallId, purposes, count, isFoil, isConsideration, name }
   ) {
     try {
@@ -262,6 +264,7 @@ export const actions = {
         message: `Added ${name}.`,
       })
       commit('updateThe99', the99)
+      dispatch('getPricesForDeck')
     } catch (e) {
       const message = get(e, 'response.data', '').startsWith(
         'Illegal duplicates'
@@ -276,7 +279,7 @@ export const actions = {
   },
 
   async updateCard(
-    { commit, state },
+    { commit, state, dispatch },
     { uuid, purposes, isFoil, isConsideration, scryfallId, count, name }
   ) {
     try {
@@ -296,6 +299,7 @@ export const actions = {
         message: `Updated ${name}.`,
       })
       commit('updateThe99', the99)
+      dispatch('getPricesForDeck')
     } catch (e) {
       const message = get(e, 'response.data', '').startsWith(
         'Illegal duplicates'
@@ -321,7 +325,7 @@ export const actions = {
     commit('updateThe99', the99)
   },
 
-  async bulkAdd({ commit, state }, updates) {
+  async bulkAdd({ commit, state, dispatch }, updates) {
     commit('bulkAddErrorMessages', [])
     try {
       const { data: deck } = await this.$axios.put(
@@ -334,6 +338,7 @@ export const actions = {
         message: `Successful bulk upload!`,
       })
       commit('deck', deck)
+      dispatch('getPricesForDeck')
     } catch ({ response }) {
       if (!response || !response.data) {
         commit('bulkAddErrorMessages', [

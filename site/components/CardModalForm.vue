@@ -29,7 +29,7 @@
         </BAutocomplete>
       </BField>
 
-      <BField label="Printing">
+      <BField v-if="selectedCard" label="Printing">
         <BAutocomplete
           :data="printingsForCard"
           :value="selectedCard.setName"
