@@ -172,11 +172,20 @@ export const actions = {
     commit('cardSuggestions', cards)
   },
 
-  async getPrintings({ commit }, card) {
+  async getPrintings({ commit }, { card, setNameFilter }) {
+    // Special logic for basic lands which we know have a million printings.
+    if (
+      !setNameFilter &&
+      ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'].includes(card.name)
+    ) {
+      commit('printings', { [card.name]: [card] })
+      return
+    }
+
     const {
       data: { printings },
     } = await this.$axios.get(`/api/cards/printings`, {
-      params: { name: card.name },
+      params: { name: card.name, setNameFilter },
     })
     commit('printings', { [card.name]: printings })
   },
