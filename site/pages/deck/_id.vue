@@ -192,10 +192,12 @@ export default {
   padding-bottom: 0;
 }
 
-.deck-view {
-  flex: 1;
-  max-height: calc(100vh - 52px);
-  overflow: auto;
+@media (min-width: 769px) {
+  .deck-view {
+    flex: 1;
+    max-height: calc(100vh - 52px);
+    overflow: auto;
+  }
 }
 
 .separator {
