@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const Axios = require('axios')
 const createAuthRefreshInterceptor = require('axios-auth-refresh').default
 const { TCGPLAYER_PUBLIC_KEY, TCGPLAYER_PRIVATE_KEY } = process.env
@@ -39,6 +40,7 @@ async function getPricesForProductIds(productIds) {
       }
     }, {})
   } catch (error) {
+    console.error(error)
     throw new Error('Could not retrieve prices')
   }
 }
