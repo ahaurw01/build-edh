@@ -48,16 +48,16 @@ async function getCards(ctx) {
   ctx.body = { cards }
 }
 
-const basicLandCache = {}
-
 async function getPrintings(ctx) {
-  const { name } = ctx.query
+  const { name, setNameFilter } = ctx.query
 
   ctx.assert(name, 400, 'No name provided')
 
-  if (basicLandCache[name]) ctx.body = { printings: basicLandCache[name] }
-  else ctx.body = { printings: await Card.find({ name }) }
+  const query = { name }
+  if (setNameFilter)
+    query.setName = {
+      $regex: new RegExp((setNameFilter || '').replace(/[^\w\d:]/g, ''), 'i'),
+    }
 
-  if (['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'].indexOf(name) > -1)
-    basicLandCache[name] = ctx.body.printings
+  ctx.body = { printings: await Card.find(query) }
 }

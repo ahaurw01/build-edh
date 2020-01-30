@@ -29,14 +29,14 @@
         </BAutocomplete>
       </BField>
 
-      <BField v-if="printingsForCard.length > 0" label="Printing">
+      <BField v-if="selectedCard" label="Printing">
         <BAutocomplete
-          :data="filteredPrintingsForCard"
+          :data="printingsForCard"
           :value="selectedCard.setName"
           field="setName"
           selection
           open-on-focus
-          @keyup.native="setPrintingFilter"
+          @keyup.native="_getPrintings"
           @select="selectCard"
         >
           <template slot-scope="props">
@@ -156,7 +156,6 @@ export default {
         this.card && this.card.source.canHaveMultiple
           ? this.card.count || 1
           : 1,
-      printingFilter: '',
       isFoil: this.card ? this.card.isFoil : false,
       isConsideration: this.card ? this.card.isConsideration : false,
     }
@@ -175,17 +174,8 @@ export default {
 
     printingsForCard() {
       const { name } = this.selectedCard || {}
-      return this.printings[name] || []
-    },
-
-    filteredPrintingsForCard() {
-      if (!this.printingFilter) return this.printingsForCard
-
-      const regexp = new RegExp(
-        this.printingFilter.replace(/[^a-z0-9]/gi, ''),
-        'i'
-      )
-      return this.printingsForCard.filter(({ setName }) => regexp.test(setName))
+      const printings = this.printings[name] || []
+      return printings.length > 0 ? printings : [this.selectedCard]
     },
 
     actionName() {
@@ -216,7 +206,7 @@ export default {
   },
 
   mounted() {
-    if (this.selectedCard) this.getPrintings(this.selectedCard)
+    if (this.selectedCard) this.getPrintings({ card: this.selectedCard })
     this.presser = new Presser()
     this.presser.on('submitForm', () => this.onSave())
   },
@@ -232,7 +222,7 @@ export default {
       this.isFoil =
         this.selectedCard.existsInFoil && !this.selectedCard.existsInNonFoil
 
-      this.getPrintings(card)
+      this.getPrintings({ card })
     },
 
     onSave() {
@@ -288,8 +278,10 @@ export default {
       }
     },
 
-    setPrintingFilter(e) {
-      this.printingFilter = e.target.value
+    _getPrintings(e) {
+      const setNameFilter = (e.target.value || '').trim()
+      if (setNameFilter.length > 1)
+        this.getPrintings({ card: this.selectedCard, setNameFilter })
     },
 
     ...mapActions({
