@@ -17,7 +17,7 @@ module.exports = {
 }
 
 async function getCardPrice(ctx) {
-  const { tcgplayerId } = ctx.params
+  const tcgplayerId = Number(ctx.params.tcgplayerId)
   // See if we have one cached.
   let price = await Price.findOne({ tcgplayerId })
   if (price) {
@@ -62,7 +62,7 @@ async function getDeck(ctx, next) {
   return next()
 }
 
-async function getPricesForAllSources(ctx, next) {
+async function getPricesForAllSources(ctx) {
   const tcgplayerIds = _.uniq(
     [...ctx.state.commanderSources, ...ctx.state.the99Sources].map(
       ({ tcgplayerId }) => tcgplayerId
@@ -80,9 +80,7 @@ async function getPricesForAllSources(ctx, next) {
     ? await getPricesForProductIds(tcgplayerIdsOutstanding)
     : {}
 
-  const fetchedPrices = Object.entries(fetchedPricesObj).map(
-    ([tcgplayerId, val]) => val
-  )
+  const fetchedPrices = Object.entries(fetchedPricesObj).map(([, val]) => val)
 
   if (fetchedPrices.length) {
     await Price.create(fetchedPrices)
@@ -100,6 +98,4 @@ async function getPricesForAllSources(ctx, next) {
       ),
     },
   }
-
-  return next()
 }
