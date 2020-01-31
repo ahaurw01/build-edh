@@ -183,7 +183,9 @@ export default {
   transform-origin: bottom left;
 }
 
-.card-container:hover .card-container-inner {
-  transform: rotate(-2deg) translateX(-0.1rem);
+@media (min-width: 769px) {
+  .card-container:hover .card-container-inner {
+    transform: rotate(-1deg) translateX(-0.1rem);
+  }
 }
 </style>
