@@ -174,15 +174,6 @@ export const actions = {
   },
 
   async getPrintings({ commit }, { card, setNameFilter }) {
-    // Special logic for basic lands which we know have a million printings.
-    if (
-      !setNameFilter &&
-      ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest'].includes(card.name)
-    ) {
-      commit('printings', { [card.name]: [card] })
-      return
-    }
-
     const {
       data: { printings },
     } = await this.$axios.get(`/api/cards/printings`, {
@@ -643,14 +634,27 @@ export const getters = {
   },
 
   textExport: (state, { commanders, the99 }) => {
+    function set(card) {
+      if (!card.source.setCode) return ''
+
+      let s = card.source.setCode
+      if (card.source.multiverseId) {
+        s += `:${card.source.multiverseId}`
+      }
+      return `(${s})`
+    }
+
     return sortBy(
-      [...commanders, ...the99].map(
-        card =>
-          `${card.source.name}${card.isCommander ? ' *CMDR* ' : ' '}(${
-            card.source.setCode
-          })${card.isFoil ? ' *F*' : ''}${
-            card.purposes.length ? ` # ${card.purposes.join(', ')}` : ''
-          }`
+      [...commanders, ...the99].map(card =>
+        [
+          card.source.name,
+          card.isCommander ? '*CMDR*' : '',
+          card.isFoil ? ' *F*' : '',
+          set(card),
+          card.purposes.length ? `# ${card.purposes.join(', ')}` : '',
+        ]
+          .filter(s => s)
+          .join(' ')
       ),
       line => {
         if (line.includes('*CMDR*')) {

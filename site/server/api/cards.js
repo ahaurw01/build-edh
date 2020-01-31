@@ -56,8 +56,11 @@ async function getPrintings(ctx) {
   const query = { name }
   if (setNameFilter)
     query.setName = {
-      $regex: new RegExp((setNameFilter || '').replace(/[^\w\d:]/g, ''), 'i'),
+      $regex: new RegExp(
+        (setNameFilter || '').replace(/[^\w\d\s:]/g, '').replace(/\s+/g, ' '),
+        'i'
+      ),
     }
 
-  ctx.body = { printings: await Card.find(query) }
+  ctx.body = { printings: await Card.find(query).limit(20) }
 }

@@ -2,7 +2,7 @@ import {
   bulkInputToNameRegex,
   isBulkInputCommander,
   isBulkInputFoil,
-  setCodeFromBulkInput,
+  setInfoFromBulkInput,
   purposesFromBulkInput,
   sourceForInput,
   validateBulkInput,
@@ -132,23 +132,41 @@ describe('Deck Validation', () => {
     })
   })
 
-  describe('setCodeFromBulkInput', () => {
+  describe('setInfoFromBulkInput', () => {
     test('nothing if no set code', () => {
       const input = 'foil'
 
-      expect(setCodeFromBulkInput(input)).toBeFalsy()
+      expect(setInfoFromBulkInput(input)).toEqual({
+        setCode: null,
+        multiverseId: null,
+      })
     })
 
     test('finds starting set code', () => {
       const input = '(hi) foil'
 
-      expect(setCodeFromBulkInput(input)).toBe('hi')
+      expect(setInfoFromBulkInput(input)).toEqual({
+        setCode: 'hi',
+        multiverseId: null,
+      })
     })
 
     test('finds ending set code', () => {
       const input = 'foil (hi)'
 
-      expect(setCodeFromBulkInput(input)).toBe('hi')
+      expect(setInfoFromBulkInput(input)).toEqual({
+        setCode: 'hi',
+        multiverseId: null,
+      })
+    })
+
+    test('finds set code with multiverse id', () => {
+      const input = 'foil (hi:123)'
+
+      expect(setInfoFromBulkInput(input)).toEqual({
+        setCode: 'hi',
+        multiverseId: 123,
+      })
     })
   })
 

@@ -1163,6 +1163,7 @@ describe('Deck Store', () => {
             source: {
               name: 'Krenko',
               setCode: 'ABC',
+              multiverseId: 123,
             },
             purposes: ['Tokens'],
             isCommander: true,
@@ -1173,6 +1174,7 @@ describe('Deck Store', () => {
             source: {
               name: 'Mountain',
               setCode: 'XYZ',
+              multiverseId: 456,
             },
             purposes: ['Artwork'],
           },
@@ -1181,7 +1183,7 @@ describe('Deck Store', () => {
         const result = getters.textExport({}, { commanders, the99 })
 
         expect(result).toEqual(
-          'Krenko *CMDR* (ABC) # Tokens\nMountain (XYZ) # Artwork'
+          'Krenko *CMDR* (ABC:123) # Tokens\nMountain (XYZ:456) # Artwork'
         )
       })
 
