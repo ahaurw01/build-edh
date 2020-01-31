@@ -128,8 +128,10 @@ img.special-shadow {
   transform: translateX(-50%);
   color: #eee;
   background: rgba(0, 0, 0, 0.75);
-  font-size: 0.9rem;
-  padding: 0.1rem;
+  font-size: 0.95rem;
+  padding: 0.2rem 0.3rem 0.3rem;
+  line-height: 1;
+  border-radius: 0 0 50% 50%;
 }
 
 .edit-button {
