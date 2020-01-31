@@ -8,6 +8,13 @@
           :placeholder="placeholder"
         />
       </BField>
+
+      <p>
+        <i>
+          Note: this does not touch your deck's considerations, only the main
+          board.
+        </i>
+      </p>
     </section>
     <footer class="modal-card-foot">
       <div class="level is-mobile" style="width: 100%">
@@ -19,7 +26,7 @@
           </div>
           <div class="level-item">
             <button class="button is-primary">
-              Add all
+              Update deck
             </button>
           </div>
         </div>
