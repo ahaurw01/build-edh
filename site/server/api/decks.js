@@ -111,7 +111,7 @@ async function getDecksByOwner(ctx) {
 }
 
 async function getDeck(ctx) {
-  const { slug } = ctx.params
+  const slug = ctx.params.slug || _.get(ctx, 'state.deck.slug')
   let deck = await Deck.findOne({ slug })
   if (!deck) return (ctx.response.status = 404)
 
@@ -165,6 +165,9 @@ function bulkUpdateDeckAssembly(ctx, next) {
   }
 
   // Construct new deck.
+  deck.commanders = []
+  // Considerations aren't part of bulk updates yet.
+  deck.the99 = deck.the99.filter(card => card.isConsideration)
   updates.forEach(input => {
     const source = sourceForInput(input, ctx.state.bulkInputSources)
     const card = {

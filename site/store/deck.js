@@ -643,15 +643,34 @@ export const getters = {
   },
 
   textExport: (state, { commanders, the99 }) => {
-    return [...commanders, ...the99]
-      .map(
+    return sortBy(
+      [...commanders, ...the99].map(
         card =>
           `${card.source.name}${card.isCommander ? ' *CMDR* ' : ' '}(${
             card.source.setCode
           })${card.isFoil ? ' *F*' : ''}${
             card.purposes.length ? ` # ${card.purposes.join(', ')}` : ''
           }`
-      )
+      ),
+      line => {
+        if (line.includes('*CMDR*')) {
+          return ' ' + line
+        }
+        return line
+      }
+    )
+      .reduce((cardLines, cardLine) => {
+        if (cardLines.length === 0) return [cardLine]
+        const lastCardLine = cardLines.pop()
+        if (lastCardLine.replace(/^\d+[ ]/, '') === cardLine) {
+          return [
+            ...cardLines,
+            `${+(/^(\d+)/.exec(lastCardLine) || ['', 1])[1] + 1} ${cardLine}`,
+          ]
+        }
+
+        return [...cardLines, lastCardLine, cardLine]
+      }, [])
       .join('\n')
   },
 

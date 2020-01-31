@@ -12,8 +12,8 @@
       <BTabItem label="Add Single Card">
         <CardModalForm />
       </BTabItem>
-      <BTabItem label="Bulk Add Cards">
-        <BulkAddModalForm />
+      <BTabItem label="Bulk Edit Cards">
+        <BulkEditModalForm :current-deck-text="textExport" />
       </BTabItem>
     </BTabs>
   </div>
@@ -22,12 +22,12 @@
 <script>
 import { mapGetters } from 'vuex'
 import CardModalForm from './CardModalForm'
-import BulkAddModalForm from './BulkAddModalForm'
+import BulkEditModalForm from './BulkEditModalForm'
 
 export default {
   components: {
     CardModalForm,
-    BulkAddModalForm,
+    BulkEditModalForm,
   },
 
   data() {
@@ -40,6 +40,7 @@ export default {
     ...mapGetters({
       canAddCommander: 'deck/canAddCommander',
       commanders: 'deck/commanders',
+      textExport: 'deck/textExport',
     }),
 
     selectedTabIndex() {

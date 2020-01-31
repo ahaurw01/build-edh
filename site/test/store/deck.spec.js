@@ -1155,5 +1155,91 @@ describe('Deck Store', () => {
         })
       })
     })
+
+    describe('textExport', () => {
+      test('handles simple deck', () => {
+        const commanders = [
+          {
+            source: {
+              name: 'Krenko',
+              setCode: 'ABC',
+            },
+            purposes: ['Tokens'],
+            isCommander: true,
+          },
+        ]
+        const the99 = [
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'XYZ',
+            },
+            purposes: ['Artwork'],
+          },
+        ]
+
+        const result = getters.textExport({}, { commanders, the99 })
+
+        expect(result).toEqual(
+          'Krenko *CMDR* (ABC) # Tokens\nMountain (XYZ) # Artwork'
+        )
+      })
+
+      test('handles multiples', () => {
+        const commanders = [
+          {
+            source: {
+              name: 'Krenko',
+              setCode: 'ABC',
+            },
+            purposes: ['Tokens'],
+            isCommander: true,
+          },
+        ]
+        const the99 = [
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'XYZ',
+            },
+            purposes: ['Artwork'],
+          },
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'WXY',
+            },
+            purposes: ['Artwork'],
+          },
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'XYZ',
+            },
+            purposes: ['Artwork'],
+          },
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'WXY',
+            },
+            purposes: ['Artwork'],
+          },
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'WXY',
+            },
+            purposes: ['Artwork'],
+          },
+        ]
+
+        const result = getters.textExport({}, { commanders, the99 })
+
+        expect(result).toEqual(
+          'Krenko *CMDR* (ABC) # Tokens\n3 Mountain (WXY) # Artwork\n2 Mountain (XYZ) # Artwork'
+        )
+      })
+    })
   })
 })
