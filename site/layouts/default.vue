@@ -64,5 +64,9 @@ export default {
 <style>
 .navbar-brand {
   justify-content: space-between;
+  flex-grow: 1;
+}
+.navbar-menu {
+  flex-grow: 0;
 }
 </style>
