@@ -30,7 +30,12 @@ const purposesFromBulkInput = (input = '') =>
 
 const sourceForInput = (input = '', sources) => {
   const regexp = bulkInputToNameRegex(input)
-  return sources.find(source => regexp.test(source.name))
+  const setCode = setCodeFromBulkInput(input)
+  return sources.find(source => {
+    return (
+      regexp.test(source.name) && (setCode ? source.setCode === setCode : true)
+    )
+  })
 }
 
 module.exports = {
