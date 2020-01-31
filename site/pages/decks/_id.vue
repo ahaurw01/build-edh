@@ -16,8 +16,8 @@
 
       <section class="section">
         <div v-if="decks.length" class="columns is-multiline">
-          <div v-for="deck in decks" :key="deck._id" class="column is-half">
-            <NuxtLink :to="`/deck/${deck._id}`">
+          <div v-for="deck in decks" :key="deck.slug" class="column is-half">
+            <NuxtLink :to="`/deck/${deck.slug}`">
               <DeckTile :deck="deck" />
             </NuxtLink>
           </div>
@@ -64,10 +64,8 @@ export default {
   methods: {
     async createDeck() {
       const { data: deck } = await this.$axios.post('/api/decks')
-      this.$router.push(`/deck/${deck._id}`)
+      this.$router.push(`/deck/${deck.slug}`)
     },
   },
 }
 </script>
-
-<style></style>

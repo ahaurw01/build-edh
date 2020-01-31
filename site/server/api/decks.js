@@ -80,6 +80,7 @@ async function createDeck(ctx) {
   const { user } = ctx.state
   const deck = new Deck({
     name: '',
+    slug: Deck.makeSlug('untitled'),
     purpose: '',
     description: '',
     owner: user._id,
@@ -110,8 +111,8 @@ async function getDecksByOwner(ctx) {
 }
 
 async function getDeck(ctx) {
-  const { id } = ctx.params
-  let deck = await Deck.findById(id)
+  const { slug } = ctx.params
+  let deck = await Deck.findOne({ slug })
   if (!deck) return (ctx.response.status = 404)
 
   deck = deck.toJSON()
@@ -138,17 +139,19 @@ async function updateDeck(ctx) {
   const { name, purpose, description, compuPurposes } = ctx.request.body
   const { id } = ctx.params
   const owner = ctx.state.user._id
-  const updates = {}
-  if (name != null) updates.name = name
-  if (purpose != null) updates.purpose = purpose
-  if (description != null) updates.description = description
-  if (compuPurposes != null) updates.compuPurposes = compuPurposes
+  const deck = await Deck.findOne({ _id: id, owner })
+  if (!deck) return (ctx.response.status = 404)
 
-  const deck = await Deck.findOneAndUpdate({ _id: id, owner }, updates, {
-    new: true,
-  })
-  if (!deck) ctx.response.status = 404
-  else ctx.body = deck
+  if (name != null && name !== deck.name) {
+    deck.name = name
+    deck.slug = Deck.makeSlug(name)
+  }
+  if (purpose != null) deck.purpose = purpose
+  if (description != null) deck.description = description
+  if (compuPurposes != null) deck.compuPurposes = compuPurposes
+
+  await deck.save()
+  ctx.body = deck
 }
 
 function bulkUpdateDeckAssembly(ctx, next) {
