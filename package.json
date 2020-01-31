@@ -7,6 +7,7 @@
     "@nuxtjs/auth": "4.8.5",
     "@nuxtjs/axios": "5.9.2",
     "@nuxtjs/pwa": "3.0.0-beta.19",
+    "@sindresorhus/slugify": "0.10.0",
     "array-shuffle": "^1.0.1",
     "axios": "0.19.2",
     "axios-auth-refresh": "2.2.1",
@@ -23,6 +24,7 @@
     "normalize-diacritics": "2.9.0",
     "nuxt": "2.11.0",
     "nuxt-buefy": "0.3.21",
+    "shortid": "2.2.15",
     "uuid": "3.3.3"
   },
   "devDependencies": {
