@@ -63,11 +63,14 @@ async function getDeck(ctx, next) {
 }
 
 async function getPricesForAllSources(ctx) {
-  const tcgplayerIds = _.uniq(
-    [...ctx.state.commanderSources, ...ctx.state.the99Sources].map(
-      ({ tcgplayerId }) => tcgplayerId
-    )
-  )
+  const tcgplayerIds = _([
+    ...ctx.state.commanderSources,
+    ...ctx.state.the99Sources,
+  ])
+    .map('tcgplayerId')
+    .compact()
+    .uniq()
+    .value()
 
   const cachedPrices = await Price.find({ tcgplayerId: { $in: tcgplayerIds } })
   const tcgplayerIdsOutstanding = _.difference(
