@@ -60,7 +60,9 @@
           allow-new
           :data="filteredSuggestedPurposes"
           autocomplete
+          open-on-focus
           @typing="setFilteredSuggestedPurposes"
+          @select="resetSuggestedPurposes"
         />
       </BField>
 
@@ -150,7 +152,7 @@ export default {
       nameLike: this.card ? this.card.source.name : '',
       selectedCard: this.card ? this.card.source : null,
       purposes: [...(this.card ? this.card.purposes : [])],
-      filteredSuggestedPurposes: this.suggestedPurposes,
+      suggestedPurposeFilter: '',
       confirmDelete: false,
       count:
         this.card && this.card.source.canHaveMultiple
@@ -203,6 +205,24 @@ export default {
 
       return this.selectedCard.existsInFoil && this.selectedCard.existsInNonFoil
     },
+
+    suggestedPurposesWithoutSelections() {
+      return this.suggestedPurposes.filter(
+        purpose => !this.purposes.includes(purpose)
+      )
+    },
+
+    filteredSuggestedPurposes() {
+      if (this.suggestedPurposeFilter.length <= 1) {
+        return this.suggestedPurposesWithoutSelections
+      }
+
+      return this.suggestedPurposesWithoutSelections.filter(purpose =>
+        purpose
+          .toLowerCase()
+          .includes(this.suggestedPurposeFilter.toLowerCase())
+      )
+    },
   },
 
   mounted() {
@@ -253,19 +273,11 @@ export default {
     }, 200),
 
     setFilteredSuggestedPurposes(text) {
-      text = text.trim()
-      const suggestedPurposesWithoutSelections = this.suggestedPurposes.filter(
-        purpose => !this.purposes.includes(purpose)
-      )
+      this.suggestedPurposeFilter = text.trim()
+    },
 
-      if (text.length <= 2) {
-        this.filteredSuggestedPurposes = suggestedPurposesWithoutSelections
-        return
-      }
-
-      this.filteredSuggestedPurposes = suggestedPurposesWithoutSelections.filter(
-        purpose => purpose.toLowerCase().includes(text.toLowerCase())
-      )
+    resetSuggestedPurposes() {
+      this.suggestedPurposeFilter = ''
     },
 
     onDelete() {

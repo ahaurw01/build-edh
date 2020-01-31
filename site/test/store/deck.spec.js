@@ -25,13 +25,13 @@ describe('Deck Store', () => {
         const result = getters.suggestedPurposes(state, { commanders, the99 })
 
         expect(result).toEqual([
-          'Ramp',
-          'Card draw',
-          'Sac outlet',
           'Board wipe',
+          'Card draw',
           'Do a thing',
-          'Win the game',
+          'Ramp',
+          'Sac outlet',
           'Single removal',
+          'Win the game',
         ])
       })
     })

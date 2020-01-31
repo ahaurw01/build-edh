@@ -416,13 +416,15 @@ export const getters = {
   usePurposeGroups: state => state.usePurposeGroups,
   sortByCmc: state => state.sortByCmc,
   suggestedPurposes: (state, { commanders, the99 }) =>
-    uniq([
-      ...flatten([...commanders, ...the99].map(c => c.purposes)),
-      'Card draw',
-      'Ramp',
-      'Single removal',
-      'Board wipe',
-    ]),
+    sortBy(
+      uniq([
+        ...flatten([...commanders, ...the99].map(c => c.purposes)),
+        'Card draw',
+        'Ramp',
+        'Single removal',
+        'Board wipe',
+      ])
+    ),
   colorIdentity: (state, { commanders }) => {
     const colors = flatten(commanders.map(c => c.source.ci))
     return ['W', 'U', 'B', 'R', 'G'].filter(c => colors.includes(c))
