@@ -125,7 +125,7 @@ export const actions = {
       }
     )
     commit('deckMeta', deck)
-    this.$router.push(`/deck/${deck.slug}`)
+    this.$router.replace(`/deck/${deck.slug}`)
   },
 
   async updatePurpose({ commit, state }, newPurpose) {
