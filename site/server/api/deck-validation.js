@@ -16,9 +16,15 @@ const isBulkInputCommander = (input = '') =>
 
 const isBulkInputFoil = (input = '') => /\*f\*/i.test(input.split('#')[0])
 
-const setCodeFromBulkInput = (input = '') => {
+const setInfoFromBulkInput = (input = '') => {
   const match = /[(](.*?)[)]/.exec(input.split('#')[0])
-  return match ? match[1].toLowerCase() : undefined
+  if (!match) return { setCode: null, multiverseId: null }
+
+  const parts = match[1].split(':')
+  const setCode = parts[0].toLowerCase()
+  const multiverseId = parts[1] ? +parts[1] : null
+
+  return { setCode, multiverseId }
 }
 
 const purposesFromBulkInput = (input = '') =>
@@ -30,7 +36,14 @@ const purposesFromBulkInput = (input = '') =>
 
 const sourceForInput = (input = '', sources) => {
   const regexp = bulkInputToNameRegex(input)
-  return sources.find(source => regexp.test(source.name))
+  const { setCode, multiverseId } = setInfoFromBulkInput(input)
+  return sources.find(source => {
+    return (
+      regexp.test(source.name) &&
+      (setCode ? source.setCode === setCode : true) &&
+      (multiverseId ? source.multiverseId === multiverseId : true)
+    )
+  })
 }
 
 module.exports = {
@@ -44,7 +57,7 @@ module.exports = {
   bulkInputToNameRegex,
   isBulkInputCommander,
   isBulkInputFoil,
-  setCodeFromBulkInput,
+  setInfoFromBulkInput,
   purposesFromBulkInput,
   sourceForInput,
 }
@@ -73,10 +86,14 @@ function parseBulkInputNumbers(ctx, next) {
  */
 async function populateBulkInputSources(ctx, next) {
   ctx.state.bulkInputSources = await Card.findWithNames(
-    (ctx.request.body.updates || []).map(input => ({
-      nameRegex: bulkInputToNameRegex(input),
-      setCode: setCodeFromBulkInput(input),
-    }))
+    (ctx.request.body.updates || []).map(input => {
+      const { setCode, multiverseId } = setInfoFromBulkInput(input)
+      return {
+        nameRegex: bulkInputToNameRegex(input),
+        setCode,
+        multiverseId,
+      }
+    })
   )
 
   return next()

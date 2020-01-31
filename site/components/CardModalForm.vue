@@ -121,10 +121,13 @@
 
 <script>
 import debounce from 'lodash/debounce'
+import get from 'lodash/get'
 import { mapGetters, mapActions } from 'vuex'
 import Card from '~/components/Card'
 import ManaCost from '~/components/ManaCost'
 import Presser from '~/components/Presser'
+
+const BASIC_NAMES = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest']
 
 export default {
   components: {
@@ -226,7 +229,9 @@ export default {
   },
 
   mounted() {
-    if (this.selectedCard) this.getPrintings({ card: this.selectedCard })
+    if (this.selectedCard) {
+      this._getPrintings()
+    }
     this.presser = new Presser()
     this.presser.on('submitForm', () => this.onSave())
   },
@@ -242,7 +247,7 @@ export default {
       this.isFoil =
         this.selectedCard.existsInFoil && !this.selectedCard.existsInNonFoil
 
-      this.getPrintings({ card })
+      this._getPrintings()
     },
 
     onSave() {
@@ -291,9 +296,15 @@ export default {
     },
 
     _getPrintings(e) {
-      const setNameFilter = (e.target.value || '').trim()
-      if (setNameFilter.length > 1)
-        this.getPrintings({ card: this.selectedCard, setNameFilter })
+      let setNameFilter = get(e, 'target.value', '').trim()
+
+      // Special logic for basic lands which we know have a million printings.
+      const isBasicLand = BASIC_NAMES.includes(this.selectedCard.name)
+      if (isBasicLand && !setNameFilter) {
+        setNameFilter = this.selectedCard.setName
+      }
+
+      this.getPrintings({ card: this.selectedCard, setNameFilter })
     },
 
     ...mapActions({

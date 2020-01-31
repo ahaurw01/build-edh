@@ -8,16 +8,25 @@
           :placeholder="placeholder"
         />
       </BField>
+
+      <p>
+        <i>
+          Note: this does not touch your deck's considerations, only the main
+          board.
+        </i>
+      </p>
     </section>
     <footer class="modal-card-foot">
-      <div class="level" style="width: 100%">
+      <div class="level is-mobile" style="width: 100%">
         <div class="level-left">
           <div class="level-item">
             <button class="button" type="button" @click="parent.close()">
               Cancel
             </button>
+          </div>
+          <div class="level-item">
             <button class="button is-primary">
-              Add all
+              Update deck
             </button>
           </div>
         </div>
@@ -29,11 +38,15 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 export default {
+  props: {
+    currentDeckText: { type: String, required: true },
+  },
+
   data() {
     return {
       placeholder:
         "Atraxa, Praetors' Voice *CMDR* # Proliferate, Life gain\n3x Forest\n17 Persistent Petitioners # Mill",
-      bulkInput: '',
+      bulkInput: this.currentDeckText,
     }
   },
 

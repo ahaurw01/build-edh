@@ -63,6 +63,7 @@ Deck.makeSlug = function(name) {
 const cardSchema = new Schema({
   scryfallId: { type: String, index: true },
   oracleId: String,
+  multiverseId: Number,
   tcgplayerId: { type: Number, index: true },
   name: { type: String, index: true },
   searchName: { type: String, index: true },
@@ -179,6 +180,9 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
   const doc = {
     scryfallId: rawCard.id,
     oracleId: rawCard.oracle_id,
+    multiverseId: rawCard.multiverse_ids
+      ? rawCard.multiverse_ids[0]
+      : undefined,
     tcgplayerId: rawCard.tcgplayer_id,
     name: rawCard.name,
     searchName: normalizeSearchName(rawCard.name),
@@ -229,17 +233,18 @@ const allCardFieldsGroup = {
 /**
  * Find cards with given name regular expressions and sets.
  *
- * @param {Object[]} filters  {nameRegex, setCode}
+ * @param {Object[]} filters  {nameRegex, setCode, multiverseId}
  *
  * @return {Card[]}
  */
 Card.findWithNames = async filters => {
   const cards = []
-  for (const { nameRegex, setCode } of filters) {
+  for (const { nameRegex, setCode, multiverseId } of filters) {
     const query = {
       name: { $regex: nameRegex },
     }
     if (setCode) query.setCode = setCode
+    if (multiverseId) query.multiverseId = multiverseId
     const card = await Card.findOne(query)
     if (card) cards.push(card)
   }

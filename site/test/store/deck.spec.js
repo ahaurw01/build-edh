@@ -1155,5 +1155,93 @@ describe('Deck Store', () => {
         })
       })
     })
+
+    describe('textExport', () => {
+      test('handles simple deck', () => {
+        const commanders = [
+          {
+            source: {
+              name: 'Krenko',
+              setCode: 'ABC',
+              multiverseId: 123,
+            },
+            purposes: ['Tokens'],
+            isCommander: true,
+          },
+        ]
+        const the99 = [
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'XYZ',
+              multiverseId: 456,
+            },
+            purposes: ['Artwork'],
+          },
+        ]
+
+        const result = getters.textExport({}, { commanders, the99 })
+
+        expect(result).toEqual(
+          'Krenko *CMDR* (ABC:123) # Tokens\nMountain (XYZ:456) # Artwork'
+        )
+      })
+
+      test('handles multiples', () => {
+        const commanders = [
+          {
+            source: {
+              name: 'Krenko',
+              setCode: 'ABC',
+            },
+            purposes: ['Tokens'],
+            isCommander: true,
+          },
+        ]
+        const the99 = [
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'XYZ',
+            },
+            purposes: ['Artwork'],
+          },
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'WXY',
+            },
+            purposes: ['Artwork'],
+          },
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'XYZ',
+            },
+            purposes: ['Artwork'],
+          },
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'WXY',
+            },
+            purposes: ['Artwork'],
+          },
+          {
+            source: {
+              name: 'Mountain',
+              setCode: 'WXY',
+            },
+            purposes: ['Artwork'],
+          },
+        ]
+
+        const result = getters.textExport({}, { commanders, the99 })
+
+        expect(result).toEqual(
+          'Krenko *CMDR* (ABC) # Tokens\n3 Mountain (WXY) # Artwork\n2 Mountain (XYZ) # Artwork'
+        )
+      })
+    })
   })
 })
