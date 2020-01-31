@@ -32,7 +32,7 @@ apiRouter.post('/login/discord', discordLogin)
 apiRouter.get('/cards', getCards)
 apiRouter.get('/cards/printings', getPrintings)
 
-apiRouter.get('/decks/:id', getDeck)
+apiRouter.get('/decks/:slug', getDeck)
 apiRouter.get('/decks', getDecksByOwner)
 
 apiRouter.get('/users/:id', getUser)

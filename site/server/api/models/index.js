@@ -1,7 +1,15 @@
 const _ = require('lodash')
 const { normalizeSync } = require('normalize-diacritics')
 const mongoose = require('mongoose')
+const slugify = require('@sindresorhus/slugify')
+const shortid = require('shortid')
 const { Schema } = mongoose
+
+// The last characters replace '-' and '_'.
+// They will get transformed to 'a' and 'e' by sluglify.
+shortid.characters(
+  '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáé'
+)
 
 function normalizeSearchName(name) {
   return normalizeSync(name)
@@ -36,6 +44,7 @@ const deckCardSchema = {
 
 const deckSchema = new Schema({
   name: String,
+  slug: { type: String, index: true, unique: true },
   purpose: String,
   description: String,
   compuPurposes: [Object],
@@ -45,6 +54,11 @@ const deckSchema = new Schema({
   the99: [deckCardSchema],
 })
 const Deck = mongoose.model('Deck', deckSchema)
+
+Deck.makeSlug = function(name) {
+  const id = shortid.generate()
+  return slugify(`${name} ${id}`, { lowercase: false, decamelize: false })
+}
 
 const cardSchema = new Schema({
   scryfallId: { type: String, index: true },

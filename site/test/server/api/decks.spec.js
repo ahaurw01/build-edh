@@ -13,7 +13,7 @@ describe('deck endpoints', () => {
 
   describe('get deck', () => {
     test('it works', async () => {
-      jest.spyOn(Deck, 'findById').mockImplementation(() =>
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
         Promise.resolve(
           new Deck({
             commanders: [{ scryfallId: '1' }],
@@ -56,6 +56,59 @@ describe('deck endpoints', () => {
         ],
         compuPurposes: [],
       })
+    })
+  })
+
+  describe('update deck properties', () => {
+    test('update name', async () => {
+      jest
+        .spyOn(Deck, 'findOne')
+        .mockImplementation(() => Promise.resolve(new Deck()))
+
+      jest.spyOn(Deck.prototype, 'save').mockImplementation(function() {
+        return this
+      })
+
+      const { body } = await supertest(server)
+        .put('/api/decks/abc123')
+        .send({ name: 'new name' })
+        .set('Authorization', tokenHeader)
+        .expect(200)
+
+      expect(body).toEqual(
+        expect.objectContaining({
+          name: 'new name',
+          slug: expect.stringContaining('new-name-'),
+        })
+      )
+    })
+
+    test('name no-op', async () => {
+      jest.spyOn(Deck, 'findOne').mockImplementation(() =>
+        Promise.resolve(
+          new Deck({
+            name: 'name',
+            slug: 'slug',
+          })
+        )
+      )
+
+      jest.spyOn(Deck.prototype, 'save').mockImplementation(function() {
+        return this
+      })
+
+      const { body } = await supertest(server)
+        .put('/api/decks/abc123')
+        .send({ name: 'name' })
+        .set('Authorization', tokenHeader)
+        .expect(200)
+
+      expect(body).toEqual(
+        expect.objectContaining({
+          name: 'name',
+          slug: 'slug',
+        })
+      )
     })
   })
 
