@@ -64,7 +64,7 @@
         />
       </BField>
 
-      <div class="columns">
+      <div class="columns is-mobile">
         <div class="column">
           <BField label="How Shiny">
             <BSwitch
