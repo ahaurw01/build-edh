@@ -60,9 +60,7 @@
           allow-new
           :data="filteredSuggestedPurposes"
           autocomplete
-          open-on-focus
           @typing="setFilteredSuggestedPurposes"
-          @select="resetSuggestedPurposes"
         />
       </BField>
 
@@ -138,6 +136,12 @@ export default {
   directives: {
     focus(el) {
       setTimeout(() => {
+        // Bail if an input is already selected.
+        if (
+          document.activeElement &&
+          document.activeElement instanceof HTMLInputElement
+        )
+          return
         const input = el.querySelector('input')
         if (!input) return
         if (!input.value) input.focus()
@@ -279,10 +283,6 @@ export default {
 
     setFilteredSuggestedPurposes(text) {
       this.suggestedPurposeFilter = text.trim()
-    },
-
-    resetSuggestedPurposes() {
-      this.suggestedPurposeFilter = ''
     },
 
     onDelete() {
