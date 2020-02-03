@@ -64,13 +64,38 @@
         </header>
         <section class="modal-card-body">
           <div class="modal-cards-wrapper">
-            <Card
-              v-for="item in library"
+            <div
+              v-for="(item, index) in library"
               :key="item.deckCard.uuid"
-              :card="item.deckCard.source"
-              :face-down="!libraryCardsAreFaceUp"
-              size="small"
-            />
+              class="modal-card-wrapper"
+            >
+              <button @click="libraryActionOverlayIndex = index">
+                <Card
+                  :card="item.deckCard.source"
+                  :face-down="!libraryCardsAreFaceUp"
+                  size="small"
+                />
+              </button>
+
+              <div
+                v-if="libraryActionOverlayIndex === index"
+                class="modal-card-actions"
+              >
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'library',
+                      toZone: 'hand',
+                      item: library[index],
+                    })
+                    libraryActionOverlayIndex = -1
+                  "
+                >
+                  To Hand
+                </BButton>
+              </div>
+            </div>
           </div>
         </section>
         <footer class="modal-card-foot">
@@ -82,7 +107,7 @@
                 </BButton>
               </div>
               <div class="level-item">
-                <BButton @click="_shuffleLibrary" type="is-primary">
+                <BButton type="is-primary" @click="_shuffleLibrary">
                   Shuffle
                 </BButton>
               </div>
@@ -145,6 +170,7 @@ export default {
       build: 'playtest/build',
       draw: 'playtest/draw',
       shuffleLibrary: 'playtest/shuffleLibrary',
+      move: 'playtest/move',
     }),
 
     openLibraryModal() {
@@ -221,5 +247,26 @@ export default {
 .modal-cards-wrapper {
   display: flex;
   flex-wrap: wrap;
+}
+.modal-card-wrapper {
+  position: relative;
+}
+.modal-card-wrapper > button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.modal-card-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem;
 }
 </style>
