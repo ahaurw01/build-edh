@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   auth: false,
@@ -16,6 +16,8 @@ export default {
     try {
       const { data: deck } = await $axios.get(`/api/decks/${params.id}`)
       store.commit('playtest/deck', deck)
+      this.build()
+      this.draw(7)
     } catch (e) {
       error({ statusCode: 404, message: 'Deck not found' })
     }
@@ -29,7 +31,12 @@ export default {
     }),
   },
 
-  methods: {},
+  methods: {
+    ...mapActions({
+      shuffleLibrary: 'playtest/shuffleLibrary',
+      draw: 'playtest/draw',
+    }),
+  },
 }
 </script>
 
