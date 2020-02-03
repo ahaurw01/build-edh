@@ -16,8 +16,6 @@ export default {
     try {
       const { data: deck } = await $axios.get(`/api/decks/${params.id}`)
       store.commit('playtest/deck', deck)
-      this.build()
-      this.draw(7)
     } catch (e) {
       error({ statusCode: 404, message: 'Deck not found' })
     }
@@ -31,9 +29,14 @@ export default {
     }),
   },
 
+  mounted() {
+    this.build()
+    this.draw(7)
+  },
+
   methods: {
     ...mapActions({
-      shuffleLibrary: 'playtest/shuffleLibrary',
+      build: 'playtest/build',
       draw: 'playtest/draw',
     }),
   },
