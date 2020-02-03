@@ -37,6 +37,7 @@ export default {
     specialShadow: { type: Boolean, default: false },
     isFoil: { type: Boolean, default: false },
     reverse: { type: Boolean, default: false },
+    faceDown: { type: Boolean, default: false },
   },
 
   data() {
@@ -64,11 +65,11 @@ export default {
   },
 
   mounted() {
-    this.fetchImage()
+    if (!this.faceDown) this.fetchImage()
   },
 
   updated() {
-    this.fetchImage()
+    if (!this.faceDown) this.fetchImage()
   },
 
   methods: {

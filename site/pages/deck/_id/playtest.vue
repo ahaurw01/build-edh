@@ -3,25 +3,54 @@
     <div class="battlefield" />
     <div class="other-zones">
       <div class="zone library">
-        <h6 class="title is-6 has-background-light">Library</h6>
+        <h6 class="title is-6 has-background-light">
+          Library ({{ library.length }})
+        </h6>
+        <Card
+          v-if="library.length"
+          :card="library[0].deckCard.source"
+          size="small"
+          faceDown
+        />
       </div>
       <div class="zone command-zone">
         <h6 class="title is-6 has-background-light">Command Zone</h6>
+        <div
+          v-for="item in commandZone"
+          :key="item.deckCard.uuid"
+          class="card-wrapper"
+        >
+          <Card :card="item.deckCard.source" size="small" />
+        </div>
       </div>
       <div class="zone graveyard">
-        <h6 class="title is-6 has-background-light">Graveyard</h6>
+        <h6 class="title is-6 has-background-light">
+          Graveyard ({{ graveyard.length }})
+        </h6>
+        <div
+          v-for="item in graveyard"
+          :key="item.deckCard.uuid"
+          class="card-wrapper"
+        >
+          <Card :card="item.deckCard.source" size="small" />
+        </div>
       </div>
       <div class="zone exile">
-        <h6 class="title is-6 has-background-light">Exile</h6>
+        <h6 class="title is-6 has-background-light">
+          Exile ({{ exile.length }})
+        </h6>
+        <div
+          v-for="item in exile"
+          :key="item.deckCard.uuid"
+          class="card-wrapper"
+        >
+          <Card :card="item.deckCard.source" size="small" />
+        </div>
       </div>
     </div>
     <div class="zone hand">
-      <h6 class="title is-6 has-background-light">Hand</h6>
-      <div
-        v-for="item in hand"
-        :key="item.deckCard.uuid"
-        class="hand-card-wrapper"
-      >
+      <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
+      <div v-for="item in hand" :key="item.deckCard.uuid" class="card-wrapper">
         <Card :card="item.deckCard.source" size="small" />
       </div>
     </div>
