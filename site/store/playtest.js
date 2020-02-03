@@ -88,6 +88,18 @@ export const actions = {
     commit(fromZone, newFromZoneArray)
     commit(toZone, newToZoneArray)
   },
+
+  tap({ commit, getters }, item) {
+    commit(
+      'battlefield',
+      getters.battlefield.map(existingItem => {
+        if (existingItem === item) {
+          return { ...existingItem, tapped: !existingItem.tapped }
+        }
+        return existingItem
+      })
+    )
+  },
 }
 
 export const getters = {

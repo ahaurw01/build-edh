@@ -9,10 +9,18 @@
           left: `${item.x}px`,
         }"
         :transfer-data="{ fromZone: 'battlefield', item }"
+        :class="{ tapped: item.tapped }"
+        :image-x-offset="100"
+        :image-y-offset="100"
         class="battlefield-card-wrapper"
         @dragstart="startDrag"
       >
-        <Card :card="item.deckCard.source" size="small" />
+        <button @click="tap(item)">
+          <Card :card="item.deckCard.source" size="small" />
+        </button>
+        <template slot="image">
+          <Card :card="item.deckCard.source" size="small" />
+        </template>
       </Drag>
     </Drop>
     <div class="other-zones">
@@ -193,6 +201,7 @@ export default {
       draw: 'playtest/draw',
       shuffleLibrary: 'playtest/shuffleLibrary',
       move: 'playtest/move',
+      tap: 'playtest/tap',
     }),
 
     openLibraryModal() {
@@ -211,7 +220,6 @@ export default {
         x: nativeEvent.offsetX,
         y: nativeEvent.offsetY,
       }
-      console.log(nativeEvent.offsetX, nativeEvent.offsetY)
     },
 
     onDrop(toZone, { fromZone, item }, nativeEvent) {
@@ -306,5 +314,17 @@ export default {
 
 .battlefield-card-wrapper {
   position: absolute;
+  transition: transform 250ms;
+}
+
+.battlefield-card-wrapper > button {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+}
+
+.tapped {
+  transform: rotate(40deg);
 }
 </style>
