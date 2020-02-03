@@ -80,7 +80,10 @@ export const actions = {
     if (!item) return
 
     const newFromZoneArray = fromZoneArray.filter(o => o !== item)
-    const newToZoneArray = [{ ...item, x, y }, ...toZoneArray]
+    const newToZoneArray = [
+      { ...item, x, y },
+      ...(fromZone === toZone ? newFromZoneArray : toZoneArray),
+    ]
 
     commit(fromZone, newFromZoneArray)
     commit(toZone, newToZoneArray)

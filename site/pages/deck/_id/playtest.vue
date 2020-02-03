@@ -1,6 +1,20 @@
 <template>
   <div class="play-area has-background-light">
-    <Drop class="battlefield" @drop="onDrop('battlefield', ...arguments)" />
+    <Drop class="battlefield" @drop="onDrop('battlefield', ...arguments)">
+      <Drag
+        v-for="item in battlefield"
+        :key="item.deckCard.uuid"
+        :style="{
+          top: `${item.y}px`,
+          left: `${item.x}px`,
+        }"
+        :transfer-data="{ fromZone: 'battlefield', item }"
+        class="battlefield-card-wrapper"
+        @dragstart="startDrag"
+      >
+        <Card :card="item.deckCard.source" size="small" />
+      </Drag>
+    </Drop>
     <div class="other-zones">
       <div class="zone library">
         <h6 class="title is-6 has-background-light">
@@ -57,6 +71,7 @@
         :key="item.deckCard.uuid"
         :transfer-data="{ fromZone: 'hand', item }"
         class="card-wrapper"
+        @dragstart="startDrag"
       >
         <Card :card="item.deckCard.source" size="small" />
       </Drag>
@@ -155,6 +170,7 @@ export default {
     libraryModalIsShowing: false,
     libraryCardsAreFaceUp: false,
     libraryActionOverlayIndex: -1,
+    latestDragOffsets: { x: 0, y: 0 },
   }),
 
   computed: {
@@ -190,13 +206,21 @@ export default {
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
+    startDrag(data, nativeEvent) {
+      this.latestDragOffsets = {
+        x: nativeEvent.offsetX,
+        y: nativeEvent.offsetY,
+      }
+      console.log(nativeEvent.offsetX, nativeEvent.offsetY)
+    },
+
     onDrop(toZone, { fromZone, item }, nativeEvent) {
       this.move({
         toZone,
         fromZone,
         item,
-        x: nativeEvent.offsetX,
-        y: nativeEvent.offsetY,
+        x: Math.max(0, nativeEvent.pageX - this.latestDragOffsets.x),
+        y: Math.max(0, nativeEvent.pageY - this.latestDragOffsets.y - 52),
       })
     },
   },
@@ -212,6 +236,7 @@ export default {
 
 .battlefield {
   flex-grow: 1;
+  position: relative;
 }
 
 .zone {
@@ -231,13 +256,6 @@ export default {
   transform: translateY(-50%);
   padding: 0 0.25rem;
 }
-
-/* .zone h6 button {
-  background: transparent;
-  border: none;
-  font-size: inherit;
-  font-weight: inherit;
-} */
 
 .other-zones {
   display: flex;
@@ -284,5 +302,9 @@ export default {
   display: flex;
   justify-content: center;
   padding: 0.5rem;
+}
+
+.battlefield-card-wrapper {
+  position: absolute;
 }
 </style>
