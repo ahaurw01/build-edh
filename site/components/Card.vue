@@ -2,7 +2,7 @@
   <div :class="size" class="mtg-card">
     <span v-if="count > 1" class="count">x{{ count }}</span>
     <img
-      :src="loading ? placeholderSrc : imgSrc"
+      :src="loading || faceDown ? placeholderSrc : imgSrc"
       :class="{ 'special-shadow': specialShadow, loading }"
     />
     <button
@@ -37,6 +37,7 @@ export default {
     specialShadow: { type: Boolean, default: false },
     isFoil: { type: Boolean, default: false },
     reverse: { type: Boolean, default: false },
+    faceDown: { type: Boolean, default: false },
   },
 
   data() {
