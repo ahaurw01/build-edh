@@ -10,8 +10,8 @@
         }"
         :transfer-data="{ fromZone: 'battlefield', item }"
         :class="{ tapped: item.tapped }"
-        :image-x-offset="100"
-        :image-y-offset="100"
+        :image-x-offset="item.tapped ? 45 : 22"
+        :image-y-offset="item.tapped ? 45 : 22"
         class="battlefield-card-wrapper"
         @dragstart="startDrag"
       >
@@ -19,7 +19,7 @@
           <Card :card="item.deckCard.source" size="small" />
         </button>
         <template slot="image">
-          <Card :card="item.deckCard.source" size="small" />
+          <BIcon icon="target" size="is-large" />
         </template>
       </Drag>
     </Drop>
@@ -78,10 +78,15 @@
         v-for="item in hand"
         :key="item.deckCard.uuid"
         :transfer-data="{ fromZone: 'hand', item }"
+        :image-x-offset="22"
+        :image-y-offset="22"
         class="card-wrapper"
         @dragstart="startDrag"
       >
         <Card :card="item.deckCard.source" size="small" />
+        <template slot="image">
+          <BIcon icon="target" size="is-large" />
+        </template>
       </Drag>
     </div>
 
