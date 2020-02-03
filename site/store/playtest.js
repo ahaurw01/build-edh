@@ -58,16 +58,32 @@ export const actions = {
     commit('library', shuffle(getters.library))
   },
 
-  draw({ commit, getters }, howMany) {
+  draw({ getters, dispatch }, howMany) {
     // Take first <howMany> cards from library and prepend them to the hand.
     // Commit new library, commit new hand.
     const hand = getters.hand.slice()
     const library = getters.library.slice()
     for (let i = 0; i < howMany && library.length; i++) {
+      dispatch('move', { fromZone: 'library', toZone: 'hand' })
       hand.unshift(library.shift())
     }
-    commit('library', library)
-    commit('hand', hand)
+  },
+
+  move({ commit, getters }, { item, fromZone, toZone }) {
+    const fromZoneArray = getters[fromZone]
+    const toZoneArray = getters[toZone]
+
+    if (!item) {
+      item = fromZoneArray[0]
+    }
+
+    if (!item) return
+
+    const newFromZoneArray = fromZoneArray.filter(o => o !== item)
+    const newToZoneArray = [item, ...toZoneArray]
+
+    commit(fromZone, newFromZoneArray)
+    commit(toZone, newToZoneArray)
   },
 }
 
