@@ -14,7 +14,7 @@ shortid.characters(
 function normalizeSearchName(name) {
   return normalizeSync(name)
     .toLowerCase()
-    .replace(/[\s'"!&*():.?/-]/g, '')
+    .replace(/[\s'"!&*():.,?/-]/g, '')
 }
 
 const userSchema = new Schema({
