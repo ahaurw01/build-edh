@@ -4,13 +4,15 @@
     <div class="other-zones">
       <div class="zone library">
         <h6 class="title is-6 has-background-light">
-          Library ({{ library.length }})
+          <BButton @click="openLibraryModal">
+            Library ({{ library.length }})
+          </BButton>
         </h6>
         <Card
           v-if="library.length"
           :card="library[0].deckCard.source"
           size="small"
-          faceDown
+          face-down
         />
       </div>
       <div class="zone command-zone">
@@ -54,11 +56,52 @@
         <Card :card="item.deckCard.source" size="small" />
       </div>
     </div>
+
+    <BModal :active.sync="libraryModalIsShowing" has-modal-card>
+      <div class="modal-card" style="width: auto">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Library ({{ library.length }})</p>
+        </header>
+        <section class="modal-card-body">
+          <div class="modal-cards-wrapper">
+            <Card
+              v-for="item in library"
+              :key="item.deckCard.uuid"
+              :card="item.deckCard.source"
+              :face-down="!libraryCardsAreFaceUp"
+              size="small"
+            />
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <div class="level is-mobile" style="width: 100%">
+            <div class="level-left">
+              <div class="level-item">
+                <BButton @click="libraryModalIsShowing = false">
+                  Close
+                </BButton>
+              </div>
+              <div class="level-item">
+                <BButton @click="_shuffleLibrary" type="is-primary">
+                  Shuffle
+                </BButton>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <BSwitch v-model="libraryCardsAreFaceUp">Show cards?</BSwitch>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </BModal>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { ToastProgrammatic as Toast } from 'buefy'
 import Card from '~/components/Card'
 
 export default {
@@ -77,7 +120,11 @@ export default {
     }
   },
 
-  data: () => ({}),
+  data: () => ({
+    libraryModalIsShowing: false,
+    libraryCardsAreFaceUp: false,
+    libraryActionOverlayIndex: -1,
+  }),
 
   computed: {
     ...mapGetters({
@@ -97,7 +144,19 @@ export default {
     ...mapActions({
       build: 'playtest/build',
       draw: 'playtest/draw',
+      shuffleLibrary: 'playtest/shuffleLibrary',
     }),
+
+    openLibraryModal() {
+      this.libraryActionOverlayIndex = -1
+      this.libraryCardsAreFaceUp = false
+      this.libraryModalIsShowing = true
+    },
+
+    _shuffleLibrary() {
+      this.shuffleLibrary()
+      Toast.open({ message: 'Library shuffled 👍', type: 'is-success' })
+    },
   },
 }
 </script>
@@ -131,6 +190,13 @@ export default {
   padding: 0 0.25rem;
 }
 
+/* .zone h6 button {
+  background: transparent;
+  border: none;
+  font-size: inherit;
+  font-weight: inherit;
+} */
+
 .other-zones {
   display: flex;
 }
@@ -149,6 +215,11 @@ export default {
 .hand {
 }
 
-.hand-card-wrapper {
+.card-wrapper {
+}
+
+.modal-cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>

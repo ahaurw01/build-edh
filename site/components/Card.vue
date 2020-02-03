@@ -2,7 +2,7 @@
   <div :class="size" class="mtg-card">
     <span v-if="count > 1" class="count">x{{ count }}</span>
     <img
-      :src="loading ? placeholderSrc : imgSrc"
+      :src="loading || faceDown ? placeholderSrc : imgSrc"
       :class="{ 'special-shadow': specialShadow, loading }"
     />
     <button
@@ -65,11 +65,11 @@ export default {
   },
 
   mounted() {
-    if (!this.faceDown) this.fetchImage()
+    this.fetchImage()
   },
 
   updated() {
-    if (!this.faceDown) this.fetchImage()
+    this.fetchImage()
   },
 
   methods: {
