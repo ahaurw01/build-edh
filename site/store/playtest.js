@@ -69,7 +69,7 @@ export const actions = {
     }
   },
 
-  move({ commit, getters }, { item, fromZone, toZone }) {
+  move({ commit, getters }, { item, fromZone, toZone, x, y }) {
     const fromZoneArray = getters[fromZone]
     const toZoneArray = getters[toZone]
 
@@ -80,7 +80,7 @@ export const actions = {
     if (!item) return
 
     const newFromZoneArray = fromZoneArray.filter(o => o !== item)
-    const newToZoneArray = [item, ...toZoneArray]
+    const newToZoneArray = [{ ...item, x, y }, ...toZoneArray]
 
     commit(fromZone, newFromZoneArray)
     commit(toZone, newToZoneArray)

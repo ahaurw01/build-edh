@@ -1,6 +1,6 @@
 <template>
   <div class="play-area has-background-light">
-    <div class="battlefield" />
+    <Drop class="battlefield" @drop="onDrop('battlefield', ...arguments)" />
     <div class="other-zones">
       <div class="zone library">
         <h6 class="title is-6 has-background-light">
@@ -52,9 +52,14 @@
     </div>
     <div class="zone hand">
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
-      <div v-for="item in hand" :key="item.deckCard.uuid" class="card-wrapper">
+      <Drag
+        v-for="item in hand"
+        :key="item.deckCard.uuid"
+        :transfer-data="{ fromZone: 'hand', item }"
+        class="card-wrapper"
+      >
         <Card :card="item.deckCard.source" size="small" />
-      </div>
+      </Drag>
     </div>
 
     <BModal :active.sync="libraryModalIsShowing" has-modal-card>
@@ -127,12 +132,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
+import { Drag, Drop } from 'vue-drag-drop'
 import Card from '~/components/Card'
 
 export default {
   auth: false,
 
-  components: { Card },
+  components: { Card, Drag, Drop },
 
   async fetch({ store, params, error, $axios }) {
     try {
@@ -182,6 +188,16 @@ export default {
     _shuffleLibrary() {
       this.shuffleLibrary()
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
+    },
+
+    onDrop(toZone, { fromZone, item }, nativeEvent) {
+      this.move({
+        toZone,
+        fromZone,
+        item,
+        x: nativeEvent.offsetX,
+        y: nativeEvent.offsetY,
+      })
     },
   },
 }
