@@ -17,22 +17,32 @@
     </div>
     <div class="zone hand">
       <h6 class="title is-6 has-background-light">Hand</h6>
+      <div
+        v-for="item in hand"
+        :key="item.deckCard.uuid"
+        class="hand-card-wrapper"
+      >
+        <Card :card="item.deckCard.source" size="small" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import Card from '~/components/Card'
 
 export default {
   auth: false,
 
-  components: {},
+  components: { Card },
 
   async fetch({ store, params, error, $axios }) {
     try {
       const { data: deck } = await $axios.get(`/api/decks/${params.id}`)
       store.commit('playtest/deck', deck)
+      store.dispatch('playtest/build')
+      store.dispatch('playtest/draw', 7)
     } catch (e) {
       error({ statusCode: 404, message: 'Deck not found' })
     }
@@ -43,13 +53,16 @@ export default {
   computed: {
     ...mapGetters({
       name: 'playtest/name',
+      library: 'playtest/library',
+      hand: 'playtest/hand',
+      battlefield: 'playtest/battlefield',
+      commandZone: 'playtest/commandZone',
+      graveyard: 'playtest/graveyard',
+      exile: 'playtest/exile',
     }),
   },
 
-  mounted() {
-    this.build()
-    this.draw(7)
-  },
+  mounted() {},
 
   methods: {
     ...mapActions({
@@ -105,5 +118,8 @@ export default {
   min-width: 150px;
 }
 .hand {
+}
+
+.hand-card-wrapper {
 }
 </style>
