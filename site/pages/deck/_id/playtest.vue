@@ -2,11 +2,12 @@
   <div class="play-area has-background-light">
     <Drop class="battlefield" @drop="onDrop('battlefield', ...arguments)">
       <Drag
-        v-for="item in battlefield"
+        v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
         :style="{
           top: `${item.y}px`,
           left: `${item.x}px`,
+          zIndex: battlefield.length - index,
         }"
         :transfer-data="{ fromZone: 'battlefield', item }"
         :class="{ tapped: item.tapped }"
