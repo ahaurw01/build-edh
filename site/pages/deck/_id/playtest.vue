@@ -181,7 +181,7 @@ export default {
 
     _shuffleLibrary() {
       this.shuffleLibrary()
-      Toast.open({ message: 'Library shuffled 👍', type: 'is-success' })
+      Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
   },
 }
