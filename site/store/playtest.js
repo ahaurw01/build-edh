@@ -100,6 +100,20 @@ export const actions = {
       })
     )
   },
+
+  dragItem({ commit, getters }, { zone, item, x, y }) {
+    commit(
+      zone,
+      getters[zone].map(existingItem => {
+        if (existingItem.deckCard.uuid === item.deckCard.uuid) {
+          return { ...item, x, y }
+        }
+        return { ...existingItem, x: null, y: null }
+      })
+    )
+  },
+
+  // dropItem() {},
 }
 
 export const getters = {

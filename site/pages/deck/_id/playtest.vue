@@ -39,7 +39,7 @@
         />
       </div>
       <div class="zone command-zone">
-        <h6 class="title is-6 has-background-light">Command Zone</h6>
+        <h6 class="title is-6 has-background-light">CZ</h6>
         <div
           v-for="item in commandZone"
           :key="item.deckCard.uuid"
@@ -50,7 +50,7 @@
       </div>
       <div class="zone graveyard">
         <h6 class="title is-6 has-background-light">
-          Graveyard ({{ graveyard.length }})
+          GY ({{ graveyard.length }})
         </h6>
         <div
           v-for="item in graveyard"
@@ -75,20 +75,17 @@
     </div>
     <div class="zone hand">
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
-      <Drag
+      <div
         v-for="item in hand"
         :key="item.deckCard.uuid"
-        :transfer-data="{ fromZone: 'hand', item }"
-        :image-x-offset="22"
-        :image-y-offset="22"
+        v-touch:start="startDragItem"
+        v-touch:moving="_dragItem('hand', item)"
+        :class="{ dragging: item.x != null }"
+        :style="styleFromItem(item)"
         class="card-wrapper"
-        @dragstart="startDrag"
       >
         <Card :card="item.deckCard.source" size="small" />
-        <template slot="image">
-          <BIcon icon="target" size="is-large" />
-        </template>
-      </Drag>
+      </div>
     </div>
 
     <BModal :active.sync="libraryModalIsShowing" has-modal-card>
@@ -208,6 +205,7 @@ export default {
       shuffleLibrary: 'playtest/shuffleLibrary',
       move: 'playtest/move',
       tap: 'playtest/tap',
+      dragItem: 'playtest/dragItem',
     }),
 
     openLibraryModal() {
@@ -221,22 +219,42 @@ export default {
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
-    startDrag(data, nativeEvent) {
+    startDragItem(event) {
       this.latestDragOffsets = {
-        x: nativeEvent.offsetX,
-        y: nativeEvent.offsetY,
+        x: event.touches[0].pageX - event.target.getBoundingClientRect().left,
+        y: event.touches[0].pageY - event.target.getBoundingClientRect().top,
       }
     },
 
-    onDrop(toZone, { fromZone, item }, nativeEvent) {
-      this.move({
-        toZone,
-        fromZone,
-        item,
-        x: Math.max(0, nativeEvent.pageX - this.latestDragOffsets.x),
-        y: Math.max(0, nativeEvent.pageY - this.latestDragOffsets.y - 52),
-      })
+    _dragItem(zone, item) {
+      return event => {
+        console.log(event)
+        this.dragItem({
+          zone,
+          item,
+          x: Math.max(0, event.touches[0].pageX - this.latestDragOffsets.x),
+          y: Math.max(52, event.touches[0].pageY - this.latestDragOffsets.y),
+        })
+      }
     },
+
+    styleFromItem(item) {
+      if (item.x == null) return {}
+      return {
+        top: `${item.y}px`,
+        left: `${item.x}px`,
+      }
+    },
+
+    // onDrop(toZone, { fromZone, item }, nativeEvent) {
+    //   this.move({
+    //     toZone,
+    //     fromZone,
+    //     item,
+    //     x: Math.max(0, nativeEvent.pageX - this.latestDragOffsets.x),
+    //     y: Math.max(0, nativeEvent.pageY - this.latestDragOffsets.y - 52),
+    //   })
+    // },
   },
 }
 </script>
@@ -273,23 +291,25 @@ export default {
 
 .other-zones {
   display: flex;
+  max-width: 100%;
 }
 .library {
-  min-width: 150px;
+  min-width: 75px;
 }
 .graveyard {
-  min-width: 150px;
+  min-width: 75px;
 }
 .exile {
-  min-width: 150px;
+  min-width: 75px;
 }
 .command-zone {
-  min-width: 150px;
+  min-width: 75px;
 }
 .hand {
 }
 
 .card-wrapper {
+  width: 75px;
 }
 
 .modal-cards-wrapper {
@@ -332,5 +352,9 @@ export default {
 
 .tapped {
   transform: rotate(40deg);
+}
+
+.dragging {
+  position: fixed;
 }
 </style>
