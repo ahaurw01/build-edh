@@ -1,95 +1,111 @@
 <template>
-  <div class="play-area has-background-light">
-    <Drop class="battlefield" @drop="onDrop('battlefield', ...arguments)">
-      <Drag
+  <div
+    v-touch:moving="_dragItem"
+    v-touch:end="dropItem"
+    class="play-area has-background-light"
+  >
+    <div class="dz battlefield">
+      <div
         v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
-        :style="{
-          top: `${item.y}px`,
-          left: `${item.x}px`,
-          zIndex: battlefield.length - index,
-        }"
-        :transfer-data="{ fromZone: 'battlefield', item }"
+        v-touch:tap="_tap(item.deckCard.uuid)"
+        v-touch:moving="startDragItem('battlefield', item.deckCard.uuid)"
+        :style="{ ...styleFromItem(item, battlefield.length, index) }"
         :class="{ tapped: item.tapped }"
-        :image-x-offset="item.tapped ? 45 : 22"
-        :image-y-offset="item.tapped ? 45 : 22"
         class="battlefield-card-wrapper"
-        @dragstart="startDrag"
       >
-        <button @click="tap(item)">
-          <Card :card="item.deckCard.source" size="small" />
-        </button>
-        <template slot="image">
-          <BIcon icon="target" size="is-large" />
-        </template>
-      </Drag>
-    </Drop>
+        <Card :card="item.deckCard.source" :size="cardWidth" />
+      </div>
+    </div>
     <div class="other-zones">
-      <div class="zone library">
+      <div :style="zoneStyle" class="dz zone library">
         <h6 class="title is-6 has-background-light">
-          <BButton @click="openLibraryModal">
-            Library ({{ library.length }})
-          </BButton>
+          Lib ({{ library.length }})
         </h6>
-        <Card
+        <div
           v-if="library.length"
-          :card="library[0].deckCard.source"
-          size="small"
-          face-down
-        />
-      </div>
-      <div class="zone command-zone">
-        <h6 class="title is-6 has-background-light">Command Zone</h6>
-        <div
-          v-for="item in commandZone"
-          :key="item.deckCard.uuid"
-          class="card-wrapper"
+          :key="library[0].deckCard.uuid"
+          v-touch:tap="openLibraryModal"
+          v-touch:moving="startDragItem('library', library[0].deckCard.uuid)"
         >
-          <Card :card="item.deckCard.source" size="small" />
+          <Card
+            :card="library[0].deckCard.source"
+            :size="cardWidth"
+            face-down
+          />
         </div>
       </div>
-      <div class="zone graveyard">
+      <div :style="zoneStyle" class="dz zone commandZone">
         <h6 class="title is-6 has-background-light">
-          Graveyard ({{ graveyard.length }})
+          CZ ({{ commandZone.length }})
         </h6>
-        <div
-          v-for="item in graveyard"
-          :key="item.deckCard.uuid"
-          class="card-wrapper"
-        >
-          <Card :card="item.deckCard.source" size="small" />
+        <div :style="{ height: `${cardHeight}px` }">
+          <div
+            v-for="(item, index) in commandZone"
+            :key="item.deckCard.uuid"
+            :style="{ display: index > 0 ? 'none' : 'block' }"
+            class="card-wrapper"
+          >
+            <Card :card="item.deckCard.source" :size="cardWidth" />
+          </div>
         </div>
       </div>
-      <div class="zone exile">
+      <div :style="zoneStyle" class="dz zone graveyard">
         <h6 class="title is-6 has-background-light">
-          Exile ({{ exile.length }})
+          GY ({{ graveyard.length }})
         </h6>
-        <div
-          v-for="item in exile"
-          :key="item.deckCard.uuid"
-          class="card-wrapper"
-        >
-          <Card :card="item.deckCard.source" size="small" />
+        <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
+          <div
+            v-for="(item, index) in graveyard"
+            :key="item.deckCard.uuid"
+            :style="{ display: index > 0 ? 'none' : 'block' }"
+            class="card-wrapper"
+          >
+            <Card :card="item.deckCard.source" :size="cardWidth" />
+          </div>
+        </div>
+      </div>
+      <div :style="zoneStyle" class="dz zone exile">
+        <h6 class="title is-6 has-background-light">Ex ({{ exile.length }})</h6>
+        <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
+          <div
+            v-for="(item, index) in exile"
+            :key="item.deckCard.uuid"
+            :style="{ display: index > 0 ? 'none' : 'block' }"
+            class="card-wrapper"
+          >
+            <Card :card="item.deckCard.source" :size="cardWidth" />
+          </div>
         </div>
       </div>
     </div>
-    <div class="zone hand">
+    <div :style="zoneStyle" class="dz zone hand">
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
-      <Drag
-        v-for="item in hand"
-        :key="item.deckCard.uuid"
-        :transfer-data="{ fromZone: 'hand', item }"
-        :image-x-offset="22"
-        :image-y-offset="22"
-        class="card-wrapper"
-        @dragstart="startDrag"
-      >
-        <Card :card="item.deckCard.source" size="small" />
-        <template slot="image">
-          <BIcon icon="target" size="is-large" />
-        </template>
-      </Drag>
+      <div :style="{ height: `${cardHeight + 10}px` }" class="hand-inner">
+        <div
+          v-for="(item, index) in hand"
+          :key="item.deckCard.uuid"
+          v-touch:start="startDragItem('hand', item.deckCard.uuid)"
+          :style="handStyleFromItem(item, hand.length, index)"
+          class="card-wrapper hand-card-wrapper"
+        >
+          <Card :card="item.deckCard.source" :size="cardWidth" />
+        </div>
+      </div>
     </div>
+
+    <div
+      v-if="draggingElement"
+      class="drag-dummy card-wrapper"
+      :class="{ tapped: draggingItem.tapped }"
+      :style="{
+        position: 'fixed',
+        top: `${currentDragCoordinates.y}px`,
+        left: `${currentDragCoordinates.x}px`,
+        width: `${cardWidth}px`,
+      }"
+      v-html="draggingElement.outerHTML"
+    />
 
     <BModal :active.sync="libraryModalIsShowing" has-modal-card>
       <div class="modal-card" style="width: auto">
@@ -121,7 +137,7 @@
                     move({
                       fromZone: 'library',
                       toZone: 'hand',
-                      item: library[index],
+                      uuid: library[index].deckCard.uuid,
                     })
                     libraryActionOverlayIndex = -1
                   "
@@ -161,13 +177,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
-import { Drag, Drop } from 'vue-drag-drop'
 import Card from '~/components/Card'
 
 export default {
   auth: false,
 
-  components: { Card, Drag, Drop },
+  components: { Card },
 
   async fetch({ store, params, error, $axios }) {
     try {
@@ -185,6 +200,12 @@ export default {
     libraryCardsAreFaceUp: false,
     libraryActionOverlayIndex: -1,
     latestDragOffsets: { x: 0, y: 0 },
+    currentDragCoordinates: { x: 0, y: 0 },
+    draggingElement: null,
+    draggingItem: null,
+    draggedFromZone: null,
+    hoveredZone: null,
+    cardWidth: 75,
   }),
 
   computed: {
@@ -197,6 +218,14 @@ export default {
       graveyard: 'playtest/graveyard',
       exile: 'playtest/exile',
     }),
+
+    cardHeight() {
+      return this.cardWidth * 1.4
+    },
+
+    zoneStyle() {
+      return { height: `${this.cardHeight + 18}px` }
+    },
   },
 
   mounted() {},
@@ -208,7 +237,14 @@ export default {
       shuffleLibrary: 'playtest/shuffleLibrary',
       move: 'playtest/move',
       tap: 'playtest/tap',
+      dragItem: 'playtest/dragItem',
     }),
+
+    _tap(uuid) {
+      return () => {
+        this.tap(uuid)
+      }
+    },
 
     openLibraryModal() {
       this.libraryActionOverlayIndex = -1
@@ -221,21 +257,101 @@ export default {
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
-    startDrag(data, nativeEvent) {
-      this.latestDragOffsets = {
-        x: nativeEvent.offsetX,
-        y: nativeEvent.offsetY,
+    startDragItem(zone, uuid) {
+      return event => {
+        // Break if already started.
+        // We use this as the "moving" handler for the battlefield to work around tap issues.
+        if (this.draggingElement) return
+
+        const item = this[zone].find(item => item.deckCard.uuid === uuid)
+
+        const x = event.touches ? event.touches[0].pageX : event.pageX
+        const y = event.touches ? event.touches[0].pageY : event.pageY
+        this.latestDragOffsets = {
+          x: x - event.target.getBoundingClientRect().left,
+          y: y - event.target.getBoundingClientRect().top,
+        }
+
+        this.currentDragCoordinates = {
+          x: Math.max(0, x - this.latestDragOffsets.x),
+          y: Math.max(52, y - this.latestDragOffsets.y),
+        }
+
+        this.draggingElement = event.target
+        this.draggingItem = item
+        this.draggedFromZone = zone
       }
     },
 
-    onDrop(toZone, { fromZone, item }, nativeEvent) {
-      this.move({
-        toZone,
-        fromZone,
-        item,
-        x: Math.max(0, nativeEvent.pageX - this.latestDragOffsets.x),
-        y: Math.max(0, nativeEvent.pageY - this.latestDragOffsets.y - 52),
-      })
+    _dragItem(event) {
+      if (!this.draggingElement) return
+      const x = event.touches ? event.touches[0].pageX : event.pageX
+      const y = event.touches ? event.touches[0].pageY : event.pageY
+
+      const hoveredZone = [
+        // Determine what zone if any we're hovering over.
+        'battlefield',
+        'hand',
+        'library',
+        'commandZone',
+        'graveyard',
+        'exile',
+      ].reduce((hoveredZone, zone) => {
+        if (hoveredZone) return hoveredZone
+        const el = document.querySelector(`.${zone}`)
+        const box = el.getBoundingClientRect()
+        if (
+          box.x <= x &&
+          x <= box.x + box.width &&
+          box.y <= y &&
+          y <= box.y + box.height
+        ) {
+          return zone
+        }
+        return null
+      }, null)
+
+      this.hoveredZone = hoveredZone
+
+      this.currentDragCoordinates = {
+        x: Math.max(0, x - this.latestDragOffsets.x),
+        y: Math.max(52, y - this.latestDragOffsets.y),
+      }
+    },
+
+    dropItem() {
+      if (this.hoveredZone) {
+        this.move({
+          fromZone: this.draggedFromZone,
+          toZone: this.hoveredZone,
+          uuid: this.draggingItem.deckCard.uuid,
+          x: this.currentDragCoordinates.x,
+          y: this.currentDragCoordinates.y,
+        })
+      }
+
+      this.latestDragOffsets = { x: 0, y: 0 }
+      this.currentDragCoordinates = { x: 0, y: 0 }
+      this.draggingElement = null
+      this.draggingItem = null
+      this.draggedFromZone = null
+      this.hoveredZone = null
+    },
+
+    styleFromItem(item, numItems, index) {
+      if (item.x == null) return {}
+      return {
+        position: 'fixed',
+        top: `${item.y}px`,
+        left: `${item.x}px`,
+        zIndex: numItems - index,
+      }
+    },
+
+    handStyleFromItem(item, numItems, index) {
+      const ratio = index / (numItems - 1)
+
+      return { left: `calc(${ratio} * (100% - ${this.cardWidth}px))` }
     },
   },
 }
@@ -255,11 +371,10 @@ export default {
 
 .zone {
   display: flex;
-  min-height: 150px;
   position: relative;
   border: 1px solid grey;
   border-radius: 4px;
-  margin: 0.5rem;
+  margin: 0.25rem;
   padding: 0.5rem;
 }
 
@@ -273,23 +388,29 @@ export default {
 
 .other-zones {
   display: flex;
+  max-width: 100%;
 }
 .library {
-  min-width: 150px;
+  min-width: 75px;
 }
 .graveyard {
-  min-width: 150px;
+  min-width: 75px;
 }
 .exile {
-  min-width: 150px;
+  min-width: 75px;
 }
-.command-zone {
-  min-width: 150px;
-}
-.hand {
+.commandZone {
+  min-width: 75px;
 }
 
-.card-wrapper {
+.hand-inner {
+  width: 100%;
+  position: relative;
+}
+
+.hand-card-wrapper {
+  position: absolute;
+  top: 0;
 }
 
 .modal-cards-wrapper {
@@ -332,5 +453,11 @@ export default {
 
 .tapped {
   transform: rotate(40deg);
+}
+
+.drag-dummy {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
 }
 </style>

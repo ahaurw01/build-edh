@@ -1,9 +1,14 @@
 <template>
-  <div :class="size" class="mtg-card">
+  <div
+    :class="typeof size === 'number' ? 'exact' : size"
+    :style="styleFromSize"
+    class="mtg-card"
+  >
     <span v-if="count > 1" class="count">x{{ count }}</span>
     <img
       :src="loading || faceDown ? placeholderSrc : imgSrc"
       :class="{ 'special-shadow': specialShadow, loading }"
+      draggable="false"
     />
     <button
       v-if="showEditButton"
@@ -24,11 +29,14 @@ export default {
   props: {
     card: { type: Object, required: true },
     size: {
-      type: String,
+      type: [String, Number],
       default: 'auto',
       validator(value) {
         return (
-          ['large', 'medium', 'small', 'x-small', 'auto'].indexOf(value) !== -1
+          (typeof value === 'string' &&
+            ['large', 'medium', 'small', 'x-small', 'auto'].indexOf(value) !==
+              -1) ||
+          (typeof value === 'number' && value > 0)
         )
       },
     },
@@ -51,7 +59,14 @@ export default {
   computed: {
     imgSrc() {
       const faceIndex = this.reverse ? 1 : 0
-      const size = this.size === 'x-small' ? 'small' : 'large'
+      const size =
+        typeof this.size === 'number'
+          ? this.size <= 100
+            ? 'small'
+            : 'large'
+          : this.size === 'x-small'
+          ? 'small'
+          : 'large'
       return get(
         this,
         `card.faces[${faceIndex}].imageUris.${size}`,
@@ -61,6 +76,13 @@ export default {
 
     isOnlyEverFoil() {
       return !this.card.existsInNonFoil
+    },
+
+    styleFromSize() {
+      if (typeof this.size === 'number') {
+        return { width: `${this.size}px` }
+      }
+      return {}
     },
   },
 
@@ -90,9 +112,13 @@ export default {
 .mtg-card {
   position: relative;
 }
-.mtg-card:not(.auto):not(.x-small) {
+.mtg-card:not(.auto):not(.x-small):not(.exact) {
   display: inline-block;
   margin: 0.25rem;
+}
+
+.exact {
+  line-height: 0;
 }
 
 :not(.x-small) > img {

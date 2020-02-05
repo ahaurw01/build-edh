@@ -34,5 +34,6 @@ module.exports = {
     'require-atomic-updates': 'off',
     'jest/no-test-callback': ['off'],
     'jest/expect-expect': ['off'],
+    'vue/no-v-html': ['off'],
   },
 }
