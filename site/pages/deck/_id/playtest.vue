@@ -1,5 +1,6 @@
 <template>
   <div
+    v-touch:start="newStartDragItem"
     v-touch:moving="_dragItem"
     v-touch:end="dropItem"
     class="play-area has-background-light"
@@ -12,7 +13,9 @@
         v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
         v-touch:tap="_tap(item.deckCard.uuid)"
-        v-touch:start="startDragItem('battlefield', item.deckCard.uuid)"
+        :data-drag-info="
+          JSON.stringify({ zone: 'battlefield', uuid: item.deckCard.uuid })
+        "
         :style="{ ...styleFromItem(item, battlefield.length, index) }"
         :class="{ tapped: item.tapped }"
         class="battlefield-card-wrapper"
@@ -33,7 +36,9 @@
           v-if="library.length"
           :key="library[0].deckCard.uuid"
           v-touch:tap="openLibraryModal"
-          v-touch:start="startDragItem('library', library[0].deckCard.uuid)"
+          :data-drag-info="
+            JSON.stringify({ zone: 'library', uuid: library[0].deckCard.uuid })
+          "
         >
           <Card
             :card="library[0].deckCard.source"
@@ -54,7 +59,9 @@
           <div
             v-for="(item, index) in commandZone"
             :key="item.deckCard.uuid"
-            v-touch:start="startDragItem('commandZone', item.deckCard.uuid)"
+            :data-drag-info="
+              JSON.stringify({ zone: 'commandZone', uuid: item.deckCard.uuid })
+            "
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -75,7 +82,12 @@
             v-for="(item, index) in graveyard"
             :key="item.deckCard.uuid"
             v-touch:tap="openGraveyardModal"
-            v-touch:start="startDragItem('graveyard', item.deckCard.uuid)"
+            :data-drag-info="
+              JSON.stringify({
+                zone: 'graveyard',
+                uuid: item.deckCard.uuid,
+              })
+            "
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -94,7 +106,12 @@
             v-for="(item, index) in exile"
             :key="item.deckCard.uuid"
             v-touch:tap="openExileModal"
-            v-touch:start="startDragItem('exile', item.deckCard.uuid)"
+            :data-drag-info="
+              JSON.stringify({
+                zone: 'exile',
+                uuid: item.deckCard.uuid,
+              })
+            "
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -119,7 +136,9 @@
         <div
           v-for="(item, index) in handReversed"
           :key="item.deckCard.uuid"
-          v-touch:start="startDragItem('hand', item.deckCard.uuid)"
+          :data-drag-info="
+            JSON.stringify({ zone: 'hand', uuid: item.deckCard.uuid })
+          "
           :style="handStyleFromItem(item, hand.length, index)"
           class="card-wrapper hand-card-wrapper"
         >
@@ -129,7 +148,7 @@
     </div>
 
     <div
-      v-if="draggingElement"
+      v-if="isDragging"
       class="drag-dummy card-wrapper"
       :class="{ tapped: draggingItem.tapped }"
       :style="{
@@ -311,6 +330,7 @@
 </template>
 
 <script>
+import get from 'lodash/get'
 import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
 import Card from '~/components/Card'
@@ -346,6 +366,8 @@ export default {
     draggedFromZone: null,
     hoveredZone: null,
     cardWidth: 75,
+    isPressing: false,
+    isDragging: false,
   }),
 
   computed: {
@@ -426,6 +448,32 @@ export default {
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
+    newStartDragItem(event) {
+      // See if we're on something draggable.
+      const elWithData = event.path.find(node => get(node, 'dataset.dragInfo'))
+      if (!elWithData) return
+
+      this.isPressing = true
+      const { zone, uuid } = JSON.parse(elWithData.dataset.dragInfo)
+      const item = this[zone].find(item => item.deckCard.uuid === uuid)
+
+      this.draggingElement = event.target
+      this.draggingItem = item
+      this.draggedFromZone = zone
+
+      const x = event.touches ? event.touches[0].pageX : event.pageX
+      const y = event.touches ? event.touches[0].pageY : event.pageY
+      this.latestDragOffsets = {
+        x: x - event.target.getBoundingClientRect().left,
+        y: y - event.target.getBoundingClientRect().top,
+      }
+
+      this.currentDragCoordinates = {
+        x: Math.max(0, x - this.latestDragOffsets.x),
+        y: Math.max(52, y - this.latestDragOffsets.y),
+      }
+    },
+
     startDragItem(zone, uuid) {
       return event => {
         const item = this[zone].find(item => item.deckCard.uuid === uuid)
@@ -449,7 +497,12 @@ export default {
     },
 
     _dragItem(event) {
-      if (!this.draggingElement) return
+      if (!this.isPressing) {
+        return
+      }
+
+      this.isDragging = true
+
       const x = event.touches ? event.touches[0].pageX : event.pageX
       const y = event.touches ? event.touches[0].pageY : event.pageY
 
@@ -485,7 +538,7 @@ export default {
     },
 
     dropItem() {
-      if (this.hoveredZone) {
+      if (this.isDragging && this.hoveredZone) {
         this.move({
           fromZone: this.draggedFromZone,
           toZone: this.hoveredZone,
@@ -501,6 +554,8 @@ export default {
       this.draggingItem = null
       this.draggedFromZone = null
       this.hoveredZone = null
+      this.isPressing = false
+      this.isDragging = false
     },
 
     styleFromItem(item, numItems, index) {
