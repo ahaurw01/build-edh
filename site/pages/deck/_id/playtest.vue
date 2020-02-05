@@ -22,6 +22,15 @@
       >
         <Card :card="item.deckCard.source" :size="cardWidth" />
       </div>
+
+      <div class="battlefield-actions">
+        <BButton @click="nextTurn">Turn: {{ turn }}</BButton>
+        <div class="life">
+          <BButton icon-left="minus" @click="bumpLife(-1)" />
+          <span>&nbsp;{{ life }}&nbsp;</span>
+          <BButton icon-left="plus" @click="bumpLife(1)" />
+        </div>
+      </div>
     </div>
     <div class="other-zones">
       <div
@@ -382,6 +391,8 @@ export default {
       commandZone: 'playtest/commandZone',
       graveyard: 'playtest/graveyard',
       exile: 'playtest/exile',
+      turn: 'playtest/turn',
+      life: 'playtest/life',
     }),
 
     handReversed() {
@@ -414,6 +425,8 @@ export default {
       move: 'playtest/move',
       tap: 'playtest/tap',
       dragItem: 'playtest/dragItem',
+      nextTurn: 'playtest/nextTurn',
+      bumpLife: 'playtest/bumpLife',
     }),
 
     setAppropriateCardSize() {
@@ -673,5 +686,23 @@ export default {
 
 .hovered {
   background: #ffdd5750;
+}
+
+.battlefield-actions {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 999999;
+  top: 52px;
+  right: 0;
+  padding: 0.5rem;
+}
+
+.battlefield-actions .life {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  font-family: monospace;
 }
 </style>
