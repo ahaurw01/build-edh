@@ -33,6 +33,12 @@
 
       <hr />
 
+      <NuxtLink :to="`/deck/${slug}/playtest`">
+        <BButton type="is-primary">
+          Playtest
+        </BButton>
+      </NuxtLink>
+
       <BButton @click="isExportModalOpen = true">View as text</BButton>
 
       <BButton v-if="iAmOwner" type="is-danger" @click="confirmDelete">
@@ -81,6 +87,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      slug: 'deck/slug',
       usePurposeGroups: 'deck/usePurposeGroups',
       sortByCmc: 'deck/sortByCmc',
       compuPurposes: 'deck/compuPurposes',

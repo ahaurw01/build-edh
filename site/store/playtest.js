@@ -51,6 +51,10 @@ export const actions = {
       'commandZone',
       getters.deck.commanders.map(deckCard => ({ deckCard }))
     )
+    commit('hand', [])
+    commit('graveyard', [])
+    commit('exile', [])
+    commit('battlefield', [])
     dispatch('shuffleLibrary')
   },
 
