@@ -69,19 +69,20 @@ export const actions = {
     }
   },
 
-  move({ commit, getters }, { item, fromZone, toZone, x, y }) {
+  move({ commit, getters }, { uuid, fromZone, toZone, x, y }) {
     const fromZoneArray = getters[fromZone]
     const toZoneArray = getters[toZone]
+    let item
 
-    if (!item) {
+    if (!uuid) {
       item = fromZoneArray[0]
+    } else {
+      item = fromZoneArray.find(item => item.deckCard.uuid === uuid)
     }
 
     if (!item) return
 
-    const newFromZoneArray = fromZoneArray.filter(
-      o => o.deckCard.uuid !== item.deckCard.uuid
-    )
+    const newFromZoneArray = fromZoneArray.filter(o => o !== item)
     const newToZoneArray = [
       { ...item, x, y },
       ...(fromZone === toZone ? newFromZoneArray : toZoneArray),
@@ -91,11 +92,11 @@ export const actions = {
     commit(toZone, newToZoneArray)
   },
 
-  tap({ commit, getters }, item) {
+  tap({ commit, getters }, uuid) {
     commit(
       'battlefield',
       getters.battlefield.map(existingItem => {
-        if (existingItem.deckCard.uuid === item.deckCard.uuid) {
+        if (existingItem.deckCard.uuid === uuid) {
           return { ...existingItem, tapped: !existingItem.tapped }
         }
         return existingItem

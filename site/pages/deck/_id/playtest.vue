@@ -5,11 +5,11 @@
     class="play-area has-background-light"
   >
     <div class="dz battlefield">
-      <!-- v-touch:start="startDragItem('battlefield', item)" -->
       <div
         v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
-        v-touch:tap="_tap(item)"
+        v-touch:tap="_tap(item.deckCard.uuid)"
+        v-touch:moving="startDragItem('battlefield', item.deckCard.uuid)"
         :style="{ ...styleFromItem(item, battlefield.length, index) }"
         :class="{ tapped: item.tapped }"
         class="battlefield-card-wrapper"
@@ -78,7 +78,7 @@
         <div
           v-for="(item, index) in hand"
           :key="item.deckCard.uuid"
-          v-touch:start="startDragItem('hand', item)"
+          v-touch:start="startDragItem('hand', item.deckCard.uuid)"
           :style="handStyleFromItem(item, hand.length, index)"
           class="card-wrapper hand-card-wrapper"
         >
@@ -90,6 +90,7 @@
     <div
       v-if="draggingElement"
       class="drag-dummy card-wrapper"
+      :class="{ tapped: draggingItem.tapped }"
       :style="{
         position: 'fixed',
         top: `${currentDragCoordinates.y}px`,
@@ -129,7 +130,7 @@
                     move({
                       fromZone: 'library',
                       toZone: 'hand',
-                      item: library[index],
+                      uuid: library[index].deckCard.uuid,
                     })
                     libraryActionOverlayIndex = -1
                   "
@@ -232,9 +233,9 @@ export default {
       dragItem: 'playtest/dragItem',
     }),
 
-    _tap(item) {
+    _tap(uuid) {
       return () => {
-        this.tap(item)
+        this.tap(uuid)
       }
     },
 
@@ -249,8 +250,14 @@ export default {
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
-    startDragItem(zone, item) {
+    startDragItem(zone, uuid) {
       return event => {
+        // Break if already started.
+        // We use this as the "moving" handler for the battlefield to work around tap issues.
+        if (this.draggingElement) return
+
+        const item = this[zone].find(item => item.deckCard.uuid === uuid)
+
         const x = event.touches ? event.touches[0].pageX : event.pageX
         const y = event.touches ? event.touches[0].pageY : event.pageY
         this.latestDragOffsets = {
@@ -310,7 +317,7 @@ export default {
         this.move({
           fromZone: this.draggedFromZone,
           toZone: this.hoveredZone,
-          item: this.draggingItem,
+          uuid: this.draggingItem.deckCard.uuid,
           x: this.currentDragCoordinates.x,
           y: this.currentDragCoordinates.y,
         })
