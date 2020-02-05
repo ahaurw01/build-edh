@@ -39,7 +39,7 @@
         <h6 class="title is-6 has-background-light">
           CZ ({{ commandZone.length }})
         </h6>
-        <div :style="{ height: `${cardHeight}px` }">
+        <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
             v-for="(item, index) in commandZone"
             :key="item.deckCard.uuid"
