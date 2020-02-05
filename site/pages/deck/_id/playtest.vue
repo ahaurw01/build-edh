@@ -13,12 +13,12 @@
         class="battlefield-card-wrapper"
       >
         <button @click="tap(item)">
-          <Card :card="item.deckCard.source" :size="75" />
+          <Card :card="item.deckCard.source" :size="cardWidth" />
         </button>
       </div>
     </div>
     <div class="other-zones">
-      <div class="dz zone library">
+      <div :style="zoneStyle" class="dz zone library">
         <h6 class="title is-6 has-background-light">
           <BButton @click="openLibraryModal">
             Library ({{ library.length }})
@@ -27,54 +27,63 @@
         <Card
           v-if="library.length"
           :card="library[0].deckCard.source"
-          :size="75"
+          :size="cardWidth"
           face-down
         />
       </div>
-      <div class="dz zone commandZone">
+      <div :style="zoneStyle" class="dz zone commandZone">
         <h6 class="title is-6 has-background-light">CZ</h6>
-        <div
-          v-for="item in commandZone"
-          :key="item.deckCard.uuid"
-          class="card-wrapper"
-        >
-          <Card :card="item.deckCard.source" :size="75" />
+        <div :style="{ height: `${cardHeight}px` }">
+          <div
+            v-for="item in commandZone"
+            :key="item.deckCard.uuid"
+            class="card-wrapper"
+          >
+            <Card :card="item.deckCard.source" :size="cardWidth" />
+          </div>
         </div>
       </div>
-      <div class="dz zone graveyard">
+      <div :style="zoneStyle" class="dz zone graveyard">
         <h6 class="title is-6 has-background-light">
           GY ({{ graveyard.length }})
         </h6>
-        <div
-          v-for="item in graveyard"
-          :key="item.deckCard.uuid"
-          class="card-wrapper"
-        >
-          <Card :card="item.deckCard.source" :size="75" />
+        <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
+          <div
+            v-for="item in graveyard"
+            :key="item.deckCard.uuid"
+            class="card-wrapper"
+          >
+            <Card :card="item.deckCard.source" :size="cardWidth" />
+          </div>
         </div>
       </div>
-      <div class="dz zone exile">
+      <div :style="zoneStyle" class="dz zone exile">
         <h6 class="title is-6 has-background-light">
           Exile ({{ exile.length }})
         </h6>
-        <div
-          v-for="item in exile"
-          :key="item.deckCard.uuid"
-          class="card-wrapper"
-        >
-          <Card :card="item.deckCard.source" :size="75" />
+        <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
+          <div
+            v-for="item in exile"
+            :key="item.deckCard.uuid"
+            class="card-wrapper"
+          >
+            <Card :card="item.deckCard.source" :size="cardWidth" />
+          </div>
         </div>
       </div>
     </div>
-    <div class="dz zone hand">
+    <div :style="zoneStyle" class="dz zone hand">
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
-      <div
-        v-for="item in hand"
-        :key="item.deckCard.uuid"
-        v-touch:start="startDragItem('hand', item)"
-        class="card-wrapper"
-      >
-        <Card :card="item.deckCard.source" :size="75" />
+      <div :style="{ height: `${cardHeight + 10}px` }" class="hand-inner">
+        <div
+          v-for="(item, index) in hand"
+          :key="item.deckCard.uuid"
+          v-touch:start="startDragItem('hand', item)"
+          :style="handStyleFromItem(item, hand.length, index)"
+          class="card-wrapper hand-card-wrapper"
+        >
+          <Card :card="item.deckCard.source" :size="cardWidth" />
+        </div>
       </div>
     </div>
 
@@ -187,6 +196,7 @@ export default {
     draggingItem: null,
     draggedFromZone: null,
     hoveredZone: null,
+    cardWidth: 75,
   }),
 
   computed: {
@@ -199,6 +209,14 @@ export default {
       graveyard: 'playtest/graveyard',
       exile: 'playtest/exile',
     }),
+
+    cardHeight() {
+      return this.cardWidth * 1.4
+    },
+
+    zoneStyle() {
+      return { height: `${this.cardHeight + 18}px` }
+    },
   },
 
   mounted() {},
@@ -303,6 +321,12 @@ export default {
         zIndex: numItems - index,
       }
     },
+
+    handStyleFromItem(item, numItems, index) {
+      const ratio = index / (numItems - 1)
+
+      return { left: `calc(${ratio} * (100% - ${this.cardWidth}px))` }
+    },
   },
 }
 </script>
@@ -321,11 +345,10 @@ export default {
 
 .zone {
   display: flex;
-  min-height: 150px;
   position: relative;
   border: 1px solid grey;
   border-radius: 4px;
-  margin: 0.5rem;
+  margin: 0.25rem;
   padding: 0.5rem;
 }
 
@@ -354,8 +377,14 @@ export default {
   min-width: 75px;
 }
 
-.card-wrapper {
-  width: 75px;
+.hand-inner {
+  width: 100%;
+  position: relative;
+}
+
+.hand-card-wrapper {
+  position: absolute;
+  top: 0;
 }
 
 .modal-cards-wrapper {
@@ -403,5 +432,6 @@ export default {
 .drag-dummy {
   position: fixed;
   pointer-events: none;
+  z-index: 9999;
 }
 </style>

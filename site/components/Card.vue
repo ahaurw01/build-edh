@@ -1,5 +1,9 @@
 <template>
-  <div :class="size" :style="styleFromSize" class="mtg-card">
+  <div
+    :class="typeof size === 'number' ? 'exact' : size"
+    :style="styleFromSize"
+    class="mtg-card"
+  >
     <span v-if="count > 1" class="count">x{{ count }}</span>
     <img
       :src="loading || faceDown ? placeholderSrc : imgSrc"
@@ -108,9 +112,13 @@ export default {
 .mtg-card {
   position: relative;
 }
-.mtg-card:not(.auto):not(.x-small) {
+.mtg-card:not(.auto):not(.x-small):not(.exact) {
   display: inline-block;
   margin: 0.25rem;
+}
+
+.exact {
+  line-height: 0;
 }
 
 :not(.x-small) > img {
