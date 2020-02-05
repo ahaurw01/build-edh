@@ -20,9 +20,7 @@
     <div class="other-zones">
       <div :style="zoneStyle" class="dz zone library">
         <h6 class="title is-6 has-background-light">
-          <BButton @click="openLibraryModal">
-            Library ({{ library.length }})
-          </BButton>
+          Lib ({{ library.length }})
         </h6>
         <div
           v-if="library.length"
@@ -38,11 +36,14 @@
         </div>
       </div>
       <div :style="zoneStyle" class="dz zone commandZone">
-        <h6 class="title is-6 has-background-light">CZ</h6>
+        <h6 class="title is-6 has-background-light">
+          CZ ({{ commandZone.length }})
+        </h6>
         <div :style="{ height: `${cardHeight}px` }">
           <div
-            v-for="item in commandZone"
+            v-for="(item, index) in commandZone"
             :key="item.deckCard.uuid"
+            :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
             <Card :card="item.deckCard.source" :size="cardWidth" />
@@ -55,8 +56,9 @@
         </h6>
         <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
-            v-for="item in graveyard"
+            v-for="(item, index) in graveyard"
             :key="item.deckCard.uuid"
+            :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
             <Card :card="item.deckCard.source" :size="cardWidth" />
@@ -64,13 +66,12 @@
         </div>
       </div>
       <div :style="zoneStyle" class="dz zone exile">
-        <h6 class="title is-6 has-background-light">
-          Exile ({{ exile.length }})
-        </h6>
+        <h6 class="title is-6 has-background-light">Ex ({{ exile.length }})</h6>
         <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
-            v-for="item in exile"
+            v-for="(item, index) in exile"
             :key="item.deckCard.uuid"
+            :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
             <Card :card="item.deckCard.source" :size="cardWidth" />
