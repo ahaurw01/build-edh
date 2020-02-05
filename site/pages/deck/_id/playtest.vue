@@ -4,7 +4,10 @@
     v-touch:end="dropItem"
     class="play-area has-background-light"
   >
-    <div class="dz battlefield">
+    <div
+      :class="{ hovered: hoveredZone === 'battlefield' }"
+      class="dz battlefield"
+    >
       <div
         v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
@@ -18,7 +21,11 @@
       </div>
     </div>
     <div class="other-zones">
-      <div :style="zoneStyle" class="dz zone library">
+      <div
+        :style="zoneStyle"
+        :class="{ hovered: hoveredZone === 'library' }"
+        class="dz zone library"
+      >
         <h6 class="title is-6 has-background-light">
           Lib ({{ library.length }})
         </h6>
@@ -35,7 +42,11 @@
           />
         </div>
       </div>
-      <div :style="zoneStyle" class="dz zone commandZone">
+      <div
+        :style="zoneStyle"
+        :class="{ hovered: hoveredZone === 'commandZone' }"
+        class="dz zone commandZone"
+      >
         <h6 class="title is-6 has-background-light">
           CZ ({{ commandZone.length }})
         </h6>
@@ -51,7 +62,11 @@
           </div>
         </div>
       </div>
-      <div :style="zoneStyle" class="dz zone graveyard">
+      <div
+        :style="zoneStyle"
+        :class="{ hovered: hoveredZone === 'graveyard' }"
+        class="dz zone graveyard"
+      >
         <h6 class="title is-6 has-background-light">
           GY ({{ graveyard.length }})
         </h6>
@@ -68,7 +83,11 @@
           </div>
         </div>
       </div>
-      <div :style="zoneStyle" class="dz zone exile">
+      <div
+        :style="zoneStyle"
+        :class="{ hovered: hoveredZone === 'exile' }"
+        class="dz zone exile"
+      >
         <h6 class="title is-6 has-background-light">Ex ({{ exile.length }})</h6>
         <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
@@ -84,7 +103,11 @@
         </div>
       </div>
     </div>
-    <div :style="zoneStyle" class="dz zone hand">
+    <div
+      :style="zoneStyle"
+      :class="{ hovered: hoveredZone === 'hand' }"
+      class="dz zone hand"
+    >
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
       <div
         :style="{
@@ -611,5 +634,9 @@ export default {
   pointer-events: none;
   z-index: 9999;
   opacity: 0.75;
+}
+
+.hovered {
+  background: #ffdd5750;
 }
 </style>
