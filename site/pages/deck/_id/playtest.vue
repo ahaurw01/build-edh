@@ -86,7 +86,13 @@
     </div>
     <div :style="zoneStyle" class="dz zone hand">
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
-      <div :style="{ height: `${cardHeight + 10}px` }" class="hand-inner">
+      <div
+        :style="{
+          height: `${cardHeight + 10}px`,
+          maxWidth: `${(cardWidth + 4) * hand.length}px`,
+        }"
+        class="hand-inner"
+      >
         <div
           v-for="(item, index) in handReversed"
           :key="item.deckCard.uuid"
@@ -343,7 +349,14 @@ export default {
     },
   },
 
-  mounted() {},
+  mounted() {
+    window.addEventListener('resize', this.setAppropriateCardSize)
+    this.setAppropriateCardSize()
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setAppropriateCardSize)
+  },
 
   methods: {
     ...mapActions({
@@ -354,6 +367,14 @@ export default {
       tap: 'playtest/tap',
       dragItem: 'playtest/dragItem',
     }),
+
+    setAppropriateCardSize() {
+      if (window.innerWidth > 720) {
+        this.cardWidth = 150
+      } else {
+        this.cardWidth = 75
+      }
+    },
 
     _tap(uuid) {
       return () => {
