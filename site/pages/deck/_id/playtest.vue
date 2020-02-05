@@ -24,9 +24,9 @@
         </h6>
         <div
           v-if="library.length"
+          :key="library[0].deckCard.uuid"
           v-touch:tap="openLibraryModal"
           v-touch:moving="startDragItem('library', library[0].deckCard.uuid)"
-          :key="library[0].deckCard.uuid"
         >
           <Card
             :card="library[0].deckCard.source"
