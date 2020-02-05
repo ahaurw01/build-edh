@@ -58,6 +58,8 @@
           <div
             v-for="(item, index) in graveyard"
             :key="item.deckCard.uuid"
+            v-touch:tap="openGraveyardModal"
+            v-touch:moving="startDragItem('graveyard', item.deckCard.uuid)"
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -142,7 +144,7 @@
                     libraryActionOverlayIndex = -1
                   "
                 >
-                  To Hand
+                  Move to Hand
                 </BButton>
               </div>
             </div>
@@ -165,6 +167,57 @@
             <div class="level-right">
               <div class="level-item">
                 <BSwitch v-model="libraryCardsAreFaceUp">Show cards?</BSwitch>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </BModal>
+
+    <BModal :active.sync="graveyardModalIsShowing" has-modal-card>
+      <div class="modal-card" style="width: auto">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Graveyard ({{ graveyard.length }})</p>
+        </header>
+        <section class="modal-card-body">
+          <div class="modal-cards-wrapper">
+            <div
+              v-for="(item, index) in graveyard"
+              :key="item.deckCard.uuid"
+              class="modal-card-wrapper"
+            >
+              <button @click="graveyardActionOverlayIndex = index">
+                <Card :card="item.deckCard.source" size="small" />
+              </button>
+
+              <div
+                v-if="graveyardActionOverlayIndex === index"
+                class="modal-card-actions"
+              >
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'graveyard',
+                      toZone: 'hand',
+                      uuid: graveyard[index].deckCard.uuid,
+                    })
+                    graveyardActionOverlayIndex = -1
+                  "
+                >
+                  Move to Hand
+                </BButton>
+              </div>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <div class="level is-mobile" style="width: 100%">
+            <div class="level-left">
+              <div class="level-item">
+                <BButton @click="graveyardModalIsShowing = false">
+                  Close
+                </BButton>
               </div>
             </div>
           </div>
@@ -199,6 +252,8 @@ export default {
     libraryModalIsShowing: false,
     libraryCardsAreFaceUp: false,
     libraryActionOverlayIndex: -1,
+    graveyardModalIsShowing: false,
+    graveyardActionOverlayIndex: -1,
     latestDragOffsets: { x: 0, y: 0 },
     currentDragCoordinates: { x: 0, y: 0 },
     draggingElement: null,
@@ -250,6 +305,11 @@ export default {
       this.libraryActionOverlayIndex = -1
       this.libraryCardsAreFaceUp = false
       this.libraryModalIsShowing = true
+    },
+
+    openGraveyardModal() {
+      this.graveyardActionOverlayIndex = -1
+      this.graveyardModalIsShowing = true
     },
 
     _shuffleLibrary() {
@@ -426,6 +486,7 @@ export default {
   padding: 0;
   margin: 0;
   cursor: pointer;
+  outline: none;
 }
 .modal-card-actions {
   position: absolute;
@@ -436,6 +497,7 @@ export default {
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 0.5rem;
 }
 
