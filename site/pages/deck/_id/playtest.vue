@@ -1,6 +1,6 @@
 <template>
   <div
-    v-touch:start="newStartDragItem"
+    v-touch:start="startDragItem"
     v-touch:moving="_dragItem"
     v-touch:end="dropItem"
     class="play-area has-background-light"
@@ -32,19 +32,22 @@
         <h6 class="title is-6 has-background-light">
           Lib ({{ library.length }})
         </h6>
-        <div
-          v-if="library.length"
-          :key="library[0].deckCard.uuid"
-          v-touch:tap="openLibraryModal"
-          :data-drag-info="
-            JSON.stringify({ zone: 'library', uuid: library[0].deckCard.uuid })
-          "
-        >
-          <Card
-            :card="library[0].deckCard.source"
-            :size="cardWidth"
-            face-down
-          />
+        <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
+          <div
+            v-for="(item, index) in library"
+            :key="item.deckCard.uuid"
+            v-touch:tap="openLibraryModal"
+            :data-drag-info="
+              JSON.stringify({
+                zone: 'library',
+                uuid: item.deckCard.uuid,
+              })
+            "
+            :style="{ display: index > 0 ? 'none' : 'block' }"
+            class="card-wrapper"
+          >
+            <Card :card="item.deckCard.source" :size="cardWidth" face-down />
+          </div>
         </div>
       </div>
       <div
@@ -428,17 +431,20 @@ export default {
     },
 
     openLibraryModal() {
+      if (this.isDragging) return
       this.libraryActionOverlayIndex = -1
       this.libraryCardsAreFaceUp = false
       this.libraryModalIsShowing = true
     },
 
     openGraveyardModal() {
+      if (this.isDragging) return
       this.graveyardActionOverlayIndex = -1
       this.graveyardModalIsShowing = true
     },
 
     openExileModal() {
+      if (this.isDragging) return
       this.exileActionOverlayIndex = -1
       this.exileModalIsShowing = true
     },
@@ -448,7 +454,7 @@ export default {
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
-    newStartDragItem(event) {
+    startDragItem(event) {
       // See if we're on something draggable.
       const elWithData = event.path.find(node => get(node, 'dataset.dragInfo'))
       if (!elWithData) return
@@ -471,28 +477,6 @@ export default {
       this.currentDragCoordinates = {
         x: Math.max(0, x - this.latestDragOffsets.x),
         y: Math.max(52, y - this.latestDragOffsets.y),
-      }
-    },
-
-    startDragItem(zone, uuid) {
-      return event => {
-        const item = this[zone].find(item => item.deckCard.uuid === uuid)
-
-        const x = event.touches ? event.touches[0].pageX : event.pageX
-        const y = event.touches ? event.touches[0].pageY : event.pageY
-        this.latestDragOffsets = {
-          x: x - event.target.getBoundingClientRect().left,
-          y: y - event.target.getBoundingClientRect().top,
-        }
-
-        this.currentDragCoordinates = {
-          x: Math.max(0, x - this.latestDragOffsets.x),
-          y: Math.max(52, y - this.latestDragOffsets.y),
-        }
-
-        this.draggingElement = event.target
-        this.draggingItem = item
-        this.draggedFromZone = zone
       }
     },
 
