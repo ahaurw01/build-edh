@@ -73,6 +73,8 @@
           <div
             v-for="(item, index) in exile"
             :key="item.deckCard.uuid"
+            v-touch:tap="openExileModal"
+            v-touch:moving="startDragItem('exile', item.deckCard.uuid)"
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -224,6 +226,57 @@
         </footer>
       </div>
     </BModal>
+
+    <BModal :active.sync="exileModalIsShowing" has-modal-card>
+      <div class="modal-card" style="width: auto">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Exile ({{ exile.length }})</p>
+        </header>
+        <section class="modal-card-body">
+          <div class="modal-cards-wrapper">
+            <div
+              v-for="(item, index) in exile"
+              :key="item.deckCard.uuid"
+              class="modal-card-wrapper"
+            >
+              <button @click="exileActionOverlayIndex = index">
+                <Card :card="item.deckCard.source" size="small" />
+              </button>
+
+              <div
+                v-if="exileActionOverlayIndex === index"
+                class="modal-card-actions"
+              >
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'exile',
+                      toZone: 'hand',
+                      uuid: exile[index].deckCard.uuid,
+                    })
+                    exileActionOverlayIndex = -1
+                  "
+                >
+                  Move to Hand
+                </BButton>
+              </div>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <div class="level is-mobile" style="width: 100%">
+            <div class="level-left">
+              <div class="level-item">
+                <BButton @click="exileModalIsShowing = false">
+                  Close
+                </BButton>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </BModal>
   </div>
 </template>
 
@@ -254,6 +307,8 @@ export default {
     libraryActionOverlayIndex: -1,
     graveyardModalIsShowing: false,
     graveyardActionOverlayIndex: -1,
+    exileModalIsShowing: false,
+    exileActionOverlayIndex: -1,
     latestDragOffsets: { x: 0, y: 0 },
     currentDragCoordinates: { x: 0, y: 0 },
     draggingElement: null,
@@ -310,6 +365,11 @@ export default {
     openGraveyardModal() {
       this.graveyardActionOverlayIndex = -1
       this.graveyardModalIsShowing = true
+    },
+
+    openExileModal() {
+      this.exileActionOverlayIndex = -1
+      this.exileModalIsShowing = true
     },
 
     _shuffleLibrary() {
@@ -499,6 +559,7 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 0.5rem;
+  border-radius: 4.75% / 3.5%;
 }
 
 .battlefield-card-wrapper {
