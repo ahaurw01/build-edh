@@ -12,7 +12,7 @@
         v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
         v-touch:tap="_tap(item.deckCard.uuid)"
-        v-touch:moving="startDragItem('battlefield', item.deckCard.uuid)"
+        v-touch:start="startDragItem('battlefield', item.deckCard.uuid)"
         :style="{ ...styleFromItem(item, battlefield.length, index) }"
         :class="{ tapped: item.tapped }"
         class="battlefield-card-wrapper"
@@ -33,7 +33,7 @@
           v-if="library.length"
           :key="library[0].deckCard.uuid"
           v-touch:tap="openLibraryModal"
-          v-touch:moving="startDragItem('library', library[0].deckCard.uuid)"
+          v-touch:start="startDragItem('library', library[0].deckCard.uuid)"
         >
           <Card
             :card="library[0].deckCard.source"
@@ -75,7 +75,7 @@
             v-for="(item, index) in graveyard"
             :key="item.deckCard.uuid"
             v-touch:tap="openGraveyardModal"
-            v-touch:moving="startDragItem('graveyard', item.deckCard.uuid)"
+            v-touch:start="startDragItem('graveyard', item.deckCard.uuid)"
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -94,7 +94,7 @@
             v-for="(item, index) in exile"
             :key="item.deckCard.uuid"
             v-touch:tap="openExileModal"
-            v-touch:moving="startDragItem('exile', item.deckCard.uuid)"
+            v-touch:start="startDragItem('exile', item.deckCard.uuid)"
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -428,10 +428,6 @@ export default {
 
     startDragItem(zone, uuid) {
       return event => {
-        // Break if already started.
-        // We use this as the "moving" handler for the battlefield to work around tap issues.
-        if (this.draggingElement) return
-
         const item = this[zone].find(item => item.deckCard.uuid === uuid)
 
         const x = event.touches ? event.touches[0].pageX : event.pageX
