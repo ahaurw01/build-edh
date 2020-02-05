@@ -79,7 +79,9 @@ export const actions = {
 
     if (!item) return
 
-    const newFromZoneArray = fromZoneArray.filter(o => o !== item)
+    const newFromZoneArray = fromZoneArray.filter(
+      o => o.deckCard.uuid !== item.deckCard.uuid
+    )
     const newToZoneArray = [
       { ...item, x, y },
       ...(fromZone === toZone ? newFromZoneArray : toZoneArray),
@@ -93,7 +95,7 @@ export const actions = {
     commit(
       'battlefield',
       getters.battlefield.map(existingItem => {
-        if (existingItem === item) {
+        if (existingItem.deckCard.uuid === item.deckCard.uuid) {
           return { ...existingItem, tapped: !existingItem.tapped }
         }
         return existingItem

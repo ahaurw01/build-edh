@@ -5,16 +5,16 @@
     class="play-area has-background-light"
   >
     <div class="dz battlefield">
+      <!-- v-touch:start="startDragItem('battlefield', item)" -->
       <div
         v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
+        v-touch:tap="_tap(item)"
         :style="{ ...styleFromItem(item, battlefield.length, index) }"
         :class="{ tapped: item.tapped }"
         class="battlefield-card-wrapper"
       >
-        <button @click="tap(item)">
-          <Card :card="item.deckCard.source" :size="cardWidth" />
-        </button>
+        <Card :card="item.deckCard.source" :size="cardWidth" />
       </div>
     </div>
     <div class="other-zones">
@@ -231,6 +231,12 @@ export default {
       tap: 'playtest/tap',
       dragItem: 'playtest/dragItem',
     }),
+
+    _tap(item) {
+      return () => {
+        this.tap(item)
+      }
+    },
 
     openLibraryModal() {
       this.libraryActionOverlayIndex = -1
