@@ -87,7 +87,7 @@
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
       <div :style="{ height: `${cardHeight + 10}px` }" class="hand-inner">
         <div
-          v-for="(item, index) in hand"
+          v-for="(item, index) in handReversed"
           :key="item.deckCard.uuid"
           v-touch:start="startDragItem('hand', item.deckCard.uuid)"
           :style="handStyleFromItem(item, hand.length, index)"
@@ -328,6 +328,10 @@ export default {
       graveyard: 'playtest/graveyard',
       exile: 'playtest/exile',
     }),
+
+    handReversed() {
+      return this.hand.slice().reverse()
+    },
 
     cardHeight() {
       return this.cardWidth * 1.4
