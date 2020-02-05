@@ -94,6 +94,7 @@
         position: 'fixed',
         top: `${currentDragCoordinates.y}px`,
         left: `${currentDragCoordinates.x}px`,
+        width: `${cardWidth}px`,
       }"
       v-html="draggingElement.outerHTML"
     />
@@ -251,13 +252,18 @@ export default {
           y: y - event.target.getBoundingClientRect().top,
         }
 
+        this.currentDragCoordinates = {
+          x: Math.max(0, x - this.latestDragOffsets.x),
+          y: Math.max(52, y - this.latestDragOffsets.y),
+        }
+
         this.draggingElement = event.target
         this.draggingItem = item
         this.draggedFromZone = zone
       }
     },
 
-    _dragItem() {
+    _dragItem(event) {
       if (!this.draggingElement) return
       const x = event.touches ? event.touches[0].pageX : event.pageX
       const y = event.touches ? event.touches[0].pageY : event.pageY
