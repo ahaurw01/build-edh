@@ -24,12 +24,18 @@
             Library ({{ library.length }})
           </BButton>
         </h6>
-        <Card
+        <div
           v-if="library.length"
-          :card="library[0].deckCard.source"
-          :size="cardWidth"
-          face-down
-        />
+          v-touch:tap="openLibraryModal"
+          v-touch:moving="startDragItem('library', library[0].deckCard.uuid)"
+          :key="library[0].deckCard.uuid"
+        >
+          <Card
+            :card="library[0].deckCard.source"
+            :size="cardWidth"
+            face-down
+          />
+        </div>
       </div>
       <div :style="zoneStyle" class="dz zone commandZone">
         <h6 class="title is-6 has-background-light">CZ</h6>
