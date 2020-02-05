@@ -1,31 +1,24 @@
 <template>
-  <div class="play-area has-background-light">
-    <Drop class="battlefield" @drop="onDrop('battlefield', ...arguments)">
-      <Drag
+  <div
+    v-touch:moving="_dragItem"
+    v-touch:end="dropItem"
+    class="play-area has-background-light"
+  >
+    <div class="dz battlefield">
+      <div
         v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
-        :style="{
-          top: `${item.y}px`,
-          left: `${item.x}px`,
-          zIndex: battlefield.length - index,
-        }"
-        :transfer-data="{ fromZone: 'battlefield', item }"
+        :style="{ ...styleFromItem(item, battlefield.length, index) }"
         :class="{ tapped: item.tapped }"
-        :image-x-offset="item.tapped ? 45 : 22"
-        :image-y-offset="item.tapped ? 45 : 22"
         class="battlefield-card-wrapper"
-        @dragstart="startDrag"
       >
         <button @click="tap(item)">
-          <Card :card="item.deckCard.source" size="small" />
+          <Card :card="item.deckCard.source" :size="75" />
         </button>
-        <template slot="image">
-          <BIcon icon="target" size="is-large" />
-        </template>
-      </Drag>
-    </Drop>
+      </div>
+    </div>
     <div class="other-zones">
-      <div class="zone library">
+      <div class="dz zone library">
         <h6 class="title is-6 has-background-light">
           <BButton @click="openLibraryModal">
             Library ({{ library.length }})
@@ -34,21 +27,21 @@
         <Card
           v-if="library.length"
           :card="library[0].deckCard.source"
-          size="small"
+          :size="75"
           face-down
         />
       </div>
-      <div class="zone command-zone">
+      <div class="dz zone commandZone">
         <h6 class="title is-6 has-background-light">CZ</h6>
         <div
           v-for="item in commandZone"
           :key="item.deckCard.uuid"
           class="card-wrapper"
         >
-          <Card :card="item.deckCard.source" size="small" />
+          <Card :card="item.deckCard.source" :size="75" />
         </div>
       </div>
-      <div class="zone graveyard">
+      <div class="dz zone graveyard">
         <h6 class="title is-6 has-background-light">
           GY ({{ graveyard.length }})
         </h6>
@@ -57,10 +50,10 @@
           :key="item.deckCard.uuid"
           class="card-wrapper"
         >
-          <Card :card="item.deckCard.source" size="small" />
+          <Card :card="item.deckCard.source" :size="75" />
         </div>
       </div>
-      <div class="zone exile">
+      <div class="dz zone exile">
         <h6 class="title is-6 has-background-light">
           Exile ({{ exile.length }})
         </h6>
@@ -69,24 +62,32 @@
           :key="item.deckCard.uuid"
           class="card-wrapper"
         >
-          <Card :card="item.deckCard.source" size="small" />
+          <Card :card="item.deckCard.source" :size="75" />
         </div>
       </div>
     </div>
-    <div class="zone hand">
+    <div class="dz zone hand">
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
       <div
         v-for="item in hand"
         :key="item.deckCard.uuid"
-        v-touch:start="startDragItem"
-        v-touch:moving="_dragItem('hand', item)"
-        :class="{ dragging: item.x != null }"
-        :style="styleFromItem(item)"
+        v-touch:start="startDragItem('hand', item)"
         class="card-wrapper"
       >
-        <Card :card="item.deckCard.source" size="small" />
+        <Card :card="item.deckCard.source" :size="75" />
       </div>
     </div>
+
+    <div
+      v-if="draggingElement"
+      class="drag-dummy card-wrapper"
+      :style="{
+        position: 'fixed',
+        top: `${currentDragCoordinates.y}px`,
+        left: `${currentDragCoordinates.x}px`,
+      }"
+      v-html="draggingElement.outerHTML"
+    />
 
     <BModal :active.sync="libraryModalIsShowing" has-modal-card>
       <div class="modal-card" style="width: auto">
@@ -158,13 +159,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
-import { Drag, Drop } from 'vue-drag-drop'
 import Card from '~/components/Card'
 
 export default {
   auth: false,
 
-  components: { Card, Drag, Drop },
+  components: { Card },
 
   async fetch({ store, params, error, $axios }) {
     try {
@@ -182,6 +182,11 @@ export default {
     libraryCardsAreFaceUp: false,
     libraryActionOverlayIndex: -1,
     latestDragOffsets: { x: 0, y: 0 },
+    currentDragCoordinates: { x: 0, y: 0 },
+    draggingElement: null,
+    draggingItem: null,
+    draggedFromZone: null,
+    hoveredZone: null,
   }),
 
   computed: {
@@ -219,42 +224,85 @@ export default {
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
-    startDragItem(event) {
-      this.latestDragOffsets = {
-        x: event.touches[0].pageX - event.target.getBoundingClientRect().left,
-        y: event.touches[0].pageY - event.target.getBoundingClientRect().top,
+    startDragItem(zone, item) {
+      return event => {
+        const x = event.touches ? event.touches[0].pageX : event.pageX
+        const y = event.touches ? event.touches[0].pageY : event.pageY
+        this.latestDragOffsets = {
+          x: x - event.target.getBoundingClientRect().left,
+          y: y - event.target.getBoundingClientRect().top,
+        }
+
+        this.draggingElement = event.target
+        this.draggingItem = item
+        this.draggedFromZone = zone
       }
     },
 
-    _dragItem(zone, item) {
-      return event => {
-        console.log(event)
-        this.dragItem({
-          zone,
-          item,
-          x: Math.max(0, event.touches[0].pageX - this.latestDragOffsets.x),
-          y: Math.max(52, event.touches[0].pageY - this.latestDragOffsets.y),
+    _dragItem() {
+      if (!this.draggingElement) return
+      const x = event.touches ? event.touches[0].pageX : event.pageX
+      const y = event.touches ? event.touches[0].pageY : event.pageY
+
+      const hoveredZone = [
+        // Determine what zone if any we're hovering over.
+        'battlefield',
+        'hand',
+        'library',
+        'commandZone',
+        'graveyard',
+        'exile',
+      ].reduce((hoveredZone, zone) => {
+        if (hoveredZone) return hoveredZone
+        const el = document.querySelector(`.${zone}`)
+        const box = el.getBoundingClientRect()
+        if (
+          box.x <= x &&
+          x <= box.x + box.width &&
+          box.y <= y &&
+          y <= box.y + box.height
+        ) {
+          return zone
+        }
+        return null
+      }, null)
+
+      this.hoveredZone = hoveredZone
+
+      this.currentDragCoordinates = {
+        x: Math.max(0, x - this.latestDragOffsets.x),
+        y: Math.max(52, y - this.latestDragOffsets.y),
+      }
+    },
+
+    dropItem() {
+      if (this.hoveredZone) {
+        this.move({
+          fromZone: this.draggedFromZone,
+          toZone: this.hoveredZone,
+          item: this.draggingItem,
+          x: this.currentDragCoordinates.x,
+          y: this.currentDragCoordinates.y,
         })
       }
+
+      this.latestDragOffsets = { x: 0, y: 0 }
+      this.currentDragCoordinates = { x: 0, y: 0 }
+      this.draggingElement = null
+      this.draggingItem = null
+      this.draggedFromZone = null
+      this.hoveredZone = null
     },
 
-    styleFromItem(item) {
+    styleFromItem(item, numItems, index) {
       if (item.x == null) return {}
       return {
+        position: 'fixed',
         top: `${item.y}px`,
         left: `${item.x}px`,
+        zIndex: numItems - index,
       }
     },
-
-    // onDrop(toZone, { fromZone, item }, nativeEvent) {
-    //   this.move({
-    //     toZone,
-    //     fromZone,
-    //     item,
-    //     x: Math.max(0, nativeEvent.pageX - this.latestDragOffsets.x),
-    //     y: Math.max(0, nativeEvent.pageY - this.latestDragOffsets.y - 52),
-    //   })
-    // },
   },
 }
 </script>
@@ -302,10 +350,8 @@ export default {
 .exile {
   min-width: 75px;
 }
-.command-zone {
+.commandZone {
   min-width: 75px;
-}
-.hand {
 }
 
 .card-wrapper {
@@ -354,7 +400,8 @@ export default {
   transform: rotate(40deg);
 }
 
-.dragging {
+.drag-dummy {
   position: fixed;
+  pointer-events: none;
 }
 </style>
