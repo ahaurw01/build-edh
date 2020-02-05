@@ -43,6 +43,7 @@
           <div
             v-for="(item, index) in commandZone"
             :key="item.deckCard.uuid"
+            v-touch:start="startDragItem('commandZone', item.deckCard.uuid)"
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
