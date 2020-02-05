@@ -568,7 +568,7 @@ export default {
 
 .battlefield-card-wrapper {
   position: absolute;
-  transition: transform 250ms;
+  transition: transform 150ms;
 }
 
 .battlefield-card-wrapper > button {
@@ -579,12 +579,13 @@ export default {
 }
 
 .tapped {
-  transform: rotate(40deg);
+  transform: rotate(90deg);
 }
 
 .drag-dummy {
   position: fixed;
   pointer-events: none;
   z-index: 9999;
+  opacity: 0.75;
 }
 </style>
