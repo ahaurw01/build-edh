@@ -487,6 +487,8 @@ export default {
   height: calc(100vh - 52px);
   display: flex;
   flex-direction: column;
+  /* Disable text selection so our dragging around doesn't trigger anything weird. */
+  user-select: none;
 }
 
 .battlefield {
