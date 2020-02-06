@@ -55,7 +55,7 @@ export const actions = {
   build({ getters, dispatch, commit }) {
     commit(
       'library',
-      getters.deck.the99.map(deckCard => ({ deckCard }))
+      getters.the99WithoutConsiderations.map(deckCard => ({ deckCard }))
     )
     commit(
       'commandZone',
@@ -156,6 +156,8 @@ export const actions = {
 export const getters = {
   name: state => state.deck.name || 'Untitled deck',
   deck: state => state.deck,
+  the99WithoutConsiderations: state =>
+    state.deck.the99.filter(c => !c.isConsideration),
   library: state => state.library,
   hand: state => state.hand,
   graveyard: state => state.graveyard,
