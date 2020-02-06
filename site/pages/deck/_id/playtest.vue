@@ -605,7 +605,7 @@ export default {
 
     _tap(uuid) {
       return () => {
-        if (this.isDragging || !this.isCardShowcaseOpen) return
+        if (this.isDragging || this.isCardShowcaseOpen) return
         this.tap(uuid)
       }
     },
