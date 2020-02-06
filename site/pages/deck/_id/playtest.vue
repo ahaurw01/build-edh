@@ -348,6 +348,12 @@ import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
 import Card from '~/components/Card'
 
+function findElementInAncestors(element, check) {
+  if (!element) return null
+  if (check(element)) return element
+  return findElementInAncestors(element.parentElement, check)
+}
+
 export default {
   auth: false,
 
@@ -477,7 +483,9 @@ export default {
 
     startDragItem(event) {
       // See if we're on something draggable.
-      const elWithData = event.path.find(node => get(node, 'dataset.dragInfo'))
+      const elWithData = findElementInAncestors(event.target, el =>
+        get(el, 'dataset.dragInfo')
+      )
       if (!elWithData) return
 
       this.isPressing = true
