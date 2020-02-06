@@ -222,14 +222,20 @@
         <section class="modal-card-body">
           <div class="modal-cards-wrapper">
             <div
-              v-for="(item, index) in library"
+              v-for="({ item, isFaceUp }, index) in libraryModalContents"
               :key="item.deckCard.uuid"
               class="modal-card-wrapper"
             >
-              <button @click="libraryActionOverlayIndex = index">
+              <button
+                @click="
+                  isFaceUp
+                    ? (libraryActionOverlayIndex = index)
+                    : (libraryModalContents[index].isFaceUp = true)
+                "
+              >
                 <Card
                   :card="item.deckCard.source"
-                  :face-down="!libraryCardsAreFaceUp"
+                  :face-down="!isFaceUp && !libraryCardsAreFaceUp"
                   size="small"
                 />
               </button>
@@ -246,6 +252,7 @@
                       toZone: 'hand',
                       uuid: library[index].deckCard.uuid,
                     })
+                    buildFreshLibraryModalContents({ keepFlipped: true })
                     libraryActionOverlayIndex = -1
                   "
                 >
@@ -259,8 +266,25 @@
                       fromZone: 'library',
                       toZone: 'library',
                       uuid: library[index].deckCard.uuid,
+                      position: 0,
+                    })
+                    buildFreshLibraryModalContents({ keepFlipped: true })
+                    libraryActionOverlayIndex = -1
+                  "
+                >
+                  Send to Top
+                </BButton>
+
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'library',
+                      toZone: 'library',
+                      uuid: library[index].deckCard.uuid,
                       position: -1,
                     })
+                    buildFreshLibraryModalContents({ keepFlipped: true })
                     libraryActionOverlayIndex = -1
                   "
                 >
@@ -451,6 +475,7 @@ export default {
     isDragging: false,
     isFullscreen: false,
     isTokenModalShowing: false,
+    libraryModalContents: [],
   }),
 
   computed: {
@@ -544,8 +569,29 @@ export default {
       }
     },
 
+    buildFreshLibraryModalContents({ keepFlipped } = { keepFlipped: false }) {
+      const flippedUuids = this.libraryModalContents
+        .filter(({ isFaceUp }) => isFaceUp)
+        .map(
+          ({
+            item: {
+              deckCard: { uuid },
+            },
+          }) => uuid
+        )
+
+      this.libraryModalContents = this.library.map(item => ({
+        item,
+        isFaceUp: keepFlipped
+          ? flippedUuids.includes(item.deckCard.uuid)
+          : false,
+      }))
+    },
+
     openLibraryModal() {
       if (this.isDragging) return
+
+      this.buildFreshLibraryModalContents()
       this.libraryActionOverlayIndex = -1
       this.libraryCardsAreFaceUp = false
       this.libraryModalIsShowing = true
@@ -565,6 +611,7 @@ export default {
 
     _shuffleLibrary() {
       this.shuffleLibrary()
+      this.buildFreshLibraryModalContents()
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
