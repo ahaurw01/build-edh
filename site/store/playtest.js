@@ -105,10 +105,13 @@ export const actions = {
     if (!item) return
 
     const newFromZoneArray = fromZoneArray.filter(o => o !== item)
-    const newToZoneArray = [
-      { ...item, x, y },
-      ...(fromZone === toZone ? newFromZoneArray : toZoneArray),
-    ]
+    const newToZoneArray =
+      item.isToken && toZone !== 'battlefield'
+        ? toZoneArray
+        : [
+            { ...item, x, y },
+            ...(fromZone === toZone ? newFromZoneArray : toZoneArray),
+          ]
 
     commit(fromZone, newFromZoneArray)
     commit(toZone, newToZoneArray)
@@ -206,6 +209,7 @@ export const actions = {
         },
         x: (coord += 10),
         y: coord,
+        isToken: true,
       }))
 
     commit('battlefield', [...getters.battlefield, ...items.reverse()])
