@@ -65,6 +65,8 @@ export const actions = {
     commit('graveyard', [])
     commit('exile', [])
     commit('battlefield', [])
+    commit('life', 40)
+    commit('turn', 0)
     dispatch('shuffleLibrary')
   },
 
