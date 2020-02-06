@@ -411,10 +411,14 @@ export default {
   mounted() {
     window.addEventListener('resize', this.setAppropriateCardSize)
     this.setAppropriateCardSize()
+
+    window.document.body.classList.add('no-refresh')
   },
 
   beforeDestroy() {
     window.removeEventListener('resize', this.setAppropriateCardSize)
+
+    window.document.body.classList.remove('no-refresh')
   },
 
   methods: {
@@ -575,6 +579,12 @@ export default {
 }
 </script>
 
+<style>
+.no-refresh {
+  overscroll-behavior: none;
+}
+</style>
+
 <style scoped>
 .play-area {
   height: calc(100vh - 52px);
@@ -582,7 +592,6 @@ export default {
   flex-direction: column;
   /* Disable text selection so our dragging around doesn't trigger anything weird. */
   user-select: none;
-  overscroll-behavior: none;
 }
 
 .battlefield {
