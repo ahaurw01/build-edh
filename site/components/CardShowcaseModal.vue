@@ -6,7 +6,7 @@
     v-on="$listeners"
   >
     <div class="modal-column">
-      <BTaglist v-if="purposes.length">
+      <BTaglist v-if="!plain && purposes.length">
         <BTag
           v-for="purpose in purposes"
           :key="purpose.text"
@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <div class="price has-text-white is-size-5">
+      <div v-if="!plain" class="price has-text-white is-size-5">
         <b>{{ price }}</b>
       </div>
     </div>
@@ -74,6 +74,7 @@ export default {
     isOpen: { type: Boolean, required: true },
     showEditButton: { type: Boolean, default: false },
     specialShadow: { type: Boolean, default: false },
+    plain: { type: Boolean, default: false },
   },
 
   computed: {

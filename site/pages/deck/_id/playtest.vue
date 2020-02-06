@@ -3,6 +3,7 @@
     v-touch:start="startDragItem"
     v-touch:moving="_dragItem"
     v-touch:end="dropItem"
+    v-touch:touchhold="longPress"
     class="play-area has-background-light no-refresh"
   >
     <div
@@ -28,7 +29,8 @@
           !libraryModalIsShowing &&
           !graveyardModalIsShowing &&
           !exileModalIsShowing &&
-          !isTokenModalShowing
+          !isTokenModalShowing &&
+          !isCardShowcaseOpen
             ? {}
             : { zIndex: 0 }
         "
@@ -443,6 +445,13 @@
     <BModal :active.sync="isTokenModalShowing" has-modal-card>
       <TokenModal />
     </BModal>
+
+    <CardShowcaseModal
+      :card="cardToShowcase"
+      :is-open="isCardShowcaseOpen"
+      plain
+      @close="isCardShowcaseOpen = false"
+    />
   </div>
 </template>
 
@@ -453,6 +462,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
 import Card from '~/components/Card'
 import TokenModal from '~/components/TokenModal'
+import CardShowcaseModal from '~/components/CardShowcaseModal'
 
 function findElementInAncestors(element, check) {
   if (!element) return null
@@ -463,7 +473,7 @@ function findElementInAncestors(element, check) {
 export default {
   auth: false,
 
-  components: { Card, TokenModal },
+  components: { Card, TokenModal, CardShowcaseModal },
 
   async fetch({ store, params, error, $axios }) {
     try {
@@ -496,6 +506,8 @@ export default {
     isFullscreen: false,
     isTokenModalShowing: false,
     libraryModalContents: [],
+    isCardShowcaseOpen: false,
+    cardToShowcase: null,
   }),
 
   computed: {
@@ -533,6 +545,12 @@ export default {
     window.addEventListener('resize', this.setAppropriateCardSize)
     this.setAppropriateCardSize()
 
+    window.oncontextmenu = function(event) {
+      event.preventDefault()
+      event.stopPropagation()
+      return false
+    }
+
     window.document.body.classList.add('no-refresh')
     window.document.documentElement.classList.add('no-refresh')
 
@@ -541,6 +559,7 @@ export default {
 
   beforeDestroy() {
     window.removeEventListener('resize', this.setAppropriateCardSize)
+    window.oncontextmenu = null
 
     window.document.body.classList.remove('no-refresh')
     window.document.documentElement.classList.remove('no-refresh')
@@ -586,7 +605,7 @@ export default {
 
     _tap(uuid) {
       return () => {
-        if (this.isDragging) return
+        if (this.isDragging || !this.isCardShowcaseOpen) return
         this.tap(uuid)
       }
     },
@@ -725,6 +744,24 @@ export default {
       this.hoveredZone = null
       this.isPressing = false
       this.isDragging = false
+    },
+
+    longPress(event) {
+      // See if we long pressed on a card.
+      const elWithData = findElementInAncestors(event.target, el =>
+        get(el, 'dataset.dragInfo')
+      )
+      if (!elWithData) return
+
+      // Cancel any press or drag.
+      this.isPressing = false
+      this.isDragging = false
+
+      const { uuid, zone } = JSON.parse(elWithData.dataset.dragInfo)
+      this.cardToShowcase = this[zone].find(
+        i => i.deckCard.uuid === uuid
+      ).deckCard
+      this.isCardShowcaseOpen = true
     },
 
     styleFromItem(item, numItems, index) {
