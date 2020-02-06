@@ -582,6 +582,7 @@ export default {
   flex-direction: column;
   /* Disable text selection so our dragging around doesn't trigger anything weird. */
   user-select: none;
+  overscroll-behavior: none;
 }
 
 .battlefield {
