@@ -705,5 +705,6 @@ export default {
   display: flex;
   align-items: center;
   font-family: monospace;
+  font-weight: bold;
 }
 </style>
