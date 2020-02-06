@@ -1,48 +1,79 @@
 <template>
   <div
+    v-touch:start="startDragItem"
     v-touch:moving="_dragItem"
     v-touch:end="dropItem"
     class="play-area has-background-light"
   >
-    <div class="dz battlefield">
+    <div
+      :class="{ hovered: hoveredZone === 'battlefield' }"
+      class="dz battlefield"
+    >
       <div
         v-for="(item, index) in battlefield"
         :key="item.deckCard.uuid"
         v-touch:tap="_tap(item.deckCard.uuid)"
-        v-touch:moving="startDragItem('battlefield', item.deckCard.uuid)"
+        :data-drag-info="
+          JSON.stringify({ zone: 'battlefield', uuid: item.deckCard.uuid })
+        "
         :style="{ ...styleFromItem(item, battlefield.length, index) }"
         :class="{ tapped: item.tapped }"
         class="battlefield-card-wrapper"
       >
         <Card :card="item.deckCard.source" :size="cardWidth" />
       </div>
+
+      <div class="battlefield-actions">
+        <BButton @click="nextTurn">Turn: {{ turn }}</BButton>
+        <div class="life">
+          <BButton icon-left="minus" @click="bumpLife(-1)" />
+          <span>&nbsp;{{ life }}&nbsp;</span>
+          <BButton icon-left="plus" @click="bumpLife(1)" />
+        </div>
+      </div>
     </div>
     <div class="other-zones">
-      <div :style="zoneStyle" class="dz zone library">
+      <div
+        :style="zoneStyle"
+        :class="{ hovered: hoveredZone === 'library' }"
+        class="dz zone library"
+      >
         <h6 class="title is-6 has-background-light">
           Lib ({{ library.length }})
         </h6>
-        <div
-          v-if="library.length"
-          :key="library[0].deckCard.uuid"
-          v-touch:tap="openLibraryModal"
-          v-touch:moving="startDragItem('library', library[0].deckCard.uuid)"
-        >
-          <Card
-            :card="library[0].deckCard.source"
-            :size="cardWidth"
-            face-down
-          />
+        <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
+          <div
+            v-for="(item, index) in library"
+            :key="item.deckCard.uuid"
+            v-touch:tap="openLibraryModal"
+            :data-drag-info="
+              JSON.stringify({
+                zone: 'library',
+                uuid: item.deckCard.uuid,
+              })
+            "
+            :style="{ display: index > 0 ? 'none' : 'block' }"
+            class="card-wrapper"
+          >
+            <Card :card="item.deckCard.source" :size="cardWidth" face-down />
+          </div>
         </div>
       </div>
-      <div :style="zoneStyle" class="dz zone commandZone">
+      <div
+        :style="zoneStyle"
+        :class="{ hovered: hoveredZone === 'commandZone' }"
+        class="dz zone commandZone"
+      >
         <h6 class="title is-6 has-background-light">
           CZ ({{ commandZone.length }})
         </h6>
-        <div :style="{ height: `${cardHeight}px` }">
+        <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
             v-for="(item, index) in commandZone"
             :key="item.deckCard.uuid"
+            :data-drag-info="
+              JSON.stringify({ zone: 'commandZone', uuid: item.deckCard.uuid })
+            "
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -50,7 +81,11 @@
           </div>
         </div>
       </div>
-      <div :style="zoneStyle" class="dz zone graveyard">
+      <div
+        :style="zoneStyle"
+        :class="{ hovered: hoveredZone === 'graveyard' }"
+        class="dz zone graveyard"
+      >
         <h6 class="title is-6 has-background-light">
           GY ({{ graveyard.length }})
         </h6>
@@ -58,6 +93,13 @@
           <div
             v-for="(item, index) in graveyard"
             :key="item.deckCard.uuid"
+            v-touch:tap="openGraveyardModal"
+            :data-drag-info="
+              JSON.stringify({
+                zone: 'graveyard',
+                uuid: item.deckCard.uuid,
+              })
+            "
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -65,12 +107,23 @@
           </div>
         </div>
       </div>
-      <div :style="zoneStyle" class="dz zone exile">
+      <div
+        :style="zoneStyle"
+        :class="{ hovered: hoveredZone === 'exile' }"
+        class="dz zone exile"
+      >
         <h6 class="title is-6 has-background-light">Ex ({{ exile.length }})</h6>
         <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
             v-for="(item, index) in exile"
             :key="item.deckCard.uuid"
+            v-touch:tap="openExileModal"
+            :data-drag-info="
+              JSON.stringify({
+                zone: 'exile',
+                uuid: item.deckCard.uuid,
+              })
+            "
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
@@ -79,13 +132,25 @@
         </div>
       </div>
     </div>
-    <div :style="zoneStyle" class="dz zone hand">
+    <div
+      :style="zoneStyle"
+      :class="{ hovered: hoveredZone === 'hand' }"
+      class="dz zone hand"
+    >
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
-      <div :style="{ height: `${cardHeight + 10}px` }" class="hand-inner">
+      <div
+        :style="{
+          height: `${cardHeight + 10}px`,
+          maxWidth: `${(cardWidth + 4) * hand.length}px`,
+        }"
+        class="hand-inner"
+      >
         <div
-          v-for="(item, index) in hand"
+          v-for="(item, index) in handReversed"
           :key="item.deckCard.uuid"
-          v-touch:start="startDragItem('hand', item.deckCard.uuid)"
+          :data-drag-info="
+            JSON.stringify({ zone: 'hand', uuid: item.deckCard.uuid })
+          "
           :style="handStyleFromItem(item, hand.length, index)"
           class="card-wrapper hand-card-wrapper"
         >
@@ -95,7 +160,7 @@
     </div>
 
     <div
-      v-if="draggingElement"
+      v-if="isDragging"
       class="drag-dummy card-wrapper"
       :class="{ tapped: draggingItem.tapped }"
       :style="{
@@ -142,7 +207,7 @@
                     libraryActionOverlayIndex = -1
                   "
                 >
-                  To Hand
+                  Move to Hand
                 </BButton>
               </div>
             </div>
@@ -171,10 +236,113 @@
         </footer>
       </div>
     </BModal>
+
+    <BModal :active.sync="graveyardModalIsShowing" has-modal-card>
+      <div class="modal-card" style="width: auto">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Graveyard ({{ graveyard.length }})</p>
+        </header>
+        <section class="modal-card-body">
+          <div class="modal-cards-wrapper">
+            <div
+              v-for="(item, index) in graveyard"
+              :key="item.deckCard.uuid"
+              class="modal-card-wrapper"
+            >
+              <button @click="graveyardActionOverlayIndex = index">
+                <Card :card="item.deckCard.source" size="small" />
+              </button>
+
+              <div
+                v-if="graveyardActionOverlayIndex === index"
+                class="modal-card-actions"
+              >
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'graveyard',
+                      toZone: 'hand',
+                      uuid: graveyard[index].deckCard.uuid,
+                    })
+                    graveyardActionOverlayIndex = -1
+                  "
+                >
+                  Move to Hand
+                </BButton>
+              </div>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <div class="level is-mobile" style="width: 100%">
+            <div class="level-left">
+              <div class="level-item">
+                <BButton @click="graveyardModalIsShowing = false">
+                  Close
+                </BButton>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </BModal>
+
+    <BModal :active.sync="exileModalIsShowing" has-modal-card>
+      <div class="modal-card" style="width: auto">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Exile ({{ exile.length }})</p>
+        </header>
+        <section class="modal-card-body">
+          <div class="modal-cards-wrapper">
+            <div
+              v-for="(item, index) in exile"
+              :key="item.deckCard.uuid"
+              class="modal-card-wrapper"
+            >
+              <button @click="exileActionOverlayIndex = index">
+                <Card :card="item.deckCard.source" size="small" />
+              </button>
+
+              <div
+                v-if="exileActionOverlayIndex === index"
+                class="modal-card-actions"
+              >
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'exile',
+                      toZone: 'hand',
+                      uuid: exile[index].deckCard.uuid,
+                    })
+                    exileActionOverlayIndex = -1
+                  "
+                >
+                  Move to Hand
+                </BButton>
+              </div>
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <div class="level is-mobile" style="width: 100%">
+            <div class="level-left">
+              <div class="level-item">
+                <BButton @click="exileModalIsShowing = false">
+                  Close
+                </BButton>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </BModal>
   </div>
 </template>
 
 <script>
+import get from 'lodash/get'
 import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
 import Card from '~/components/Card'
@@ -199,6 +367,10 @@ export default {
     libraryModalIsShowing: false,
     libraryCardsAreFaceUp: false,
     libraryActionOverlayIndex: -1,
+    graveyardModalIsShowing: false,
+    graveyardActionOverlayIndex: -1,
+    exileModalIsShowing: false,
+    exileActionOverlayIndex: -1,
     latestDragOffsets: { x: 0, y: 0 },
     currentDragCoordinates: { x: 0, y: 0 },
     draggingElement: null,
@@ -206,6 +378,8 @@ export default {
     draggedFromZone: null,
     hoveredZone: null,
     cardWidth: 75,
+    isPressing: false,
+    isDragging: false,
   }),
 
   computed: {
@@ -217,7 +391,13 @@ export default {
       commandZone: 'playtest/commandZone',
       graveyard: 'playtest/graveyard',
       exile: 'playtest/exile',
+      turn: 'playtest/turn',
+      life: 'playtest/life',
     }),
+
+    handReversed() {
+      return this.hand.slice().reverse()
+    },
 
     cardHeight() {
       return this.cardWidth * 1.4
@@ -228,7 +408,14 @@ export default {
     },
   },
 
-  mounted() {},
+  mounted() {
+    window.addEventListener('resize', this.setAppropriateCardSize)
+    this.setAppropriateCardSize()
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.setAppropriateCardSize)
+  },
 
   methods: {
     ...mapActions({
@@ -238,18 +425,42 @@ export default {
       move: 'playtest/move',
       tap: 'playtest/tap',
       dragItem: 'playtest/dragItem',
+      nextTurn: 'playtest/nextTurn',
+      bumpLife: 'playtest/bumpLife',
     }),
+
+    setAppropriateCardSize() {
+      if (window.innerWidth > 720) {
+        this.cardWidth = 150
+      } else {
+        this.cardWidth = 75
+      }
+    },
 
     _tap(uuid) {
       return () => {
+        if (this.isDragging) return
         this.tap(uuid)
       }
     },
 
     openLibraryModal() {
+      if (this.isDragging) return
       this.libraryActionOverlayIndex = -1
       this.libraryCardsAreFaceUp = false
       this.libraryModalIsShowing = true
+    },
+
+    openGraveyardModal() {
+      if (this.isDragging) return
+      this.graveyardActionOverlayIndex = -1
+      this.graveyardModalIsShowing = true
+    },
+
+    openExileModal() {
+      if (this.isDragging) return
+      this.exileActionOverlayIndex = -1
+      this.exileModalIsShowing = true
     },
 
     _shuffleLibrary() {
@@ -257,34 +468,39 @@ export default {
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
-    startDragItem(zone, uuid) {
-      return event => {
-        // Break if already started.
-        // We use this as the "moving" handler for the battlefield to work around tap issues.
-        if (this.draggingElement) return
+    startDragItem(event) {
+      // See if we're on something draggable.
+      const elWithData = event.path.find(node => get(node, 'dataset.dragInfo'))
+      if (!elWithData) return
 
-        const item = this[zone].find(item => item.deckCard.uuid === uuid)
+      this.isPressing = true
+      const { zone, uuid } = JSON.parse(elWithData.dataset.dragInfo)
+      const item = this[zone].find(item => item.deckCard.uuid === uuid)
 
-        const x = event.touches ? event.touches[0].pageX : event.pageX
-        const y = event.touches ? event.touches[0].pageY : event.pageY
-        this.latestDragOffsets = {
-          x: x - event.target.getBoundingClientRect().left,
-          y: y - event.target.getBoundingClientRect().top,
-        }
+      this.draggingElement = event.target
+      this.draggingItem = item
+      this.draggedFromZone = zone
 
-        this.currentDragCoordinates = {
-          x: Math.max(0, x - this.latestDragOffsets.x),
-          y: Math.max(52, y - this.latestDragOffsets.y),
-        }
+      const x = event.touches ? event.touches[0].pageX : event.pageX
+      const y = event.touches ? event.touches[0].pageY : event.pageY
+      this.latestDragOffsets = {
+        x: x - event.target.getBoundingClientRect().left,
+        y: y - event.target.getBoundingClientRect().top,
+      }
 
-        this.draggingElement = event.target
-        this.draggingItem = item
-        this.draggedFromZone = zone
+      this.currentDragCoordinates = {
+        x: Math.max(0, x - this.latestDragOffsets.x),
+        y: Math.max(52, y - this.latestDragOffsets.y),
       }
     },
 
     _dragItem(event) {
-      if (!this.draggingElement) return
+      if (!this.isPressing) {
+        return
+      }
+
+      this.isDragging = true
+
       const x = event.touches ? event.touches[0].pageX : event.pageX
       const y = event.touches ? event.touches[0].pageY : event.pageY
 
@@ -320,7 +536,7 @@ export default {
     },
 
     dropItem() {
-      if (this.hoveredZone) {
+      if (this.isDragging && this.hoveredZone) {
         this.move({
           fromZone: this.draggedFromZone,
           toZone: this.hoveredZone,
@@ -336,6 +552,8 @@ export default {
       this.draggingItem = null
       this.draggedFromZone = null
       this.hoveredZone = null
+      this.isPressing = false
+      this.isDragging = false
     },
 
     styleFromItem(item, numItems, index) {
@@ -362,6 +580,8 @@ export default {
   height: calc(100vh - 52px);
   display: flex;
   flex-direction: column;
+  /* Disable text selection so our dragging around doesn't trigger anything weird. */
+  user-select: none;
 }
 
 .battlefield {
@@ -426,6 +646,7 @@ export default {
   padding: 0;
   margin: 0;
   cursor: pointer;
+  outline: none;
 }
 .modal-card-actions {
   position: absolute;
@@ -436,12 +657,14 @@ export default {
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 0.5rem;
+  border-radius: 4.75% / 3.5%;
 }
 
 .battlefield-card-wrapper {
   position: absolute;
-  transition: transform 250ms;
+  transition: transform 150ms;
 }
 
 .battlefield-card-wrapper > button {
@@ -452,12 +675,36 @@ export default {
 }
 
 .tapped {
-  transform: rotate(40deg);
+  transform: rotate(90deg);
 }
 
 .drag-dummy {
   position: fixed;
   pointer-events: none;
   z-index: 9999;
+  opacity: 0.75;
+}
+
+.hovered {
+  background: #ffdd5750;
+}
+
+.battlefield-actions {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 999999;
+  top: 52px;
+  right: 0;
+  padding: 0.5rem;
+}
+
+.battlefield-actions .life {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  font-family: monospace;
+  font-weight: bold;
 }
 </style>

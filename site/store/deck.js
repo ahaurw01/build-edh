@@ -387,6 +387,7 @@ export const actions = {
 export const getters = {
   user: state => state.auth.user,
   owner: state => state.owner,
+  slug: state => state.deck.slug,
   iAmOwner: (state, getters, rootState) =>
     get(getters, 'owner._id', -1) === get(rootState, 'auth.user._id', -2),
   name: state => state.deck.name || 'Untitled deck',

@@ -9,6 +9,8 @@ export const state = () => ({
   exile: [],
   battlefield: [],
   commandZone: [],
+  life: 40,
+  turn: 0,
 })
 
 export const mutations = {
@@ -39,6 +41,14 @@ export const mutations = {
   commandZone(state, commandZone) {
     state.commandZone = commandZone
   },
+
+  turn(state, turn) {
+    state.turn = turn
+  },
+
+  life(state, life) {
+    state.life = life
+  },
 }
 
 export const actions = {
@@ -51,6 +61,10 @@ export const actions = {
       'commandZone',
       getters.deck.commanders.map(deckCard => ({ deckCard }))
     )
+    commit('hand', [])
+    commit('graveyard', [])
+    commit('exile', [])
+    commit('battlefield', [])
     dispatch('shuffleLibrary')
   },
 
@@ -104,6 +118,16 @@ export const actions = {
     )
   },
 
+  untapAll({ commit, getters }) {
+    commit(
+      'battlefield',
+      getters.battlefield.map(item => ({
+        ...item,
+        tapped: false,
+      }))
+    )
+  },
+
   dragItem({ commit, getters }, { zone, item, x, y }) {
     commit(
       zone,
@@ -116,7 +140,15 @@ export const actions = {
     )
   },
 
-  // dropItem() {},
+  nextTurn({ commit, getters, dispatch }) {
+    dispatch('untapAll')
+    dispatch('draw', 1)
+    commit('turn', getters.turn + 1)
+  },
+
+  bumpLife({ commit, getters }, diff) {
+    commit('life', getters.life + diff)
+  },
 }
 
 export const getters = {
@@ -128,4 +160,6 @@ export const getters = {
   exile: state => state.exile,
   battlefield: state => state.battlefield,
   commandZone: state => state.commandZone,
+  turn: state => state.turn,
+  life: state => state.life,
 }
