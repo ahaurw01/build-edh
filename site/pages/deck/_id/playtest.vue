@@ -3,11 +3,11 @@
     v-touch:start="startDragItem"
     v-touch:moving="_dragItem"
     v-touch:end="dropItem"
-    class="play-area has-background-light"
+    class="play-area has-background-light no-refresh"
   >
     <div
       :class="{ hovered: hoveredZone === 'battlefield' }"
-      class="dz battlefield"
+      class="dz battlefield no-refresh"
     >
       <div
         v-for="(item, index) in battlefield"
@@ -33,7 +33,7 @@
         <BButton @click="reset">Reset</BButton>
       </div>
     </div>
-    <div class="other-zones">
+    <div class="other-zones no-refresh">
       <div
         :style="zoneStyle"
         :class="{ hovered: hoveredZone === 'library' }"
@@ -136,7 +136,7 @@
     <div
       :style="zoneStyle"
       :class="{ hovered: hoveredZone === 'hand' }"
-      class="dz zone hand"
+      class="dz zone hand no-refresh"
     >
       <h6 class="title is-6 has-background-light">Hand ({{ hand.length }})</h6>
       <div
@@ -414,12 +414,14 @@ export default {
     this.setAppropriateCardSize()
 
     window.document.body.classList.add('no-refresh')
+    window.document.documentElement.classList.add('no-refresh')
   },
 
   beforeDestroy() {
     window.removeEventListener('resize', this.setAppropriateCardSize)
 
     window.document.body.classList.remove('no-refresh')
+    window.document.documentElement.classList.remove('no-refresh')
   },
 
   methods: {
