@@ -206,8 +206,4 @@ export default {
 .benign-actions > :nth-child(n + 2) {
   margin-left: 0.5rem;
 }
-
-.danger-actions {
-  margin-top: 2rem;
-}
 </style>
