@@ -30,6 +30,7 @@
           <span>&nbsp;{{ life }}&nbsp;</span>
           <BButton icon-left="plus" @click="bumpLife(1)" />
         </div>
+        <BButton @click="reset">Reset</BButton>
       </div>
     </div>
     <div class="other-zones">
@@ -575,6 +576,13 @@ export default {
 
       return { left: `calc(${ratio} * (100% - ${this.cardWidth}px))` }
     },
+
+    reset() {
+      if (window.confirm('Are you sure?')) {
+        this.build()
+        this.draw(7)
+      }
+    },
   },
 }
 </script>
@@ -710,8 +718,11 @@ export default {
   padding: 0.5rem;
 }
 
-.battlefield-actions .life {
+.battlefield-actions > :nth-child(n + 2) {
   margin-top: 0.5rem;
+}
+
+.battlefield-actions .life {
   display: flex;
   align-items: center;
   font-family: monospace;
