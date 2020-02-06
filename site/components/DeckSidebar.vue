@@ -43,7 +43,7 @@
         <BButton @click="isExportModalOpen = true">View as text</BButton>
       </div>
 
-      <hr />
+      <hr v-if="iAmOwner" />
 
       <BButton v-if="iAmOwner" type="is-danger" @click="confirmDelete">
         Delete this deck
