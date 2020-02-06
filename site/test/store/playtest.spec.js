@@ -58,25 +58,25 @@ describe('Playtest Store', () => {
 
         store.commit('library', [
           {
-            deckCard: 'Lightning Greaves',
+            deckCard: { uuid: 1, source: 'Lightning Greaves' },
           },
           {
-            deckCard: 'Sol Ring',
+            deckCard: { uuid: 2, source: 'Sol Ring' },
           },
           {
-            deckCard: 'Lightning Bolt',
+            deckCard: { uuid: 3, source: 'Lightning Bolt' },
           },
           {
-            deckCard: 'Goblin Grenade',
+            deckCard: { uuid: 4, source: 'Goblin Grenade' },
           },
           {
-            deckCard: 'Mountain',
+            deckCard: { uuid: 5, source: 'Mountain' },
           },
           {
-            deckCard: 'Mountain',
+            deckCard: { uuid: 6, source: 'Mountain' },
           },
           {
-            deckCard: 'Mountain',
+            deckCard: { uuid: 7, source: 'Mountain' },
           },
         ])
 
@@ -85,30 +85,70 @@ describe('Playtest Store', () => {
         expect(store.getters.hand).toHaveLength(3)
         expect(store.getters.hand).toEqual([
           {
-            deckCard: 'Lightning Bolt',
+            deckCard: { uuid: 3, source: 'Lightning Bolt' },
           },
           {
-            deckCard: 'Sol Ring',
+            deckCard: { uuid: 2, source: 'Sol Ring' },
           },
           {
-            deckCard: 'Lightning Greaves',
+            deckCard: { uuid: 1, source: 'Lightning Greaves' },
           },
         ])
         expect(store.getters.library).toHaveLength(4)
         expect(store.getters.library).toEqual([
           {
-            deckCard: 'Goblin Grenade',
+            deckCard: { uuid: 4, source: 'Goblin Grenade' },
           },
           {
-            deckCard: 'Mountain',
+            deckCard: { uuid: 5, source: 'Mountain' },
           },
           {
-            deckCard: 'Mountain',
+            deckCard: { uuid: 6, source: 'Mountain' },
           },
           {
-            deckCard: 'Mountain',
+            deckCard: { uuid: 7, source: 'Mountain' },
           },
         ])
+      })
+    })
+
+    describe('move', () => {
+      describe('send to bottom', () => {
+        test('adjusts library as appropriate', () => {
+          const store = makeStore()
+
+          store.commit('library', [
+            {
+              deckCard: { source: { name: 'Lightning Greaves' }, uuid: 1 },
+            },
+            {
+              deckCard: { source: { name: 'Sol Ring' }, uuid: 2 },
+            },
+            {
+              deckCard: { source: { name: 'Lightning Bolt' }, uuid: 3 },
+            },
+          ])
+
+          store.dispatch('move', {
+            uuid: 1,
+            position: -1,
+            fromZone: 'library',
+            toZone: 'library',
+          })
+
+          expect(store.getters.library).toHaveLength(3)
+          expect(store.getters.library).toEqual([
+            {
+              deckCard: { source: { name: 'Sol Ring' }, uuid: 2 },
+            },
+            {
+              deckCard: { source: { name: 'Lightning Bolt' }, uuid: 3 },
+            },
+            {
+              deckCard: { source: { name: 'Lightning Greaves' }, uuid: 1 },
+            },
+          ])
+        })
       })
     })
   })

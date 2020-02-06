@@ -95,7 +95,11 @@
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
-            <Card :card="item.deckCard.source" :size="cardWidth" face-down />
+            <Card
+              :card="item.deckCard.source"
+              :size="cardWidth"
+              :face-down="!playWithTopCardRevealed"
+            />
           </div>
         </div>
       </div>
@@ -222,14 +226,26 @@
         <section class="modal-card-body">
           <div class="modal-cards-wrapper">
             <div
-              v-for="(item, index) in library"
+              v-for="({ item, isFaceUp }, index) in libraryModalContents"
               :key="item.deckCard.uuid"
               class="modal-card-wrapper"
             >
-              <button @click="libraryActionOverlayIndex = index">
+              <button
+                @click="
+                  isFaceUp ||
+                  libraryCardsAreFaceUp ||
+                  (index === 0 && playWithTopCardRevealed)
+                    ? (libraryActionOverlayIndex = index)
+                    : (libraryModalContents[index].isFaceUp = true)
+                "
+              >
                 <Card
                   :card="item.deckCard.source"
-                  :face-down="!libraryCardsAreFaceUp"
+                  :face-down="
+                    !isFaceUp &&
+                      !libraryCardsAreFaceUp &&
+                      !(index === 0 && playWithTopCardRevealed)
+                  "
                   size="small"
                 />
               </button>
@@ -246,10 +262,43 @@
                       toZone: 'hand',
                       uuid: library[index].deckCard.uuid,
                     })
+                    buildFreshLibraryModalContents({ keepFlipped: true })
                     libraryActionOverlayIndex = -1
                   "
                 >
                   Move to Hand
+                </BButton>
+
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'library',
+                      toZone: 'library',
+                      uuid: library[index].deckCard.uuid,
+                      position: 0,
+                    })
+                    buildFreshLibraryModalContents({ keepFlipped: true })
+                    libraryActionOverlayIndex = -1
+                  "
+                >
+                  Send to Top
+                </BButton>
+
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'library',
+                      toZone: 'library',
+                      uuid: library[index].deckCard.uuid,
+                      position: -1,
+                    })
+                    buildFreshLibraryModalContents({ keepFlipped: true })
+                    libraryActionOverlayIndex = -1
+                  "
+                >
+                  Send to Bottom
                 </BButton>
               </div>
             </div>
@@ -270,8 +319,18 @@
               </div>
             </div>
             <div class="level-right">
-              <div class="level-item">
-                <BSwitch v-model="libraryCardsAreFaceUp">Show cards?</BSwitch>
+              <div class="level">
+                <div class="level-item">
+                  <BSwitch
+                    :value="playWithTopCardRevealed"
+                    @input="setPlayWithTopCardRevealed"
+                  >
+                    Future Sight
+                  </BSwitch>
+                </div>
+                <div class="level-item library-show-all-switch">
+                  <BSwitch v-model="libraryCardsAreFaceUp">Show all</BSwitch>
+                </div>
               </div>
             </div>
           </div>
@@ -436,6 +495,7 @@ export default {
     isDragging: false,
     isFullscreen: false,
     isTokenModalShowing: false,
+    libraryModalContents: [],
   }),
 
   computed: {
@@ -449,6 +509,7 @@ export default {
       exile: 'playtest/exile',
       turn: 'playtest/turn',
       life: 'playtest/life',
+      playWithTopCardRevealed: 'playtest/playWithTopCardRevealed',
     }),
 
     handReversed() {
@@ -495,6 +556,7 @@ export default {
       dragItem: 'playtest/dragItem',
       nextTurn: 'playtest/nextTurn',
       bumpLife: 'playtest/bumpLife',
+      setPlayWithTopCardRevealed: 'playtest/setPlayWithTopCardRevealed',
     }),
 
     canGoFullscreen() {
@@ -529,8 +591,29 @@ export default {
       }
     },
 
+    buildFreshLibraryModalContents({ keepFlipped } = { keepFlipped: false }) {
+      const flippedUuids = this.libraryModalContents
+        .filter(({ isFaceUp }) => isFaceUp)
+        .map(
+          ({
+            item: {
+              deckCard: { uuid },
+            },
+          }) => uuid
+        )
+
+      this.libraryModalContents = this.library.map(item => ({
+        item,
+        isFaceUp: keepFlipped
+          ? flippedUuids.includes(item.deckCard.uuid)
+          : false,
+      }))
+    },
+
     openLibraryModal() {
       if (this.isDragging) return
+
+      this.buildFreshLibraryModalContents()
       this.libraryActionOverlayIndex = -1
       this.libraryCardsAreFaceUp = false
       this.libraryModalIsShowing = true
@@ -550,6 +633,7 @@ export default {
 
     _shuffleLibrary() {
       this.shuffleLibrary()
+      this.buildFreshLibraryModalContents()
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
     },
 
@@ -757,10 +841,14 @@ export default {
   bottom: 0;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 0.5rem;
   border-radius: 4.75% / 3.5%;
+}
+.modal-card-actions :nth-child(n + 2) {
+  margin-top: 1rem;
 }
 
 .battlefield-card-wrapper {
@@ -810,5 +898,12 @@ export default {
   align-items: center;
   font-family: monospace;
   font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .library-show-all-switch {
+    margin-top: 0.5rem;
+    justify-content: flex-start;
+  }
 }
 </style>

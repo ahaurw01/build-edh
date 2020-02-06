@@ -13,6 +13,7 @@ export const state = () => ({
   life: 40,
   turn: 0,
   tokenSuggestions: [],
+  playWithTopCardRevealed: false,
 })
 
 export const mutations = {
@@ -55,6 +56,10 @@ export const mutations = {
   tokenSuggestions(state, tokenSuggestions) {
     state.tokenSuggestions = tokenSuggestions
   },
+
+  playWithTopCardRevealed(state, playWithTopCardRevealed) {
+    state.playWithTopCardRevealed = playWithTopCardRevealed
+  },
 }
 
 export const actions = {
@@ -73,6 +78,7 @@ export const actions = {
     commit('battlefield', [])
     commit('life', 40)
     commit('turn', 0)
+    commit('playWithTopCardRevealed', false)
     dispatch('shuffleLibrary')
   },
 
@@ -80,18 +86,14 @@ export const actions = {
     commit('library', shuffle(getters.library))
   },
 
-  draw({ getters, dispatch }, howMany) {
+  draw({ dispatch }, howMany) {
     // Take first <howMany> cards from library and prepend them to the hand.
-    // Commit new library, commit new hand.
-    const hand = getters.hand.slice()
-    const library = getters.library.slice()
-    for (let i = 0; i < howMany && library.length; i++) {
+    for (let i = 0; i < howMany; i++) {
       dispatch('move', { fromZone: 'library', toZone: 'hand' })
-      hand.unshift(library.shift())
     }
   },
 
-  move({ commit, getters }, { uuid, fromZone, toZone, x, y }) {
+  move({ commit, getters }, { uuid, fromZone, toZone, x, y, position }) {
     const fromZoneArray = getters[fromZone]
     const toZoneArray = getters[toZone]
     let item
@@ -105,16 +107,24 @@ export const actions = {
     if (!item) return
 
     const newFromZoneArray = fromZoneArray.filter(o => o !== item)
-    const newToZoneArray =
-      item.isToken && toZone !== 'battlefield'
-        ? toZoneArray
-        : [
-            { ...item, x, y },
-            ...(fromZone === toZone ? newFromZoneArray : toZoneArray),
-          ]
-
     commit(fromZone, newFromZoneArray)
-    commit(toZone, newToZoneArray)
+
+    if (!item.isToken || toZone === 'battlefield') {
+      const newItem = { ...item }
+      if (x != null) newItem.x = x
+      if (y != null) newItem.y = y
+      if (position == null) position = 0
+      if (position === -1) position = toZoneArray.length
+      const arrayToSplice = fromZone === toZone ? newFromZoneArray : toZoneArray
+
+      const newToZoneArray = [
+        ...arrayToSplice.slice(0, position),
+        newItem,
+        ...arrayToSplice.slice(position),
+      ]
+
+      commit(toZone, newToZoneArray)
+    }
   },
 
   tap({ commit, getters }, uuid) {
@@ -219,6 +229,10 @@ export const actions = {
 
     commit('battlefield', [...getters.battlefield, ...items.reverse()])
   },
+
+  setPlayWithTopCardRevealed({ commit }, value) {
+    commit('playWithTopCardRevealed', value)
+  },
 }
 
 export const getters = {
@@ -235,4 +249,5 @@ export const getters = {
   turn: state => state.turn,
   life: state => state.life,
   tokenSuggestions: state => state.tokenSuggestions,
+  playWithTopCardRevealed: state => state.playWithTopCardRevealed,
 }
