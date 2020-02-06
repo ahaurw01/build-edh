@@ -439,6 +439,7 @@ export default {
 
     _tap(uuid) {
       return () => {
+        if (this.isDragging) return
         this.tap(uuid)
       }
     },
