@@ -33,15 +33,28 @@
         "
         class="battlefield-actions"
       >
-        <BButton @click="nextTurn">Turn: {{ turn }}</BButton>
+        <BButton :size="cardWidth === 75 ? 'is-small' : ''" @click="nextTurn"
+          >Turn: {{ turn }}</BButton
+        >
         <div class="life">
-          <BButton icon-left="minus" @click="bumpLife(-1)" />
+          <BButton
+            :size="cardWidth === 75 ? 'is-small' : ''"
+            icon-left="minus"
+            @click="bumpLife(-1)"
+          />
           <span>&nbsp;{{ life }}&nbsp;</span>
-          <BButton icon-left="plus" @click="bumpLife(1)" />
+          <BButton
+            :size="cardWidth === 75 ? 'is-small' : ''"
+            icon-left="plus"
+            @click="bumpLife(1)"
+          />
         </div>
         <div class="buttons">
-          <BButton @click="reset">Reset</BButton>
+          <BButton :size="cardWidth === 75 ? 'is-small' : ''" @click="reset"
+            >Reset</BButton
+          >
           <BButton
+            :size="cardWidth === 75 ? 'is-small' : ''"
             v-if="canGoFullscreen"
             :icon-left="isFullscreen ? 'fullscreen-exit' : 'fullscreen'"
             @click="toggleFullscreen"
