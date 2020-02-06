@@ -193,6 +193,23 @@ export const actions = {
       // Swallow error
     }
   },
+
+  createTokens({ commit, getters }, { token, count }) {
+    let coord = 50
+    const items = '.'
+      .repeat(count)
+      .split('')
+      .map(() => ({
+        deckCard: {
+          uuid: Math.random(),
+          source: token,
+        },
+        x: (coord += 10),
+        y: coord,
+      }))
+
+    commit('battlefield', [...getters.battlefield, ...items.reverse()])
+  },
 }
 
 export const getters = {

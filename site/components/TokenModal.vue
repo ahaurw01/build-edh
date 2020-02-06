@@ -114,12 +114,14 @@ export default {
 
     onSave() {
       if (!this.selectedToken) return
+      this.createTokens({ token: this.selectedToken, count: this.count })
 
       this.parent.close()
     },
 
     ...mapActions({
       searchForTokens: 'playtest/searchForTokens',
+      createTokens: 'playtest/createTokens',
     }),
   },
 }

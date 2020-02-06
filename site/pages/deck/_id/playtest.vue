@@ -593,12 +593,12 @@ export default {
 
       const hoveredZone = [
         // Determine what zone if any we're hovering over.
-        'battlefield',
         'hand',
         'library',
         'commandZone',
         'graveyard',
         'exile',
+        'battlefield',
       ].reduce((hoveredZone, zone) => {
         if (hoveredZone) return hoveredZone
         const el = document.querySelector(`.${zone}`)
