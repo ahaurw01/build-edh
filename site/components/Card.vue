@@ -9,6 +9,7 @@
       :src="loading || faceDown ? placeholderSrc : imgSrc"
       :class="{ 'special-shadow': specialShadow, loading }"
       draggable="false"
+      @dragstart="$event.preventDefault()"
     />
     <button
       v-if="showEditButton"
