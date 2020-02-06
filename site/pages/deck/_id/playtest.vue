@@ -305,7 +305,7 @@
           </div>
         </section>
         <footer class="modal-card-foot">
-          <div class="level" style="width: 100%">
+          <div class="level is-mobile" style="width: 100%">
             <div class="level-left">
               <div class="level-item">
                 <BButton @click="libraryModalIsShowing = false">
@@ -319,16 +319,18 @@
               </div>
             </div>
             <div class="level-right">
-              <div class="level-item">
-                <BSwitch
-                  :value="playWithTopCardRevealed"
-                  @input="setPlayWithTopCardRevealed"
-                >
-                  Play with top card revealed?
-                </BSwitch>
-              </div>
-              <div class="level-item">
-                <BSwitch v-model="libraryCardsAreFaceUp">Show cards?</BSwitch>
+              <div class="level">
+                <div class="level-item">
+                  <BSwitch
+                    :value="playWithTopCardRevealed"
+                    @input="setPlayWithTopCardRevealed"
+                  >
+                    Future Sight
+                  </BSwitch>
+                </div>
+                <div class="level-item library-show-all-switch">
+                  <BSwitch v-model="libraryCardsAreFaceUp">Show all</BSwitch>
+                </div>
               </div>
             </div>
           </div>
@@ -896,5 +898,12 @@ export default {
   align-items: center;
   font-family: monospace;
   font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .library-show-all-switch {
+    margin-top: 0.5rem;
+    justify-content: flex-start;
+  }
 }
 </style>
