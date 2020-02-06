@@ -78,8 +78,8 @@ export const actions = {
     commit('battlefield', [])
     commit('life', 40)
     commit('turn', 0)
+    commit('playWithTopCardRevealed', false)
     dispatch('shuffleLibrary')
-    dispatch('playWithTopCardRevealed', false)
   },
 
   shuffleLibrary({ commit, getters }) {
@@ -111,8 +111,8 @@ export const actions = {
 
     if (!item.isToken || toZone === 'battlefield') {
       const newItem = { ...item }
-      if (x != null) item.x = x
-      if (y != null) item.y = y
+      if (x != null) newItem.x = x
+      if (y != null) newItem.y = y
       if (position == null) position = 0
       if (position === -1) position = toZoneArray.length
       const arrayToSplice = fromZone === toZone ? newFromZoneArray : toZoneArray
