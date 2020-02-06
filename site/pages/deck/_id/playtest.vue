@@ -39,7 +39,14 @@
           <span>&nbsp;{{ life }}&nbsp;</span>
           <BButton icon-left="plus" @click="bumpLife(1)" />
         </div>
-        <BButton @click="reset">Reset</BButton>
+        <div class="buttons">
+          <BButton @click="reset">Reset</BButton>
+          <BButton
+            v-if="canGoFullscreen"
+            :icon-left="isFullscreen ? 'fullscreen-exit' : 'fullscreen'"
+            @click="toggleFullscreen"
+          />
+        </div>
       </div>
     </div>
     <div class="other-zones no-refresh">
@@ -353,6 +360,7 @@
 
 <script>
 import get from 'lodash/get'
+import screenfull from 'screenfull'
 import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
 import Card from '~/components/Card'
@@ -396,6 +404,7 @@ export default {
     cardWidth: 75,
     isPressing: false,
     isDragging: false,
+    isFullscreen: false,
   }),
 
   computed: {
@@ -430,6 +439,8 @@ export default {
 
     window.document.body.classList.add('no-refresh')
     window.document.documentElement.classList.add('no-refresh')
+
+    if (screenfull.isEnabled) screenfull.on('change', this.setIsFullscreen)
   },
 
   beforeDestroy() {
@@ -450,6 +461,23 @@ export default {
       nextTurn: 'playtest/nextTurn',
       bumpLife: 'playtest/bumpLife',
     }),
+
+    canGoFullscreen() {
+      return screenfull.isEnabled
+    },
+
+    setIsFullscreen() {
+      const { isFullscreen } = screenfull
+      this.isFullscreen = isFullscreen
+    },
+
+    toggleFullscreen() {
+      if (this.isFullscreen) {
+        screenfull.exit()
+      } else {
+        screenfull.request()
+      }
+    },
 
     setAppropriateCardSize() {
       if (window.innerWidth > 720) {
