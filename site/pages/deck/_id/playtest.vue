@@ -33,23 +33,46 @@
         "
         class="battlefield-actions"
       >
-        <BButton @click="nextTurn">Turn: {{ turn }}</BButton>
+        <BButton :size="cardsAreSmall ? 'is-small' : ''" @click="nextTurn"
+          >Turn: {{ turn }}</BButton
+        >
         <div class="life">
-          <BButton icon-left="minus" @click="bumpLife(-1)" />
+          <BButton
+            :size="cardsAreSmall ? 'is-small' : ''"
+            icon-left="minus"
+            @click="bumpLife(-1)"
+          />
           <span>&nbsp;{{ life }}&nbsp;</span>
-          <BButton icon-left="plus" @click="bumpLife(1)" />
+          <BButton
+            :size="cardsAreSmall ? 'is-small' : ''"
+            icon-left="plus"
+            @click="bumpLife(1)"
+          />
         </div>
-        <BButton @click="reset">Reset</BButton>
+        <div class="buttons">
+          <BButton :size="cardsAreSmall ? 'is-small' : ''" @click="reset"
+            >Reset</BButton
+          >
+          <BButton
+            :size="cardsAreSmall ? 'is-small' : ''"
+            v-if="canGoFullscreen"
+            :icon-left="isFullscreen ? 'fullscreen-exit' : 'fullscreen'"
+            @click="toggleFullscreen"
+          />
+        </div>
       </div>
     </div>
-    <div class="other-zones no-refresh">
+    <div
+      :style="{ bottom: `${cardHeight + 25}px` }"
+      class="other-zones no-refresh has-background-light"
+    >
       <div
         :style="zoneStyle"
         :class="{ hovered: hoveredZone === 'library' }"
         class="dz zone library"
       >
         <h6 class="title is-6 has-background-light">
-          Lib ({{ library.length }})
+          {{ cardsAreSmall ? 'Lib' : 'Library' }} ({{ library.length }})
         </h6>
         <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
@@ -75,7 +98,7 @@
         class="dz zone commandZone"
       >
         <h6 class="title is-6 has-background-light">
-          CZ ({{ commandZone.length }})
+          {{ cardsAreSmall ? 'CZ' : 'Command Zone' }} ({{ commandZone.length }})
         </h6>
         <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
@@ -97,7 +120,7 @@
         class="dz zone graveyard"
       >
         <h6 class="title is-6 has-background-light">
-          GY ({{ graveyard.length }})
+          {{ cardsAreSmall ? 'GY' : 'Graveyard' }} ({{ graveyard.length }})
         </h6>
         <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
@@ -122,7 +145,9 @@
         :class="{ hovered: hoveredZone === 'exile' }"
         class="dz zone exile"
       >
-        <h6 class="title is-6 has-background-light">Ex ({{ exile.length }})</h6>
+        <h6 class="title is-6 has-background-light">
+          {{ cardsAreSmall ? 'Ex' : 'Exile' }} ({{ exile.length }})
+        </h6>
         <div :style="{ height: `${cardHeight}px`, minWidth: `${cardWidth}px` }">
           <div
             v-for="(item, index) in exile"
@@ -353,6 +378,7 @@
 
 <script>
 import get from 'lodash/get'
+import screenfull from 'screenfull'
 import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
 import Card from '~/components/Card'
@@ -396,6 +422,7 @@ export default {
     cardWidth: 75,
     isPressing: false,
     isDragging: false,
+    isFullscreen: false,
   }),
 
   computed: {
@@ -422,6 +449,10 @@ export default {
     zoneStyle() {
       return { height: `${this.cardHeight + 18}px` }
     },
+
+    cardsAreSmall() {
+      return this.cardWidth === 75
+    },
   },
 
   mounted() {
@@ -430,6 +461,8 @@ export default {
 
     window.document.body.classList.add('no-refresh')
     window.document.documentElement.classList.add('no-refresh')
+
+    if (screenfull.isEnabled) screenfull.on('change', this.setIsFullscreen)
   },
 
   beforeDestroy() {
@@ -450,6 +483,23 @@ export default {
       nextTurn: 'playtest/nextTurn',
       bumpLife: 'playtest/bumpLife',
     }),
+
+    canGoFullscreen() {
+      return screenfull.isEnabled
+    },
+
+    setIsFullscreen() {
+      const { isFullscreen } = screenfull
+      this.isFullscreen = isFullscreen
+    },
+
+    toggleFullscreen() {
+      if (this.isFullscreen) {
+        screenfull.exit()
+      } else {
+        screenfull.request()
+      }
+    },
 
     setAppropriateCardSize() {
       if (window.innerWidth > 720) {
@@ -646,6 +696,7 @@ export default {
 .other-zones {
   display: flex;
   max-width: 100%;
+  position: absolute;
 }
 .library {
   min-width: 75px;
