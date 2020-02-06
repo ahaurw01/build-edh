@@ -26,7 +26,6 @@
     "nuxt-buefy": "0.3.21",
     "shortid": "2.2.15",
     "uuid": "3.3.3",
-    "vue-drag-drop": "1.1.4",
     "vue2-touch-events": "2.1.0"
   },
   "devDependencies": {
