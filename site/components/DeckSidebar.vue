@@ -33,13 +33,17 @@
 
       <hr />
 
-      <NuxtLink :to="`/deck/${slug}/playtest`">
-        <BButton type="is-primary">
-          Playtest
-        </BButton>
-      </NuxtLink>
+      <div class="benign-actions">
+        <NuxtLink :to="`/deck/${slug}/playtest`">
+          <BButton type="is-primary">
+            Playtest
+          </BButton>
+        </NuxtLink>
 
-      <BButton @click="isExportModalOpen = true">View as text</BButton>
+        <BButton @click="isExportModalOpen = true">View as text</BButton>
+      </div>
+
+      <hr />
 
       <BButton v-if="iAmOwner" type="is-danger" @click="confirmDelete">
         Delete this deck
@@ -197,5 +201,13 @@ export default {
 
 .textarea {
   width: calc(100vw - 50px);
+}
+
+.benign-actions > :nth-child(n + 2) {
+  margin-left: 0.5rem;
+}
+
+.danger-actions {
+  margin-top: 2rem;
 }
 </style>
