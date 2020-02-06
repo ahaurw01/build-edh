@@ -251,6 +251,21 @@
                 >
                   Move to Hand
                 </BButton>
+
+                <BButton
+                  type="is-light"
+                  @click="
+                    move({
+                      fromZone: 'library',
+                      toZone: 'library',
+                      uuid: library[index].deckCard.uuid,
+                      position: -1,
+                    })
+                    libraryActionOverlayIndex = -1
+                  "
+                >
+                  Send to Bottom
+                </BButton>
               </div>
             </div>
           </div>
@@ -757,10 +772,14 @@ export default {
   bottom: 0;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 0.5rem;
   border-radius: 4.75% / 3.5%;
+}
+.modal-card-actions :nth-child(n + 2) {
+  margin-top: 1rem;
 }
 
 .battlefield-card-wrapper {
