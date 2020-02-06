@@ -95,7 +95,11 @@
             :style="{ display: index > 0 ? 'none' : 'block' }"
             class="card-wrapper"
           >
-            <Card :card="item.deckCard.source" :size="cardWidth" face-down />
+            <Card
+              :card="item.deckCard.source"
+              :size="cardWidth"
+              :face-down="!playWithTopCardRevealed"
+            />
           </div>
         </div>
       </div>
@@ -228,14 +232,20 @@
             >
               <button
                 @click="
-                  isFaceUp
+                  isFaceUp ||
+                  libraryCardsAreFaceUp ||
+                  (index === 0 && playWithTopCardRevealed)
                     ? (libraryActionOverlayIndex = index)
                     : (libraryModalContents[index].isFaceUp = true)
                 "
               >
                 <Card
                   :card="item.deckCard.source"
-                  :face-down="!isFaceUp && !libraryCardsAreFaceUp"
+                  :face-down="
+                    !isFaceUp &&
+                      !libraryCardsAreFaceUp &&
+                      !(index === 0 && playWithTopCardRevealed)
+                  "
                   size="small"
                 />
               </button>
@@ -295,7 +305,7 @@
           </div>
         </section>
         <footer class="modal-card-foot">
-          <div class="level is-mobile" style="width: 100%">
+          <div class="level" style="width: 100%">
             <div class="level-left">
               <div class="level-item">
                 <BButton @click="libraryModalIsShowing = false">
@@ -309,6 +319,14 @@
               </div>
             </div>
             <div class="level-right">
+              <div class="level-item">
+                <BSwitch
+                  :value="playWithTopCardRevealed"
+                  @input="setPlayWithTopCardRevealed"
+                >
+                  Play with top card revealed?
+                </BSwitch>
+              </div>
               <div class="level-item">
                 <BSwitch v-model="libraryCardsAreFaceUp">Show cards?</BSwitch>
               </div>
@@ -489,6 +507,7 @@ export default {
       exile: 'playtest/exile',
       turn: 'playtest/turn',
       life: 'playtest/life',
+      playWithTopCardRevealed: 'playtest/playWithTopCardRevealed',
     }),
 
     handReversed() {
@@ -535,6 +554,7 @@ export default {
       dragItem: 'playtest/dragItem',
       nextTurn: 'playtest/nextTurn',
       bumpLife: 'playtest/bumpLife',
+      setPlayWithTopCardRevealed: 'playtest/setPlayWithTopCardRevealed',
     }),
 
     canGoFullscreen() {

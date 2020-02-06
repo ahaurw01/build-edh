@@ -13,6 +13,7 @@ export const state = () => ({
   life: 40,
   turn: 0,
   tokenSuggestions: [],
+  playWithTopCardRevealed: false,
 })
 
 export const mutations = {
@@ -55,6 +56,10 @@ export const mutations = {
   tokenSuggestions(state, tokenSuggestions) {
     state.tokenSuggestions = tokenSuggestions
   },
+
+  playWithTopCardRevealed(state, playWithTopCardRevealed) {
+    state.playWithTopCardRevealed = playWithTopCardRevealed
+  },
 }
 
 export const actions = {
@@ -74,6 +79,7 @@ export const actions = {
     commit('life', 40)
     commit('turn', 0)
     dispatch('shuffleLibrary')
+    dispatch('playWithTopCardRevealed', false)
   },
 
   shuffleLibrary({ commit, getters }) {
@@ -223,6 +229,10 @@ export const actions = {
 
     commit('battlefield', [...getters.battlefield, ...items.reverse()])
   },
+
+  setPlayWithTopCardRevealed({ commit }, value) {
+    commit('playWithTopCardRevealed', value)
+  },
 }
 
 export const getters = {
@@ -239,4 +249,5 @@ export const getters = {
   turn: state => state.turn,
   life: state => state.life,
   tokenSuggestions: state => state.tokenSuggestions,
+  playWithTopCardRevealed: state => state.playWithTopCardRevealed,
 }
