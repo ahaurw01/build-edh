@@ -331,7 +331,7 @@
                   </BSwitch>
                 </div>
                 <div class="level-item library-show-all-switch">
-                  <BSwitch v-model="libraryCardsAreFaceUp">Show all</BSwitch>
+                  <BSwitch v-model="libraryCardsAreFaceUp">Show All</BSwitch>
                 </div>
               </div>
             </div>
@@ -753,11 +753,16 @@ export default {
       )
       if (!elWithData) return
 
+      const { uuid, zone } = JSON.parse(elWithData.dataset.dragInfo)
+      if (zone === 'library' && !this.playWithTopCardRevealed) {
+        // Nice try.
+        return
+      }
+
       // Cancel any press or drag.
       this.isPressing = false
       this.isDragging = false
 
-      const { uuid, zone } = JSON.parse(elWithData.dataset.dragInfo)
       this.cardToShowcase = this[zone].find(
         i => i.deckCard.uuid === uuid
       ).deckCard
