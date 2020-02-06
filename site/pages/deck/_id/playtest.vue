@@ -23,7 +23,16 @@
         <Card :card="item.deckCard.source" :size="cardWidth" />
       </div>
 
-      <div class="battlefield-actions">
+      <div
+        :style="
+          !libraryModalIsShowing &&
+          !graveyardModalIsShowing &&
+          !exileModalIsShowing
+            ? {}
+            : { zIndex: 0 }
+        "
+        class="battlefield-actions"
+      >
         <BButton @click="nextTurn">Turn: {{ turn }}</BButton>
         <div class="life">
           <BButton icon-left="minus" @click="bumpLife(-1)" />
