@@ -176,20 +176,25 @@ export const actions = {
       if (data.data) {
         commit(
           'tokenSuggestions',
-          data.data.map(scryfallCard => ({
-            name: scryfallCard.name,
-            imageUris: get(
-              scryfallCard,
-              'image_uris',
-              get(scryfallCard, 'card_faces[0].image_uris')
-            ),
-            oracleText: get(
-              scryfallCard,
-              'oracle_text',
-              get(scryfallCard, 'card_faces[0].oracle_text', '')
-            ),
-            existsInNonFoil: true,
-          }))
+          data.data
+            .map(scryfallCard => {
+              if (scryfallCard.name.includes(' // ')) return null
+              return {
+                name: scryfallCard.name,
+                imageUris: get(
+                  scryfallCard,
+                  'image_uris',
+                  get(scryfallCard, 'card_faces[0].image_uris')
+                ),
+                oracleText: get(
+                  scryfallCard,
+                  'oracle_text',
+                  get(scryfallCard, 'card_faces[0].oracle_text', '')
+                ),
+                existsInNonFoil: true,
+              }
+            })
+            .filter(c => c)
         )
       }
     } catch (e) {
