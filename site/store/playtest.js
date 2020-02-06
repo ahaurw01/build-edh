@@ -1,4 +1,5 @@
 import shuffle from 'lodash/shuffle'
+import get from 'lodash/get'
 
 export const state = () => ({
   deck: null,
@@ -11,6 +12,7 @@ export const state = () => ({
   commandZone: [],
   life: 40,
   turn: 0,
+  tokenSuggestions: [],
 })
 
 export const mutations = {
@@ -48,6 +50,10 @@ export const mutations = {
 
   life(state, life) {
     state.life = life
+  },
+
+  tokenSuggestions(state, tokenSuggestions) {
+    state.tokenSuggestions = tokenSuggestions
   },
 }
 
@@ -99,10 +105,13 @@ export const actions = {
     if (!item) return
 
     const newFromZoneArray = fromZoneArray.filter(o => o !== item)
-    const newToZoneArray = [
-      { ...item, x, y },
-      ...(fromZone === toZone ? newFromZoneArray : toZoneArray),
-    ]
+    const newToZoneArray =
+      item.isToken && toZone !== 'battlefield'
+        ? toZoneArray
+        : [
+            { ...item, x, y },
+            ...(fromZone === toZone ? newFromZoneArray : toZoneArray),
+          ]
 
     commit(fromZone, newFromZoneArray)
     commit(toZone, newToZoneArray)
@@ -151,6 +160,60 @@ export const actions = {
   bumpLife({ commit, getters }, diff) {
     commit('life', getters.life + diff)
   },
+
+  async searchForTokens({ commit }, searchTerm) {
+    searchTerm = searchTerm.trim()
+    if (searchTerm.length < 2) return
+    try {
+      const { data } = await this.$axios.get(
+        `https://api.scryfall.com/cards/search`,
+        {
+          params: {
+            q: `is:token name:${searchTerm}`,
+          },
+        }
+      )
+      if (data.data) {
+        commit(
+          'tokenSuggestions',
+          data.data.map(scryfallCard => ({
+            name: scryfallCard.name,
+            imageUris: get(
+              scryfallCard,
+              'image_uris',
+              get(scryfallCard, 'card_faces[0].image_uris')
+            ),
+            oracleText: get(
+              scryfallCard,
+              'oracle_text',
+              get(scryfallCard, 'card_faces[0].oracle_text', '')
+            ),
+            existsInNonFoil: true,
+          }))
+        )
+      }
+    } catch (e) {
+      // Swallow error
+    }
+  },
+
+  createTokens({ commit, getters }, { token, count }) {
+    let coord = 50
+    const items = '.'
+      .repeat(count)
+      .split('')
+      .map(() => ({
+        deckCard: {
+          uuid: Math.random(),
+          source: token,
+        },
+        x: (coord += 10),
+        y: coord,
+        isToken: true,
+      }))
+
+    commit('battlefield', [...getters.battlefield, ...items.reverse()])
+  },
 }
 
 export const getters = {
@@ -166,4 +229,5 @@ export const getters = {
   commandZone: state => state.commandZone,
   turn: state => state.turn,
   life: state => state.life,
+  tokenSuggestions: state => state.tokenSuggestions,
 }

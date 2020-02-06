@@ -27,7 +27,8 @@
         :style="
           !libraryModalIsShowing &&
           !graveyardModalIsShowing &&
-          !exileModalIsShowing
+          !exileModalIsShowing &&
+          !isTokenModalShowing
             ? {}
             : { zIndex: 0 }
         "
@@ -49,13 +50,19 @@
             @click="bumpLife(1)"
           />
         </div>
+        <BButton
+          :size="cardsAreSmall ? 'is-small' : ''"
+          @click="isTokenModalShowing = true"
+        >
+          Tokens
+        </BButton>
         <div class="buttons">
           <BButton :size="cardsAreSmall ? 'is-small' : ''" @click="reset"
             >Reset</BButton
           >
           <BButton
-            :size="cardsAreSmall ? 'is-small' : ''"
             v-if="canGoFullscreen"
+            :size="cardsAreSmall ? 'is-small' : ''"
             :icon-left="isFullscreen ? 'fullscreen-exit' : 'fullscreen'"
             @click="toggleFullscreen"
           />
@@ -373,6 +380,10 @@
         </footer>
       </div>
     </BModal>
+
+    <BModal :active.sync="isTokenModalShowing" has-modal-card>
+      <TokenModal />
+    </BModal>
   </div>
 </template>
 
@@ -382,6 +393,7 @@ import screenfull from 'screenfull'
 import { mapGetters, mapActions } from 'vuex'
 import { ToastProgrammatic as Toast } from 'buefy'
 import Card from '~/components/Card'
+import TokenModal from '~/components/TokenModal'
 
 function findElementInAncestors(element, check) {
   if (!element) return null
@@ -392,7 +404,7 @@ function findElementInAncestors(element, check) {
 export default {
   auth: false,
 
-  components: { Card },
+  components: { Card, TokenModal },
 
   async fetch({ store, params, error, $axios }) {
     try {
@@ -423,6 +435,7 @@ export default {
     isPressing: false,
     isDragging: false,
     isFullscreen: false,
+    isTokenModalShowing: false,
   }),
 
   computed: {
@@ -580,12 +593,12 @@ export default {
 
       const hoveredZone = [
         // Determine what zone if any we're hovering over.
-        'battlefield',
         'hand',
         'library',
         'commandZone',
         'graveyard',
         'exile',
+        'battlefield',
       ].reduce((hoveredZone, zone) => {
         if (hoveredZone) return hoveredZone
         const el = document.querySelector(`.${zone}`)
