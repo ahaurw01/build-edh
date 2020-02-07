@@ -224,12 +224,12 @@ export const actions = {
           uuid: Math.random(),
           source: token,
         },
-        x: (coord += 10),
+        x: (coord += 20),
         y: coord,
         isToken: true,
       }))
 
-    commit('battlefield', [...getters.battlefield, ...items.reverse()])
+    commit('battlefield', [...items.reverse(), ...getters.battlefield])
   },
 
   setPlayWithTopCardRevealed({ commit }, value) {
