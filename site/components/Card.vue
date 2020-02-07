@@ -18,7 +18,7 @@
     >
       <BIcon icon="pencil" />
     </button>
-    <div v-if="isFoil || isOnlyEverFoil" class="foil-overlay" />
+    <div v-if="!faceDown && (isFoil || isOnlyEverFoil)" class="foil-overlay" />
   </div>
 </template>
 
