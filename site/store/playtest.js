@@ -113,6 +113,8 @@ export const actions = {
       const newItem = { ...item }
       if (x != null) newItem.x = x
       if (y != null) newItem.y = y
+      if (fromZone === 'battlefield' && toZone !== 'battlefield')
+        newItem.tapped = false
       if (position == null) position = 0
       if (position === -1) position = toZoneArray.length
       const arrayToSplice = fromZone === toZone ? newFromZoneArray : toZoneArray
