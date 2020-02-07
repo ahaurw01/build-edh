@@ -272,7 +272,8 @@ export default {
       this.parent.close()
     },
 
-    _getCardSuggestions: debounce(function() {
+    _getCardSuggestions: debounce(function(e) {
+      if (get(e, 'key', '').startsWith('Arrow')) return
       this.getCardSuggestions({
         nameLike: this.nameLike,
         isLegal: true,
@@ -296,6 +297,8 @@ export default {
     },
 
     _getPrintings(e) {
+      if (get(e, 'key', '').startsWith('Arrow')) return
+
       let setNameFilter = get(e, 'target.value', '').trim()
 
       // Special logic for basic lands which we know have a million printings.
