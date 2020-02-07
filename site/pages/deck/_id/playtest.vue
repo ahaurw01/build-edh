@@ -553,6 +553,7 @@ export default {
 
     window.document.body.classList.add('no-refresh')
     window.document.documentElement.classList.add('no-refresh')
+    window.document.documentElement.classList.add('no-scroll')
 
     if (screenfull.isEnabled) screenfull.on('change', this.setIsFullscreen)
   },
@@ -563,6 +564,7 @@ export default {
 
     window.document.body.classList.remove('no-refresh')
     window.document.documentElement.classList.remove('no-refresh')
+    window.document.documentElement.classList.remove('no-scroll')
   },
 
   methods: {
@@ -798,6 +800,10 @@ export default {
 <style>
 .no-refresh {
   overscroll-behavior: none;
+}
+
+.no-scroll {
+  overflow-y: hidden;
 }
 </style>
 
