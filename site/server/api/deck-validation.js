@@ -182,10 +182,6 @@ function validateCommanders(ctx, next) {
     ctx.state.commanderErrorMessages.push('Cannot have duplicate commanders')
   }
 
-  if (!_.every(sources, 'canBeCommander')) {
-    ctx.state.commanderErrorMessages.push('Ineligible commander')
-  }
-
   if (commanders.length === 2 && !_.every(sources, 'isPartner')) {
     ctx.state.commanderErrorMessages.push('Both commanders must have partner')
   }
