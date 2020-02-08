@@ -289,7 +289,8 @@ export default {
       this.getCardSuggestions({
         nameLike: this.nameLike,
         isLegal: this.onlySearchLegal ? true : undefined,
-        canBeCommander: this.forCommander ? true : undefined,
+        canBeCommander:
+          this.forCommander && this.onlySearchLegal ? true : undefined,
         ci:
           this.forCommander || !this.onlySearchLegal
             ? undefined
