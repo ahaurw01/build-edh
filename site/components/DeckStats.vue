@@ -17,6 +17,9 @@
       </ul>
     </li>
     <li><b>Total deck price:</b> ${{ deckPrice }}</li>
+    <li v-if="totalIllegalCards">
+      <b>Illegal cards:</b> {{ totalIllegalCards }}
+    </li>
   </ul>
 </template>
 
@@ -31,6 +34,7 @@ export default {
       medianCmc: 'deck/medianCmc',
       castingCostPipCounts: 'deck/castingCostPipCounts',
       deckPrice: 'deck/deckPrice',
+      totalIllegalCards: 'deck/totalIllegalCards',
     }),
   },
 

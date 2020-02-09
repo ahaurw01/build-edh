@@ -536,6 +536,11 @@ export const getters = {
     }
   },
 
+  totalIllegalCards: (state, { cardUuidToIsLegal }) => {
+    return Object.entries(cardUuidToIsLegal).filter(([, isLegal]) => !isLegal)
+      .length
+  },
+
   subtypes: (state, { commanders, the99 }) => {
     const getSubtypes = c => get(c, 'source.faces[0].subTypes')
     return sortBy(
