@@ -81,6 +81,7 @@ const cardSchema = new Schema({
   canBeCommander: { type: Boolean, index: true },
   isPartner: { type: Boolean, index: true },
   partnerWith: String,
+  isPromo: Boolean,
   faces: [
     {
       name: String,
@@ -192,6 +193,7 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
       ? rawCard.multiverse_ids[0]
       : undefined,
     tcgplayerId: rawCard.tcgplayer_id,
+    isPromo: rawCard.promo,
     name: rawCard.name,
     searchName: normalizeSearchName(rawCard.name),
     cmc: rawCard.cmc,
