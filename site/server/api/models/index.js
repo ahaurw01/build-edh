@@ -171,7 +171,15 @@ cardSchema.statics.partnerWith = function(doc) {
 cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
   const Card = this
 
-  if (!rawCard.games.includes('paper')) {
+  // Ignore non-paper cards.
+  // Ignore cards for other game types.
+  if (
+    !rawCard.games.includes('paper') ||
+    rawCard.layout === 'planar' ||
+    rawCard.layout === 'vanguard' ||
+    rawCard.layout === 'scheme' ||
+    (rawCard.type_line || '').startsWith('Conspiracy')
+  ) {
     return Card.deleteOne({
       scryfallId: rawCard.id,
     })

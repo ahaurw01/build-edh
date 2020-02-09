@@ -5,6 +5,9 @@
     class="mtg-card"
   >
     <span v-if="count > 1" class="count">x{{ count }}</span>
+    <span v-if="isIllegal" class="illegal">
+      <BIcon type="is-warning" icon="alert" custom-class="illegal-icon" />
+    </span>
     <img
       :src="loading || faceDown ? placeholderSrc : imgSrc"
       :class="{ 'special-shadow': specialShadow, loading }"
@@ -47,6 +50,7 @@ export default {
     isFoil: { type: Boolean, default: false },
     reverse: { type: Boolean, default: false },
     faceDown: { type: Boolean, default: false },
+    isIllegal: { type: Boolean, default: false },
   },
 
   data() {
@@ -162,6 +166,13 @@ img.special-shadow {
   border-radius: 0 0 50% 50%;
 }
 
+.illegal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-shadow: 0 0 4px black;
+}
+
 .edit-button {
   position: absolute;
   left: 1rem;
@@ -185,5 +196,11 @@ img.special-shadow {
     rgba(255, 226, 164, 0.25) 100%
   );
   pointer-events: none;
+}
+</style>
+
+<style>
+i.illegal-icon::before {
+  font-size: 20px !important;
 }
 </style>

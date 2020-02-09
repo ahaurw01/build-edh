@@ -1243,5 +1243,143 @@ describe('Deck Store', () => {
         )
       })
     })
+
+    describe('cardUuidToIsLegal', () => {
+      test('all legal', () => {
+        const commanders = [
+          {
+            uuid: 1,
+            source: {
+              isLegal: true,
+              canBeCommander: true,
+              ci: ['W', 'U'],
+            },
+          },
+          {
+            uuid: 2,
+            source: {
+              isLegal: true,
+              canBeCommander: true,
+              ci: ['R'],
+            },
+          },
+        ]
+        const the99 = [
+          {
+            uuid: 3,
+            source: {
+              isLegal: true,
+              ci: ['W', 'U', 'R'],
+            },
+          },
+          {
+            uuid: 4,
+            source: {
+              isLegal: true,
+              ci: ['U'],
+            },
+          },
+          {
+            uuid: 5,
+            source: {
+              isLegal: true,
+              ci: [],
+            },
+          },
+        ]
+        const considerations = [
+          {
+            uuid: 6,
+            source: {
+              isLegal: true,
+              ci: ['U', 'R'],
+            },
+          },
+        ]
+
+        const deckColorIdentity = getters.deckColorIdentity({}, { commanders })
+        const result = getters.cardUuidToIsLegal(
+          {},
+          { commanders, the99, considerations, deckColorIdentity }
+        )
+
+        expect(result).toEqual({
+          1: true,
+          2: true,
+          3: true,
+          4: true,
+          5: true,
+          6: true,
+        })
+      })
+
+      test('all illegal', () => {
+        const commanders = [
+          {
+            uuid: 1,
+            source: {
+              isLegal: false,
+              canBeCommander: true,
+              ci: ['W', 'U'],
+            },
+          },
+          {
+            uuid: 2,
+            source: {
+              isLegal: true,
+              canBeCommander: false,
+              ci: ['R'],
+            },
+          },
+        ]
+        const the99 = [
+          {
+            uuid: 3,
+            source: {
+              isLegal: false,
+              ci: ['W', 'U', 'R'],
+            },
+          },
+          {
+            uuid: 4,
+            source: {
+              isLegal: true,
+              ci: ['G'],
+            },
+          },
+          {
+            uuid: 5,
+            source: {
+              isLegal: true,
+              ci: ['B', 'W'],
+            },
+          },
+        ]
+        const considerations = [
+          {
+            uuid: 6,
+            source: {
+              isLegal: false,
+              ci: ['B'],
+            },
+          },
+        ]
+
+        const deckColorIdentity = getters.deckColorIdentity({}, { commanders })
+        const result = getters.cardUuidToIsLegal(
+          {},
+          { commanders, the99, considerations, deckColorIdentity }
+        )
+
+        expect(result).toEqual({
+          1: false,
+          2: false,
+          3: false,
+          4: false,
+          5: false,
+          6: false,
+        })
+      })
+    })
   })
 })

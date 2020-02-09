@@ -80,12 +80,19 @@ export default {
   computed: {
     ...mapGetters({
       cardUuidToCompuPurposeTitles: 'deck/cardUuidToCompuPurposeTitles',
+      cardUuidToIsLegal: 'deck/cardUuidToIsLegal',
       prices: 'deck/prices',
     }),
 
     purposes() {
       if (!this.card) return []
       return [
+        this.cardUuidToIsLegal[this.card.uuid]
+          ? null
+          : {
+              icon: 'alert',
+              text: 'NOT LEGAL',
+            },
         ...this.card.purposes.map(text => ({
           icon: 'cards-outline',
           text,
@@ -96,7 +103,7 @@ export default {
             text,
           })
         ),
-      ]
+      ].filter(x => x)
     },
 
     price() {

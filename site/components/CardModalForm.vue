@@ -1,33 +1,44 @@
 <template>
   <form ref="form" @submit.prevent="onSave">
     <section class="modal-card-body" style="overflow: visible">
-      <BField :label="forCommander ? 'Commander' : 'Card'">
-        <BAutocomplete
-          v-model="nameLike"
-          v-focus
-          field="name"
-          :data="cardSuggestions"
-          keep-first
-          @keyup.native="_getCardSuggestions"
-          @select="selectCard"
-        >
-          <template slot-scope="props">
-            <div class="media">
-              <div class="media-left">
-                <Card size="x-small" :card="props.option" />
-              </div>
-              <div class="media-content" style="white-space: normal;">
-                <h6 class="title is-6">
-                  {{ props.option.name }}
-                  <span v-if="props.option.faces[0].manaCost">-</span>
-                  <ManaCost :mana-cost="props.option.faces[0].manaCost" />
-                </h6>
-                <p>{{ props.option.faces[0].oracleText }}</p>
-              </div>
-            </div>
-          </template>
-        </BAutocomplete>
-      </BField>
+      <div class="columns">
+        <div class="column">
+          <BField :label="forCommander ? 'Commander' : 'Card'">
+            <BAutocomplete
+              v-model="nameLike"
+              v-focus
+              field="name"
+              :data="cardSuggestions"
+              keep-first
+              @keyup.native="_getCardSuggestions"
+              @select="selectCard"
+            >
+              <template slot-scope="props">
+                <div class="media">
+                  <div class="media-left">
+                    <Card size="x-small" :card="props.option" />
+                  </div>
+                  <div class="media-content" style="white-space: normal;">
+                    <h6 class="title is-6">
+                      {{ props.option.name }}
+                      <span v-if="props.option.faces[0].manaCost">-</span>
+                      <ManaCost :mana-cost="props.option.faces[0].manaCost" />
+                    </h6>
+                    <p>{{ props.option.faces[0].oracleText }}</p>
+                  </div>
+                </div>
+              </template>
+            </BAutocomplete>
+          </BField>
+        </div>
+        <div class="column is-narrow legal-switch">
+          <BField label="Only Legal Cards">
+            <BSwitch v-model="onlySearchLegal">
+              {{ onlySearchLegal ? 'Yes' : 'No' }}
+            </BSwitch>
+          </BField>
+        </div>
+      </div>
 
       <BField v-if="selectedCard" label="Printing">
         <BAutocomplete
@@ -156,6 +167,7 @@ export default {
   },
   data() {
     return {
+      onlySearchLegal: true,
       nameLike: this.card ? this.card.source.name : '',
       selectedCard: this.card ? this.card.source : null,
       purposes: [...(this.card ? this.card.purposes : [])],
@@ -276,9 +288,13 @@ export default {
       if (get(e, 'key', '').startsWith('Arrow')) return
       this.getCardSuggestions({
         nameLike: this.nameLike,
-        isLegal: true,
-        canBeCommander: this.forCommander ? true : undefined,
-        ci: this.forCommander ? undefined : this.colorIdentity,
+        isLegal: this.onlySearchLegal ? true : undefined,
+        canBeCommander:
+          this.forCommander && this.onlySearchLegal ? true : undefined,
+        ci:
+          this.forCommander || !this.onlySearchLegal
+            ? undefined
+            : this.colorIdentity,
       })
     }, 200),
 
@@ -323,3 +339,11 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+@media (min-width: 769px) {
+  .legal-switch label.switch {
+    margin-top: 0.25rem;
+  }
+}
+</style>

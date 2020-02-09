@@ -311,7 +311,6 @@ async function oldValidateCommanders(ctx) {
   ctx.state.sources = ctx.state.sources.concat(sources)
 
   ctx.assert(commanders.length === sources.length, 400, 'Card not found')
-  ctx.assert(_.every(sources, 'canBeCommander'), 400, 'Ineligible commander')
 
   if (commanders.length <= 1) return
 

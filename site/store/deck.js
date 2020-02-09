@@ -6,6 +6,7 @@ import last from 'lodash/last'
 import get from 'lodash/get'
 import compact from 'lodash/compact'
 import chunk from 'lodash/chunk'
+import intersection from 'lodash/intersection'
 import { ToastProgrammatic as Toast } from 'buefy'
 
 function openToast({ message, type = 'is-success', position = 'is-bottom' }) {
@@ -491,6 +492,53 @@ export const getters = {
       })
     })
     return map
+  },
+
+  deckColorIdentity: (state, { commanders }) => {
+    return uniq(flatten(commanders.map(({ source }) => source.ci)))
+  },
+
+  cardUuidToIsLegal: (
+    state,
+    { commanders, the99, considerations, deckColorIdentity }
+  ) => {
+    function isDeckCardLegal(source) {
+      return (
+        intersection(source.ci, deckColorIdentity).length ===
+          source.ci.length && source.isLegal
+      )
+    }
+
+    function isCommanderLegal(source) {
+      return source.isLegal && source.canBeCommander
+    }
+
+    const commanderHash = commanders.reduce((hash, { uuid, source }) => {
+      return {
+        ...hash,
+        [uuid]: isCommanderLegal(source),
+      }
+    }, {})
+
+    const otherHash = [...the99, ...considerations].reduce(
+      (hash, { uuid, source }) => {
+        return {
+          ...hash,
+          [uuid]: isDeckCardLegal(source),
+        }
+      },
+      {}
+    )
+
+    return {
+      ...commanderHash,
+      ...otherHash,
+    }
+  },
+
+  totalIllegalCards: (state, { cardUuidToIsLegal }) => {
+    return Object.entries(cardUuidToIsLegal).filter(([, isLegal]) => !isLegal)
+      .length
   },
 
   subtypes: (state, { commanders, the99 }) => {

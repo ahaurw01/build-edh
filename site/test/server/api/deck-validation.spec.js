@@ -465,7 +465,6 @@ describe('Deck Validation', () => {
       validateCommanders(ctx, () => {
         expect(ctx.state.commanderErrorMessages).toEqual([
           'Cannot have more than two commanders',
-          'Ineligible commander',
         ])
         done()
       })

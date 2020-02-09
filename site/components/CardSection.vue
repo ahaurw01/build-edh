@@ -30,6 +30,7 @@
               :count="card.count"
               :is-foil="card.isFoil"
               :special-shadow="!noSpecialShadow && card.isCommander"
+              :is-illegal="!cardUuidToIsLegal[card.uuid]"
               size="medium"
             />
           </button>
@@ -82,6 +83,7 @@ export default {
   computed: {
     ...mapGetters({
       iAmOwner: 'deck/iAmOwner',
+      cardUuidToIsLegal: 'deck/cardUuidToIsLegal',
     }),
 
     columns() {
