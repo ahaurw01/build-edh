@@ -6,7 +6,7 @@
   >
     <span v-if="count > 1" class="count">x{{ count }}</span>
     <span v-if="isIllegal" class="illegal">
-      <BIcon type="is-danger" icon="alert" custom-class="illegal-icon" />
+      <BIcon type="is-warning" icon="alert" custom-class="illegal-icon" />
     </span>
     <img
       :src="loading || faceDown ? placeholderSrc : imgSrc"
