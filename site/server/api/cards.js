@@ -40,21 +40,19 @@ async function getCards(ctx) {
   // Use these filters to make a best guess of what somebody is looking for.
   // Don't grab the mystery booster print. Otherwise that would be the print for everything.
   // Don't grab promos, since those are often the last reprint.
+  // Don't grab full art, since those are often basics that cost more and people aren't using.
   // Exclude certain sets that aren't typically recognizable.
   // To the best of my knowledge this won't exclude any cards outright.
   // That's the intention at least.
   filters.isPromo = false
+  filters.isFullArt = false
   filters.setName = {
-    $nin: [
-      'Mystery Booster',
-      'Kaladesh Inventions',
-      'Amonkhet Invocations',
-      'Zendikar Expeditions',
-    ],
+    $nin: Card.SETS_WE_PROB_DONT_WANT,
   }
 
   let cards = await Card.aggregate()
     .match(filters)
+    .sort({ releaseDate: 'desc' })
     .group(allCardFieldsGroup)
     .limit(20)
     .exec()
