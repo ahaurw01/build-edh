@@ -17,7 +17,7 @@
       </ul>
     </li>
     <li><b>Total deck price:</b> ${{ deckPrice }}</li>
-    <li v-if="totalIllegalCards">
+    <li v-if="totalIllegalCards" class="has-text-danger">
       <b>Illegal cards:</b> {{ totalIllegalCards }}
     </li>
   </ul>
