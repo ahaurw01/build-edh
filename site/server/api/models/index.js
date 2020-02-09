@@ -174,12 +174,14 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
 
   // Ignore non-paper cards.
   // Ignore cards for other game types.
+  // Ignore cards in non-en languages.
   if (
     !rawCard.games.includes('paper') ||
     rawCard.layout === 'planar' ||
     rawCard.layout === 'vanguard' ||
     rawCard.layout === 'scheme' ||
-    (rawCard.type_line || '').startsWith('Conspiracy')
+    (rawCard.type_line || '').startsWith('Conspiracy') ||
+    rawCard.lang !== 'en'
   ) {
     return Card.deleteOne({
       scryfallId: rawCard.id,
