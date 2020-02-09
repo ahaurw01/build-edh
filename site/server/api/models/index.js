@@ -74,7 +74,7 @@ const cardSchema = new Schema({
   existsInNonFoil: Boolean,
   rarity: String,
   setCode: String,
-  setName: String,
+  setName: { type: String, index: true },
   canHaveMultiple: Boolean,
   imageUris: { large: String, small: String },
   typeLine: String,
@@ -236,7 +236,7 @@ const Card = mongoose.model('Card', cardSchema)
 const allCardFieldsGroup = {
   ...Object.keys(Card.schema.paths).reduce((acc, key) => {
     key = key.split('.')[0]
-    acc[key] = { $last: `$${key}` }
+    acc[key] = { $first: `$${key}` }
     return acc
   }, {}),
   _id: '$name',

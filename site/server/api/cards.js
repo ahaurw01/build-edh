@@ -37,6 +37,22 @@ async function getCards(ctx) {
   if (isPartner != null) filters.isPartner = isPartner
   if (ci != null) filters.$expr = { $setIsSubset: ['$ci', ci] }
 
+  // Use these filters to make a best guess of what somebody is looking for.
+  // Don't grab the mystery booster print. Otherwise that would be the print for everything.
+  // Don't grab promos, since those are often the last reprint.
+  // Exclude certain sets that aren't typically recognizable.
+  // To the best of my knowledge this won't exclude any cards outright.
+  // That's the intention at least.
+  filters.isPromo = false
+  filters.setName = {
+    $nin: [
+      'Mystery Booster',
+      'Kaladesh Inventions',
+      'Amonkhet Invocations',
+      'Zendikar Expeditions',
+    ],
+  }
+
   let cards = await Card.aggregate()
     .match(filters)
     .group(allCardFieldsGroup)
