@@ -61,6 +61,7 @@ Deck.makeSlug = function(name) {
 }
 
 const cardSchema = new Schema({
+  ignore: { type: Boolean, index: true }, // Basically a soft delete.
   scryfallId: { type: String, index: true },
   oracleId: String,
   multiverseId: Number,
@@ -177,20 +178,16 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
   // Ignore non-paper cards.
   // Ignore cards for other game types.
   // Ignore cards in non-en languages.
-  if (
+  const ignore =
     !rawCard.games.includes('paper') ||
     rawCard.layout === 'planar' ||
     rawCard.layout === 'vanguard' ||
     rawCard.layout === 'scheme' ||
     (rawCard.type_line || '').startsWith('Conspiracy') ||
     rawCard.lang !== 'en'
-  ) {
-    return Card.deleteOne({
-      scryfallId: rawCard.id,
-    })
-  }
 
   const doc = {
+    ignore,
     scryfallId: rawCard.id,
     oracleId: rawCard.oracle_id,
     multiverseId: rawCard.multiverse_ids
@@ -269,6 +266,7 @@ Card.findWithNames = async filters => {
     }
     if (setCode) query.setCode = setCode
     else {
+      query.ignore = false
       query.isPromo = false
       query.isFullArt = false
       query.setName = {

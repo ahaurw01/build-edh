@@ -29,7 +29,7 @@ async function getCards(ctx) {
   if (isPartner === 'true') isPartner = true
   if (isPartner === 'false') isPartner = false
 
-  const filters = {}
+  const filters = { ignore: false }
   if (nameLike)
     filters.searchName = new RegExp(Card.normalizeSearchName(nameLike), 'i')
   if (canBeCommander != null) filters.canBeCommander = canBeCommander
@@ -67,7 +67,7 @@ async function getPrintings(ctx) {
 
   ctx.assert(name, 400, 'No name provided')
 
-  const query = { name }
+  const query = { name, ignore: false }
   if (setNameFilter)
     query.setName = {
       $regex: new RegExp(
