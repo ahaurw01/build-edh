@@ -44,6 +44,7 @@ const deckCardSchema = {
 
 const deckSchema = new Schema({
   name: String,
+  powerLevel: Number,
   slug: { type: String, index: true, unique: true },
   purpose: String,
   description: String,

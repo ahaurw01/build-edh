@@ -35,6 +35,17 @@
 
           <div class="columns is-vcentered">
             <div class="column">
+              <p>Power level: {{ powerLevelDisplay }}</p>
+              <PowerLevelSlider
+                v-if="iAmOwner"
+                :value="powerLevel"
+                @change="updatePowerLevel"
+              />
+            </div>
+          </div>
+
+          <div class="columns is-vcentered">
+            <div class="column">
               <p
                 v-for="(paragraph, index) in descriptionParagraphs"
                 :key="index"
@@ -112,6 +123,7 @@ import NinetyNineSection from '~/components/NinetyNineSection'
 import DeckSidebar from '~/components/DeckSidebar'
 import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 import Presser from '~/components/Presser'
+import PowerLevelSlider from '~/components/PowerLevelSlider'
 
 export default {
   auth: false,
@@ -122,6 +134,7 @@ export default {
     NinetyNineSection,
     DeckSidebar,
     AddSingleOrBulkModal,
+    PowerLevelSlider,
   },
 
   async fetch({ store, params, error, $axios }) {
@@ -147,6 +160,8 @@ export default {
     ...mapGetters({
       owner: 'deck/owner',
       name: 'deck/name',
+      powerLevel: 'deck/powerLevel',
+      powerLevelDisplay: 'deck/powerLevelDisplay',
       purpose: 'deck/purpose',
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
@@ -174,6 +189,7 @@ export default {
     ...mapActions({
       resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
       getPricesForDeck: 'deck/getPricesForDeck',
+      updatePowerLevel: 'deck/updatePowerLevel',
     }),
   },
 }

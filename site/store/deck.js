@@ -35,6 +35,7 @@ export const mutations = {
       name: deck.name,
       purpose: deck.purpose,
       description: deck.description,
+      powerLevel: deck.powerLevel,
     }
   },
 
@@ -127,6 +128,16 @@ export const actions = {
     )
     commit('deckMeta', deck)
     this.$router.replace(`/deck/${deck.slug}`)
+  },
+
+  async updatePowerLevel({ commit, state }, newPowerLevel) {
+    const { data: deck } = await this.$axios.put(
+      `/api/decks/${state.deck._id}`,
+      {
+        powerLevel: newPowerLevel,
+      }
+    )
+    commit('deckMeta', deck)
   },
 
   async updatePurpose({ commit, state }, newPurpose) {
@@ -393,6 +404,31 @@ export const getters = {
   iAmOwner: (state, getters, rootState) =>
     get(getters, 'owner._id', -1) === get(rootState, 'auth.user._id', -2),
   name: state => state.deck.name || 'Untitled deck',
+  powerLevel: state => state.deck.powerLevel || 4,
+  powerLevelDisplay: (state, { powerLevel }) => {
+    switch (powerLevel) {
+      case 1:
+        return 'Super Jank'
+      case 2:
+        return 'Jank'
+      case 3:
+        return 'Jank/Casual'
+      case 4:
+        return 'Casual'
+      case 5:
+        return 'Casual/Focused'
+      case 6:
+        return 'Focused'
+      case 7:
+        return 'Focused/Optimized'
+      case 8:
+        return 'Optimized'
+      case 9:
+        return 'Optimized/Competitive'
+      case 10:
+        return 'Competitive'
+    }
+  },
   purpose: state => state.deck.purpose || 'No purpose',
   description: state => state.deck.description || 'No description',
   descriptionParagraphs: state =>

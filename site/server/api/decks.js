@@ -136,7 +136,13 @@ async function getDeck(ctx) {
 }
 
 async function updateDeck(ctx) {
-  const { name, purpose, description, compuPurposes } = ctx.request.body
+  const {
+    name,
+    purpose,
+    description,
+    compuPurposes,
+    powerLevel,
+  } = ctx.request.body
   const { id } = ctx.params
   const owner = ctx.state.user._id
   const deck = await Deck.findOne({ _id: id, owner })
@@ -149,6 +155,10 @@ async function updateDeck(ctx) {
   if (purpose != null) deck.purpose = purpose
   if (description != null) deck.description = description
   if (compuPurposes != null) deck.compuPurposes = compuPurposes
+  if (powerLevel != null) {
+    const powerLevelNum = Number(powerLevel)
+    if (!Number.isNaN(powerLevelNum)) deck.powerLevel = powerLevelNum
+  }
 
   await deck.save()
   ctx.body = deck
