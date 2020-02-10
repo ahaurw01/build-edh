@@ -29,7 +29,7 @@ async function getCards(ctx) {
   if (isPartner === 'true') isPartner = true
   if (isPartner === 'false') isPartner = false
 
-  const filters = {}
+  const filters = { ignore: false }
   if (nameLike)
     filters.searchName = new RegExp(Card.normalizeSearchName(nameLike), 'i')
   if (canBeCommander != null) filters.canBeCommander = canBeCommander
@@ -37,8 +37,22 @@ async function getCards(ctx) {
   if (isPartner != null) filters.isPartner = isPartner
   if (ci != null) filters.$expr = { $setIsSubset: ['$ci', ci] }
 
+  // Use these filters to make a best guess of what somebody is looking for.
+  // Don't grab the mystery booster print. Otherwise that would be the print for everything.
+  // Don't grab promos, since those are often the last reprint.
+  // Don't grab full art, since those are often basics that cost more and people aren't using.
+  // Exclude certain sets that aren't typically recognizable.
+  // To the best of my knowledge this won't exclude any cards outright.
+  // That's the intention at least.
+  filters.isPromo = false
+  filters.isFullArt = false
+  filters.setName = {
+    $nin: Card.SETS_WE_PROB_DONT_WANT,
+  }
+
   let cards = await Card.aggregate()
     .match(filters)
+    .sort({ releaseDate: 'desc' })
     .group(allCardFieldsGroup)
     .limit(20)
     .exec()
@@ -53,7 +67,7 @@ async function getPrintings(ctx) {
 
   ctx.assert(name, 400, 'No name provided')
 
-  const query = { name }
+  const query = { name, ignore: false }
   if (setNameFilter)
     query.setName = {
       $regex: new RegExp(

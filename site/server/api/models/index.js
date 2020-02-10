@@ -61,9 +61,11 @@ Deck.makeSlug = function(name) {
 }
 
 const cardSchema = new Schema({
+  ignore: { type: Boolean, index: true }, // Basically a soft delete.
   scryfallId: { type: String, index: true },
   oracleId: String,
   multiverseId: Number,
+  releaseDate: Date,
   tcgplayerId: { type: Number, index: true },
   name: { type: String, index: true },
   searchName: { type: String, index: true },
@@ -74,13 +76,15 @@ const cardSchema = new Schema({
   existsInNonFoil: Boolean,
   rarity: String,
   setCode: String,
-  setName: String,
+  setName: { type: String, index: true },
   canHaveMultiple: Boolean,
   imageUris: { large: String, small: String },
   typeLine: String,
   canBeCommander: { type: Boolean, index: true },
   isPartner: { type: Boolean, index: true },
   partnerWith: String,
+  isPromo: Boolean,
+  isFullArt: Boolean,
   faces: [
     {
       name: String,
@@ -173,25 +177,26 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
 
   // Ignore non-paper cards.
   // Ignore cards for other game types.
-  if (
+  // Ignore cards in non-en languages.
+  const ignore =
     !rawCard.games.includes('paper') ||
     rawCard.layout === 'planar' ||
     rawCard.layout === 'vanguard' ||
     rawCard.layout === 'scheme' ||
-    (rawCard.type_line || '').startsWith('Conspiracy')
-  ) {
-    return Card.deleteOne({
-      scryfallId: rawCard.id,
-    })
-  }
+    (rawCard.type_line || '').startsWith('Conspiracy') ||
+    rawCard.lang !== 'en'
 
   const doc = {
+    ignore,
     scryfallId: rawCard.id,
     oracleId: rawCard.oracle_id,
     multiverseId: rawCard.multiverse_ids
       ? rawCard.multiverse_ids[0]
       : undefined,
+    releaseDate: rawCard.released_at,
     tcgplayerId: rawCard.tcgplayer_id,
+    isPromo: rawCard.promo,
+    isFullArt: rawCard.full_art,
     name: rawCard.name,
     searchName: normalizeSearchName(rawCard.name),
     cmc: rawCard.cmc,
@@ -232,11 +237,19 @@ const Card = mongoose.model('Card', cardSchema)
 const allCardFieldsGroup = {
   ...Object.keys(Card.schema.paths).reduce((acc, key) => {
     key = key.split('.')[0]
-    acc[key] = { $last: `$${key}` }
+    acc[key] = { $first: `$${key}` }
     return acc
   }, {}),
   _id: '$name',
 }
+
+// Sets to avoid when suggesting or adding cards without explicit sets desired.
+Card.SETS_WE_PROB_DONT_WANT = [
+  'Mystery Booster',
+  'Kaladesh Inventions',
+  'Amonkhet Invocations',
+  'Zendikar Expeditions',
+]
 
 /**
  * Find cards with given name regular expressions and sets.
@@ -252,8 +265,18 @@ Card.findWithNames = async filters => {
       name: { $regex: nameRegex },
     }
     if (setCode) query.setCode = setCode
+    else {
+      query.ignore = false
+      query.isPromo = false
+      query.isFullArt = false
+      query.setName = {
+        $nin: Card.SETS_WE_PROB_DONT_WANT,
+      }
+    }
     if (multiverseId) query.multiverseId = multiverseId
-    const card = await Card.findOne(query)
+    const [card] = await Card.find(query)
+      .sort({ releaseDate: 'desc' })
+      .limit(1)
     if (card) cards.push(card)
   }
 
