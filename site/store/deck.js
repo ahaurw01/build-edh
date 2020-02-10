@@ -367,7 +367,8 @@ export const actions = {
   },
 
   async getPriceForCard({ commit, state }, source) {
-    if (!source || state.prices[source.tcgplayerId]) return
+    if (!source || !source.tcgplayerId || state.prices[source.tcgplayerId])
+      return
 
     const {
       data: { price },

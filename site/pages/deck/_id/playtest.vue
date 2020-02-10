@@ -1,4 +1,5 @@
 <template>
+  <!-- Main play area -->
   <div
     v-touch:start="startDragItem"
     v-touch:moving="_dragItem"
@@ -6,6 +7,7 @@
     v-touch:touchhold="longPress"
     class="play-area has-background-light no-refresh"
   >
+    <!-- Battlefield -->
     <div
       :class="{ hovered: hoveredZone === 'battlefield' }"
       class="dz battlefield no-refresh"
@@ -24,6 +26,7 @@
         <Card :card="item.deckCard.source" :size="cardWidth" />
       </div>
 
+      <!-- Battlefield actions -->
       <div
         :style="
           !libraryModalIsShowing &&
@@ -71,10 +74,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Collection of "other" zones -->
     <div
       :style="{ bottom: `${cardHeight + 25}px` }"
       class="other-zones no-refresh has-background-light"
     >
+      <!-- Library -->
       <div
         :style="zoneStyle"
         :class="{ hovered: hoveredZone === 'library' }"
@@ -105,6 +111,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Command Zone -->
       <div
         :style="zoneStyle"
         :class="{ hovered: hoveredZone === 'commandZone' }"
@@ -127,6 +135,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Graveyard -->
       <div
         :style="zoneStyle"
         :class="{ hovered: hoveredZone === 'graveyard' }"
@@ -153,6 +163,8 @@
           </div>
         </div>
       </div>
+
+      <!-- Exile -->
       <div
         :style="zoneStyle"
         :class="{ hovered: hoveredZone === 'exile' }"
@@ -180,6 +192,8 @@
         </div>
       </div>
     </div>
+
+    <!-- Hand -->
     <div
       :style="zoneStyle"
       :class="{ hovered: hoveredZone === 'hand' }"
@@ -207,6 +221,7 @@
       </div>
     </div>
 
+    <!-- Dragging card image -->
     <div
       v-if="isDragging"
       class="drag-dummy card-wrapper"
@@ -220,6 +235,7 @@
       v-html="draggingElement.outerHTML"
     />
 
+    <!-- Library modal -->
     <BModal :active.sync="libraryModalIsShowing" has-modal-card>
       <div class="modal-card" style="width: auto">
         <header class="modal-card-head">
@@ -340,6 +356,7 @@
       </div>
     </BModal>
 
+    <!-- Graveyard Modal -->
     <BModal :active.sync="graveyardModalIsShowing" has-modal-card>
       <div class="modal-card" style="width: auto">
         <header class="modal-card-head">
@@ -391,6 +408,7 @@
       </div>
     </BModal>
 
+    <!-- Exile Modal -->
     <BModal :active.sync="exileModalIsShowing" has-modal-card>
       <div class="modal-card" style="width: auto">
         <header class="modal-card-head">
@@ -442,10 +460,12 @@
       </div>
     </BModal>
 
+    <!-- Token Modal -->
     <BModal :active.sync="isTokenModalShowing" has-modal-card>
       <TokenModal />
     </BModal>
 
+    <!-- Card Showcase Modal -->
     <CardShowcaseModal
       :card="cardToShowcase"
       :is-open="isCardShowcaseOpen"
@@ -641,13 +661,13 @@ export default {
     },
 
     openGraveyardModal() {
-      if (this.isDragging) return
+      if (this.isDragging || this.isCardShowcaseOpen) return
       this.graveyardActionOverlayIndex = -1
       this.graveyardModalIsShowing = true
     },
 
     openExileModal() {
-      if (this.isDragging) return
+      if (this.isDragging || this.isCardShowcaseOpen) return
       this.exileActionOverlayIndex = -1
       this.exileModalIsShowing = true
     },

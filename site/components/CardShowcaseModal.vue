@@ -123,7 +123,7 @@ export default {
   watch: {
     'card.source.tcgplayerId': function() {
       const { source } = this.card || {}
-      if (source) this.getPriceForCard(source)
+      if (source && !this.plain) this.getPriceForCard(source)
     },
   },
 
