@@ -33,14 +33,21 @@
             </div>
           </div>
 
-          <div class="columns is-vcentered">
-            <div class="column">
-              <p>Power level: {{ powerLevelDisplay }}</p>
+          <div class="columns is-mobile is-vcentered">
+            <div v-if="iAmOwner" class="column">
+              <p>
+                Power level: <i>{{ powerLevelDisplay }}</i>
+              </p>
               <PowerLevelSlider
-                v-if="iAmOwner"
                 :value="powerLevel"
                 @change="updatePowerLevel"
               />
+            </div>
+            <div v-else class="column is-narrow">
+              <p class="power-level-read-only">
+                Power level: <i>{{ powerLevelDisplay }}</i>
+              </p>
+              <PowerLevelBar :value="powerLevel" />
             </div>
           </div>
 
@@ -124,6 +131,7 @@ import DeckSidebar from '~/components/DeckSidebar'
 import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 import Presser from '~/components/Presser'
 import PowerLevelSlider from '~/components/PowerLevelSlider'
+import PowerLevelBar from '~/components/PowerLevelBar'
 
 export default {
   auth: false,
@@ -135,6 +143,7 @@ export default {
     DeckSidebar,
     AddSingleOrBulkModal,
     PowerLevelSlider,
+    PowerLevelBar,
   },
 
   async fetch({ store, params, error, $axios }) {
@@ -259,6 +268,10 @@ export default {
   .sidebar-opener {
     display: none;
   }
+}
+
+.power-level-read-only {
+  white-space: nowrap;
 }
 
 @keyframes point-it-out {
