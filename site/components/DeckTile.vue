@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card deck-tile">
     <div class="card-content">
       <div class="media">
         <div v-if="deck.commanders.length" class="media-left">
@@ -17,10 +17,10 @@
           <p>
             {{ deck.purpose }}
           </p>
-          <PowerLevelBar :value="deck.powerLevel || 2" />
         </div>
       </div>
     </div>
+    <PowerLevelBar :value="deck.powerLevel || 2" />
   </div>
 </template>
 
@@ -39,6 +39,10 @@ export default {
 </script>
 
 <style scoped>
+.deck-tile {
+  overflow: hidden;
+}
+
 .media-left {
   display: flex;
 }

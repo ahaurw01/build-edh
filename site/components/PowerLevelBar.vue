@@ -29,8 +29,7 @@ export default {
 <style scoped>
 .outer-bar {
   position: relative;
-  height: 1rem;
-  border: 1px solid lightgray;
+  height: 0.5rem;
   background: linear-gradient(
     90deg,
     rgba(73, 156, 232, 1) 0%,
@@ -38,7 +37,6 @@ export default {
     rgba(250, 221, 110, 1) 67%,
     rgba(236, 76, 100, 1) 100%
   );
-  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -47,6 +45,6 @@ export default {
   top: 0;
   right: 0;
   bottom: 0;
-  background: white;
+  background: hsl(0, 0%, 96%);
 }
 </style>
