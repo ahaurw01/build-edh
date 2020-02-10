@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card deck-tile">
     <div class="card-content">
       <div class="media">
         <div v-if="deck.commanders.length" class="media-left">
@@ -10,7 +10,7 @@
             size="x-small"
           />
         </div>
-        <div class="content">
+        <div class="media-content">
           <h4 class="title is-4">
             {{ deck.name || 'Untitled deck' }}
           </h4>
@@ -20,14 +20,17 @@
         </div>
       </div>
     </div>
+    <PowerLevelBar :value="deck.powerLevel || 4" />
   </div>
 </template>
 
 <script>
 import Card from './Card'
+import PowerLevelBar from './PowerLevelBar'
 export default {
   components: {
     Card,
+    PowerLevelBar,
   },
   props: {
     deck: { type: Object, required: true },
@@ -36,6 +39,10 @@ export default {
 </script>
 
 <style scoped>
+.deck-tile {
+  overflow: hidden;
+}
+
 .media-left {
   display: flex;
 }

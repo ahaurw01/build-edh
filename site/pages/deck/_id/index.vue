@@ -33,6 +33,24 @@
             </div>
           </div>
 
+          <div class="columns is-mobile is-vcentered">
+            <div v-if="iAmOwner" class="column">
+              <p>
+                Power level: <i>{{ powerLevelDisplay }}</i>
+              </p>
+              <PowerLevelSlider
+                :value="powerLevel"
+                @change="updatePowerLevel"
+              />
+            </div>
+            <div v-else class="column is-narrow">
+              <p class="power-level-read-only">
+                Power level: <i>{{ powerLevelDisplay }}</i>
+              </p>
+              <PowerLevelBar :value="powerLevel" />
+            </div>
+          </div>
+
           <div class="columns is-vcentered">
             <div class="column">
               <p
@@ -112,6 +130,8 @@ import NinetyNineSection from '~/components/NinetyNineSection'
 import DeckSidebar from '~/components/DeckSidebar'
 import AddSingleOrBulkModal from '~/components/AddSingleOrBulkModal'
 import Presser from '~/components/Presser'
+import PowerLevelSlider from '~/components/PowerLevelSlider'
+import PowerLevelBar from '~/components/PowerLevelBar'
 
 export default {
   auth: false,
@@ -122,6 +142,8 @@ export default {
     NinetyNineSection,
     DeckSidebar,
     AddSingleOrBulkModal,
+    PowerLevelSlider,
+    PowerLevelBar,
   },
 
   async fetch({ store, params, error, $axios }) {
@@ -147,6 +169,8 @@ export default {
     ...mapGetters({
       owner: 'deck/owner',
       name: 'deck/name',
+      powerLevel: 'deck/powerLevel',
+      powerLevelDisplay: 'deck/powerLevelDisplay',
       purpose: 'deck/purpose',
       description: 'deck/description',
       descriptionParagraphs: 'deck/descriptionParagraphs',
@@ -174,6 +198,7 @@ export default {
     ...mapActions({
       resetBulkAddErrorMessages: 'deck/resetBulkAddErrorMessages',
       getPricesForDeck: 'deck/getPricesForDeck',
+      updatePowerLevel: 'deck/updatePowerLevel',
     }),
   },
 }
@@ -243,6 +268,10 @@ export default {
   .sidebar-opener {
     display: none;
   }
+}
+
+.power-level-read-only {
+  white-space: nowrap;
 }
 
 @keyframes point-it-out {
