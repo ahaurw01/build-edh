@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <PowerLevelBar :value="deck.powerLevel || 2" />
+    <PowerLevelBar :value="deck.powerLevel || 4" />
   </div>
 </template>
 
