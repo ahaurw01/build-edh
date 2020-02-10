@@ -10,13 +10,14 @@
             size="x-small"
           />
         </div>
-        <div class="content">
+        <div class="media-content">
           <h4 class="title is-4">
             {{ deck.name || 'Untitled deck' }}
           </h4>
           <p>
             {{ deck.purpose }}
           </p>
+          <PowerLevelBar :value="deck.powerLevel || 2" />
         </div>
       </div>
     </div>
@@ -25,9 +26,11 @@
 
 <script>
 import Card from './Card'
+import PowerLevelBar from './PowerLevelBar'
 export default {
   components: {
     Card,
+    PowerLevelBar,
   },
   props: {
     deck: { type: Object, required: true },
