@@ -4,7 +4,13 @@
       <BIcon v-if="showIcon" :icon="icon" />
       <span v-if="showIcon">&nbsp;</span>
       <span>{{ title }}</span>
-      <span v-if="showTotal">&nbsp;({{ numCardsTotal }})</span>
+      <span class="smaller-text">
+        {{
+          showTotal
+            ? `&nbsp;(${numCardsTotal} cards, $${priceTotal})`
+            : `&nbsp;($${priceTotal})`
+        }}
+      </span>
     </div>
 
     <div class="card-columns">
@@ -84,6 +90,7 @@ export default {
     ...mapGetters({
       iAmOwner: 'deck/iAmOwner',
       cardUuidToIsLegal: 'deck/cardUuidToIsLegal',
+      priceForCard: 'deck/priceForCard',
     }),
 
     columns() {
@@ -92,6 +99,12 @@ export default {
 
     numCardsTotal() {
       return this.cards.reduce((total, { count }) => total + count, 0)
+    },
+
+    priceTotal() {
+      return this.cards
+        .reduce((total, card) => total + this.priceForCard(card), 0)
+        .toFixed(2)
     },
 
     icon() {
@@ -189,5 +202,9 @@ export default {
   .card-container:hover .card-container-inner {
     transform: rotate(-1deg) translateX(-0.1rem);
   }
+}
+
+.smaller-text {
+  font-size: 80%;
 }
 </style>
