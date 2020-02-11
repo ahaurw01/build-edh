@@ -55,9 +55,6 @@ async function getDeck(ctx, next) {
     return ctx.throw(404)
   }
 
-  // Drop cards that are only considerations.
-  deck.the99 = deck.the99.filter(c => !c.isConsideration)
-
   ctx.state.deck = deck
   return next()
 }

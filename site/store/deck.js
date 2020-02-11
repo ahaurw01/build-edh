@@ -764,18 +764,24 @@ export const getters = {
       .join('\n')
   },
 
-  deckPrice: (state, { commanders, the99, prices }) => {
+  deckPrice: (state, { commanders, the99, priceForCard }) => {
     const price = [...commanders, ...the99].reduce((total, card) => {
+      return total + priceForCard(card)
+    }, 0)
+
+    return price.toFixed(2)
+  },
+
+  priceForCard: (state, { prices }) => {
+    return function(card) {
       const { tcgplayerId } = card.source
       const { isFoil } = card
       const entry = prices[tcgplayerId]
       if (entry) {
-        total += isFoil ? +(entry.usdFoil || 0) : +(entry.usd || 0)
+        return isFoil ? +(entry.usdFoil || 0) : +(entry.usd || 0)
       }
-      return total
-    }, 0)
-
-    return price.toFixed(2)
+      return 0
+    }
   },
 }
 
