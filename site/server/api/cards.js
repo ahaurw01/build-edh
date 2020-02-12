@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const { Card, allCardFieldsGroup } = require('./models')
 
 module.exports = {
@@ -52,12 +51,10 @@ async function getCards(ctx) {
 
   let cards = await Card.aggregate()
     .match(filters)
-    .sort({ releaseDate: 'desc' })
+    .sort({ edhrecRank: -1, releaseDate: -1 })
     .group(allCardFieldsGroup)
     .limit(20)
     .exec()
-
-  cards = _.sortBy(cards, ({ name: { length } }) => length)
 
   ctx.body = { cards }
 }
