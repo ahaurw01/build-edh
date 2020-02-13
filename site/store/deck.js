@@ -175,7 +175,7 @@ export const actions = {
   },
 
   async getCardSuggestions({ commit }, query) {
-    if (!(query.nameLike || '').trim()) {
+    if ((query.nameLike || '').trim().length < 3) {
       return commit('cardSuggestions', [])
     }
 
