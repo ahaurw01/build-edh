@@ -51,8 +51,9 @@ async function getCards(ctx) {
 
   let cards = await Card.aggregate()
     .match(filters)
-    .sort({ edhrecRank: -1, releaseDate: -1 })
+    .sort({ edhrecRank: 1, releaseDate: -1 })
     .group(allCardFieldsGroup)
+    .sort({ edhrecRank: 1 })
     .limit(20)
     .exec()
 
