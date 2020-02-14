@@ -55,7 +55,7 @@
     "vue-jest": "3.0.5"
   },
   "scripts": {
-    "test": "jest",
+    "test": "cross-env JWT_SECRET=secret jest",
     "dev": "source .env && cross-env NODE_ENV=development nodemon site/server/index.js --watch site/server",
     "build": "nuxt build -c site/nuxt.config.js",
     "start": "cross-env NODE_ENV=production node site/server/index.js",

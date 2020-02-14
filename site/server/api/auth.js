@@ -3,7 +3,7 @@ const DiscordOauth2 = require('discord-oauth2')
 const { User } = require('./models')
 const { baseURL, DISCORD_CLIENT_SECRET } = require('../../nuxt.config.js')
 
-const jwtSecret = 'secret'
+const jwtSecret = process.env.JWT_SECRET
 
 module.exports = {
   me,
@@ -40,6 +40,8 @@ async function discordLogin(ctx) {
 
   ctx.body = {
     // We are acting like an access token provider for nuxt auth.
-    access_token: jwt.sign(user.safeProps(), jwtSecret),
+    access_token: jwt.sign(user.safeProps(), jwtSecret, {
+      expiresIn: '30 days',
+    }),
   }
 }
