@@ -3,7 +3,7 @@ const DiscordOauth2 = require('discord-oauth2')
 const { User } = require('./models')
 const { baseURL, DISCORD_CLIENT_SECRET } = require('../../nuxt.config.js')
 
-const jwtSecret = 'secret'
+const jwtSecret = process.env.JWT_SECRET
 
 module.exports = {
   me,

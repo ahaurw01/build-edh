@@ -41,7 +41,7 @@ apiRouter.get('/prices/card/:tcgplayerId', getCardPrice)
 apiRouter.get('/prices/deck/:deckId', ...getDeckPricesMiddlewares)
 
 // Authed routes below here:
-apiRouter.use(koaJwt({ secret: 'secret' }))
+apiRouter.use(koaJwt({ secret: process.env.JWT_SECRET }))
 
 apiRouter.get('/me', me)
 
