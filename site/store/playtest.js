@@ -1,4 +1,5 @@
 import shuffle from 'lodash/shuffle'
+import sortBy from 'lodash/sortBy'
 import get from 'lodash/get'
 
 export const state = () => ({
@@ -80,6 +81,17 @@ export const actions = {
     commit('turn', 0)
     commit('playWithTopCardRevealed', false)
     dispatch('shuffleLibrary')
+  },
+
+  drawOpeningHand({ commit, getters, dispatch }) {
+    dispatch('draw', 7)
+    let { hand } = getters
+    // Sort by cmc.
+    hand = sortBy(hand, [
+      'deckCard.source.cmc',
+      'deckCard.source.name',
+    ]).reverse()
+    commit('hand', hand)
   },
 
   shuffleLibrary({ commit, getters }) {

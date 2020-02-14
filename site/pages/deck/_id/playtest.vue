@@ -500,7 +500,7 @@ export default {
       const { data: deck } = await $axios.get(`/api/decks/${params.id}`)
       store.commit('playtest/deck', deck)
       store.dispatch('playtest/build')
-      store.dispatch('playtest/draw', 7)
+      store.dispatch('playtest/drawOpeningHand')
     } catch (e) {
       error({ statusCode: 404, message: 'Deck not found' })
     }
@@ -590,7 +590,7 @@ export default {
   methods: {
     ...mapActions({
       build: 'playtest/build',
-      draw: 'playtest/draw',
+      drawOpeningHand: 'playtest/drawOpeningHand',
       shuffleLibrary: 'playtest/shuffleLibrary',
       move: 'playtest/move',
       tap: 'playtest/tap',
@@ -673,6 +673,7 @@ export default {
     },
 
     _shuffleLibrary() {
+      this.libraryCardsAreFaceUp = false
       this.shuffleLibrary()
       this.buildFreshLibraryModalContents()
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
@@ -810,7 +811,7 @@ export default {
     reset() {
       if (window.confirm('Are you sure?')) {
         this.build()
-        this.draw(7)
+        this.drawOpeningHand()
       }
     },
   },
