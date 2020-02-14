@@ -40,6 +40,8 @@ async function discordLogin(ctx) {
 
   ctx.body = {
     // We are acting like an access token provider for nuxt auth.
-    access_token: jwt.sign(user.safeProps(), jwtSecret),
+    access_token: jwt.sign(user.safeProps(), jwtSecret, {
+      expiresIn: '30 days',
+    }),
   }
 }
