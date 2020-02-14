@@ -673,6 +673,7 @@ export default {
     },
 
     _shuffleLibrary() {
+      this.libraryCardsAreFaceUp = false
       this.shuffleLibrary()
       this.buildFreshLibraryModalContents()
       Toast.open({ message: '🎲 library shuffled 🎲', type: 'is-success' })
