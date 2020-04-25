@@ -87,6 +87,7 @@ const cardSchema = new Schema({
   partnerWith: String,
   isPromo: Boolean,
   isFullArt: Boolean,
+  searchDemerits: Number,
   faces: [
     {
       name: String,
@@ -227,6 +228,13 @@ cardSchema.statics.upsertCardFromScryfallData = function(rawCard) {
       colors: rawFace.colors,
       loyalty: rawFace.loyalty,
     })),
+    // When searching for cards, we'll sort by ascending searchDemerits.
+    // We want to deprioritize full art, promo, and certain sets like
+    // mystery booster or masterpieces.
+    searchDemerits:
+      (rawCard.full_art ? 1 : 0) +
+      (rawCard.promo ? 1 : 0) +
+      (Card.SETS_WE_PROB_DONT_WANT.includes(rawCard.set_name) ? 1 : 0),
   }
   doc.canBeCommander = Card.canBeCommander(doc)
   doc.isPartner = Card.isPartner(doc)
@@ -270,15 +278,10 @@ Card.findWithNames = async filters => {
     if (setCode) query.setCode = setCode
     else {
       query.ignore = false
-      query.isPromo = false
-      query.isFullArt = false
-      query.setName = {
-        $nin: Card.SETS_WE_PROB_DONT_WANT,
-      }
     }
     if (multiverseId) query.multiverseId = multiverseId
     const [card] = await Card.find(query)
-      .sort({ releaseDate: 'desc' })
+      .sort({ searchDemerits: 'asc', releaseDate: 'desc' })
       .limit(1)
     if (card) cards.push(card)
   }
