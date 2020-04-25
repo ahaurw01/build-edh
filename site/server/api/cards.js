@@ -38,7 +38,8 @@ async function getCards(ctx) {
 
   let cards = await Card.aggregate()
     .match(filters)
-    // Sort by edhrec rank first to bubble popular cards to the top.
+    // Sort the basic lands to the top first, since those are obvious choices.
+    // Sort by edhrec rank next to bubble popular cards to the top.
     // E.g. "sol" should definitely give us Sol Ring.
     // Then sort by ascending searchDemerits.
     // A card with searchDemerits indicates that we don't prefer to have it be the
@@ -47,9 +48,17 @@ async function getCards(ctx) {
     // We assign searchDemerits for being foil only, promo printing, etc.
     // Then all things equal, sort by latest release date so we don't prefer
     // Alpha cards, for example.
-    .sort({ edhrecRank: 1, searchDemerits: 1, releaseDate: -1 })
+    .sort({
+      isNonSnowBasicLand: -1,
+      edhrecRank: 1,
+      searchDemerits: 1,
+      releaseDate: -1,
+    })
     .group(allCardFieldsGroup)
-    .sort({ edhrecRank: 1 })
+    .sort({
+      isNonSnowBasicLand: -1,
+      edhrecRank: 1,
+    })
     .limit(20)
     .exec()
 
