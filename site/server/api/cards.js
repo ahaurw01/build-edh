@@ -36,24 +36,29 @@ async function getCards(ctx) {
   if (isPartner != null) filters.isPartner = isPartner
   if (ci != null) filters.$expr = { $setIsSubset: ['$ci', ci] }
 
-  // Use these filters to make a best guess of what somebody is looking for.
-  // Don't grab the mystery booster print. Otherwise that would be the print for everything.
-  // Don't grab promos, since those are often the last reprint.
-  // Don't grab full art, since those are often basics that cost more and people aren't using.
-  // Exclude certain sets that aren't typically recognizable.
-  // To the best of my knowledge this won't exclude any cards outright.
-  // That's the intention at least.
-  filters.isPromo = false
-  filters.isFullArt = false
-  filters.setName = {
-    $nin: Card.SETS_WE_PROB_DONT_WANT,
-  }
-
   let cards = await Card.aggregate()
     .match(filters)
-    .sort({ edhrecRank: 1, releaseDate: -1 })
+    // Sort the basic lands to the top first, since those are obvious choices.
+    // Sort by edhrec rank next to bubble popular cards to the top.
+    // E.g. "sol" should definitely give us Sol Ring.
+    // Then sort by ascending searchDemerits.
+    // A card with searchDemerits indicates that we don't prefer to have it be the
+    // top result when searching, but it needs to be available if it's the only
+    // printing we'd find.
+    // We assign searchDemerits for being foil only, promo printing, etc.
+    // Then all things equal, sort by latest release date so we don't prefer
+    // Alpha cards, for example.
+    .sort({
+      isNonSnowBasicLand: -1,
+      edhrecRank: 1,
+      searchDemerits: 1,
+      releaseDate: -1,
+    })
     .group(allCardFieldsGroup)
-    .sort({ edhrecRank: 1 })
+    .sort({
+      isNonSnowBasicLand: -1,
+      edhrecRank: 1,
+    })
     .limit(20)
     .exec()
 

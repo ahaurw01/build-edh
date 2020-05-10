@@ -658,9 +658,9 @@ export const getters = {
           source: {
             faces: [face0],
           },
-        }) => face0.types.length > 1 || face0.types[0] !== 'Land'
+        }) => !face0.types.includes('Land')
       )
-      .map(card => get(card, 'source.cmc') || []),
+      .map(card => get(card, 'source.cmc') || 0),
 
   averageCmc: (state, { cmcArrayMinusLands }) => {
     const avg = cmcArrayMinusLands.reduce(
