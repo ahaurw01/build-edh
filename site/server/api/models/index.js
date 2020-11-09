@@ -6,7 +6,7 @@ const shortid = require('shortid')
 const { Schema } = mongoose
 
 // The last characters replace '-' and '_'.
-// They will get transformed to 'a' and 'e' by sluglify.
+// They will get transformed to 'a' and 'e' by slugify.
 shortid.characters(
   '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáé'
 )
@@ -308,10 +308,20 @@ const priceSchema = new Schema({
 
 const Price = mongoose.model('Price', priceSchema)
 
+const metadataSchema = new Schema({
+  type: {
+    type: String,
+    unique: true,
+  },
+  info: Object,
+})
+const Metadata = mongoose.model('Metadata', metadataSchema)
+
 module.exports = {
   User,
   Deck,
   Card,
   Price,
+  Metadata,
   allCardFieldsGroup,
 }
