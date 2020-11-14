@@ -8,7 +8,9 @@ const debug = require('debug')('ingest')
 const bent = require('bent')
 const moment = require('moment')
 
-const { Card, Metadata } = require('../site/server/api/models')
+const { Card, Metadata } = process.env.LOCAL
+  ? require('../site/server/api/models')
+  : require('./models')
 const getJson = bent('json')
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/buildedh'
 
