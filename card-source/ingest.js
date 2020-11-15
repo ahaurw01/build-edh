@@ -1,13 +1,19 @@
 'use strict'
 
-const fs = require('fs').promises
-const path = require('path')
 const _ = require('lodash')
 const mongoose = require('mongoose')
 const debug = require('debug')('ingest')
+const bent = require('bent')
+const moment = require('moment')
 
-const { Card } = require('../site/server/api/models')
+const { Card, Metadata } = process.env.LOCAL
+  ? require('../site/server/api/models')
+  : require('./models')
+const getJson = bent('json')
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/buildedh'
+
+// Acknowledge deprecations
+mongoose.set('useFindAndModify', false)
 
 async function connectToDb() {
   await mongoose.connect(MONGO_URI)
@@ -19,12 +25,39 @@ async function disconnectFromDb() {
   debug('disconnected from db')
 }
 
-async function readAllCardsFromFile() {
-  const fileContents = await fs.readFile(
-    path.join(__dirname, '/data/scryfall-default-cards.json'),
-    'utf8'
+async function fetchScryfallMetaInfo() {
+  const bulkDataInfo = await getJson('https://api.scryfall.com/bulk-data')
+  const defaultInfo = _.find(_.get(bulkDataInfo, 'data', []), {
+    type: 'default_cards',
+  })
+  if (!defaultInfo) {
+    throw new Error('could not find default card info')
+  }
+
+  debug('fetched scryfall bulk data info:', defaultInfo)
+
+  return {
+    updatedAt: defaultInfo.updated_at,
+    url: defaultInfo.download_uri,
+  }
+}
+
+async function fetchAllCards(url) {
+  debug('downloading cards...')
+  const cards = await getJson(url)
+  debug('finished downloading cards')
+  return cards
+}
+
+async function isUpdateNeeded(scryfallUpdatedAt) {
+  const metadata = await Metadata.findOne({ type: 'bulk' }).exec()
+  if (!metadata) return true
+
+  debug('update is needed')
+
+  return moment(scryfallUpdatedAt).isAfter(
+    moment(_.get(metadata, 'info.asOf', 0))
   )
-  return JSON.parse(fileContents)
 }
 
 async function insertCardsToDb(rawCards) {
@@ -44,17 +77,36 @@ async function insertCardsToDb(rawCards) {
   }
 }
 
-;(async function work() {
+async function writeMetadata(asOf) {
+  await Metadata.findOneAndUpdate(
+    { type: 'bulk' },
+    { info: { asOf } },
+    { upsert: true }
+  ).exec()
+  debug('updated metadata')
+}
+
+exports.handler = async function() {
   try {
     await connectToDb()
+    const { updatedAt, url } = await fetchScryfallMetaInfo()
+    const shouldUpdate = await isUpdateNeeded(updatedAt)
+    if (!shouldUpdate) {
+      debug('No updated needed.')
+      return
+    }
+
     const [rawCards] = await Promise.all([
-      readAllCardsFromFile(),
+      fetchAllCards(url),
       Card.createIndexes(),
     ])
     await insertCardsToDb(rawCards)
+    await writeMetadata(updatedAt)
   } catch (e) {
     debug(e)
   } finally {
     await disconnectFromDb()
   }
-})()
+}
+
+if (require.main === module) exports.handler()
