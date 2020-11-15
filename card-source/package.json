@@ -4,15 +4,19 @@
   "description": "Lambda job for updating cards",
   "main": "ingest.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "npm i && cp ../site/server/api/models/index.js ./models.js && zip -r function.zip . && aws lambda update-function-code --function-name card-updater --zip-file fileb://function.zip && rm function.zip models.js"
   },
   "author": "ahaurw01",
   "license": "UNLICENSED",
   "dependencies": {
+    "@sindresorhus/slugify": "^1.1.0",
     "bent": "^7.3.12",
     "debug": "^4.2.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "mongoose": "^5.10.14"
+    "mongoose": "^5.10.14",
+    "normalize-diacritics": "^2.12.0",
+    "shortid": "^2.2.16"
   }
 }
