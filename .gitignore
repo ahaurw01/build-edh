@@ -65,3 +65,6 @@ typings/
 
 # Nuxt stuff
 /site/static/sw.js
+
+# ide stuff
+.idea
